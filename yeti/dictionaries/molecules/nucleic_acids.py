@@ -4,8 +4,12 @@
 
 class NucleicAcid(object):
     def __init__(self):
+        """
+        The basic building class for standard RNA and DNA.
+        """
+
         self.dihedral_angles_dictionary = self.__get_dihedral_angles_dictionary()
-        self.distance_dict = self.__get_distances_dictionary()
+        self.distances_dict = self.__get_distances_dictionary()
         self.bonds_between_residues = ["O3\'", "P"]
 
     @staticmethod
@@ -19,6 +23,7 @@ class NucleicAcid(object):
 
         :rtype: dict
         """
+
         dihedral_angles_dictionary = {"alpha": (["O3\'", "P", "O5\'", "C5\'"], [-1, 0, 0, 0], r"$\alpha$"),
                                       "beta": (["P", "O5\'", "C5\'", "C4\'"], [0, 0, 0, 0], r"$\beta$"),
                                       "gamma": (["O5\'", "C5\'", "C4\'", "C3\'"], [0, 0, 0, 0], r"$\gamma$"),
@@ -52,39 +57,67 @@ class NucleicAcid(object):
 
         return distance_dict
 
-    def __get_residue_bonds_dictionary(self):
-        # TODO
-        self.base_bond_dictionary = {"adenine": (["C1\'", "N9"], ["N9", "C8"], ["N9", "C4"], ["C8", "H8"], ["C8", "N7"],
-                                                 ["N7", "C5"], ["C5", "C6"], ["C5", "C4"], ["C6", "N6"], ["C6", "N1"],
-                                                 ["N6", "H61"], ["N6", "H62"], ["N1", "C2"], ["C2", "H2"], ["C2", "N3"],
-                                                 ["N3", "C4"]),
-                                     "cytosine": (["C1\'", "N1"], ["N1", "C6"], ["N1", "C2"], ["C6", "H6"],
-                                                  ["C6", "C5"], ["C5", "H5"], ["C5", "C4"], ["C4", "N4"], ["C4", "N3"],
-                                                  ["N4", "H41"], ["N4", "H42"], ["N3", "C2"], ["C2", "O2"]),
-                                     "guanine": (["C1\'", "N9"], ["N9", "C8"], ["N9", "C4"], ["C8", "H8"], ["C8", "N7"],
-                                                 ["N7", "C5"], ["C5", "C6"], ["C5", "C4"], ["C6", "O6"], ["C6", "N1"],
-                                                 ["N1", "H1"], ["N1", "C2"], ["C2", "N2"], ["C2", "N3"], ["N2", "H21"],
-                                                 ["N2", "H22"], ["N3", "C4"])
-                                     }
+    def _get_residue_bonds_dictionary(self):
+        """
+        Creates an attribute. That attribute is a dictionary, which contains a list of all bonds within the standard
+        bases adenine, cytosine and guanine.
+        """
 
-    def get_donors_dict(self):
-        # TODO
-        self.base_bond_donors_dict = {"adenine": (["N6", "H61"], ["N6", "H62"]),
-                                      "cytosine": (["N4", "H41"], ["N4", "H42"]),
-                                      "guanine": (["N1", "H1"], ["N2", "H21"], ["N2", "H22"])
-                                      }
+        self.residue_bonds_dictionary = {"adenine": (["C1\'", "N9"], ["N9", "C8"], ["N9", "C4"], ["C8", "H8"],
+                                                     ["C8", "N7"], ["N7", "C5"], ["C5", "C6"], ["C5", "C4"],
+                                                     ["C6", "N6"], ["C6", "N1"], ["N6", "H61"], ["N6", "H62"],
+                                                     ["N1", "C2"], ["C2", "H2"], ["C2", "N3"], ["N3", "C4"]),
+                                         "cytosine": (["C1\'", "N1"], ["N1", "C6"], ["N1", "C2"], ["C6", "H6"],
+                                                      ["C6", "C5"], ["C5", "H5"], ["C5", "C4"], ["C4", "N4"],
+                                                      ["C4", "N3"], ["N4", "H41"], ["N4", "H42"], ["N3", "C2"],
+                                                      ["C2", "O2"]),
+                                         "guanine": (["C1\'", "N9"], ["N9", "C8"], ["N9", "C4"], ["C8", "H8"],
+                                                     ["C8", "N7"], ["N7", "C5"], ["C5", "C6"], ["C5", "C4"],
+                                                     ["C6", "O6"], ["C6", "N1"], ["N1", "H1"], ["N1", "C2"],
+                                                     ["C2", "N2"], ["C2", "N3"], ["N2", "H21"], ["N2", "H22"],
+                                                     ["N3", "C4"])
+                                         }
 
-    def get_acceptors_dict(self):
-        # TODO
-        self.base_bond_acceptors = {"adenine": (),
+    def _get_donors_dictionary(self):
+        """
+        Creates an attribute. That attribute is a dictionary, which contains further dictionaries for donor atoms,
+        bonds and slots for the standard bases adenine, cytosine and guanine.
+        """
+
+        donor_base_atoms_dict = {"adenine": (),
+                                 "cytosine": (),
+                                 "guanine": ()
+                                 }
+
+        donor_base_bonds_dict = {"adenine": (["N6", "H61"], ["N6", "H62"]),
+                                 "cytosine": (["N4", "H41"], ["N4", "H42"]),
+                                 "guanine": (["N1", "H1"], ["N2", "H21"], ["N2", "H22"])
+                                 }
+
+        donor_slots_dict = {"adenine": {},
+                            "cytosine": {},
+                            "guanine": {}
+                            }
+
+        self.donors_dictionary = {"atoms": donor_base_atoms_dict,
+                                  "bonds": donor_base_bonds_dict,
+                                  "slots": donor_slots_dict}
+
+    def _get_acceptors_dict(self):
+        """
+        Creates an attribute. That attribute is a dictionary, which contains further dictionaries for acceptor atoms,
+        bonds and slots for the standard bases adenine, cytosine and guanine.
+        """
+
+        acceptor_base_atoms_dict = {"adenine": ("N1", "N3", "N6", "N7"),
+                                    "cytosine": ("N3", "N4"),
+                                    "guanine": ("N3", "N7")
+                                    }
+
+        acceptor_base_bonds_dict = {"adenine": (),
                                     "cytosine": (["C2", "O2"],),
                                     "guanine": (["C6", "O6"],)
                                     }
-
-        self.base_atom_acceptors_dict = {"adenine": ("N1", "N3", "N6", "N7"),
-                                         "cytosine": ("N3", "N4"),
-                                         "guanine": ("N3", "N7")
-                                         }
 
         adenine_slots = {"N1": 1,
                          "N3": 1,
@@ -102,10 +135,14 @@ class NucleicAcid(object):
                          "N7": 1
                          }
 
-        self.acceptor_slots = {"adenine": adenine_slots,
+        acceptor_slots_dict = {"adenine": adenine_slots,
                                "cytosine": cytosine_slots,
                                "guanine": guanine_slots
                                }
+
+        self.donors_dictionary = {"atoms": acceptor_base_atoms_dict,
+                                  "bonds": acceptor_base_bonds_dict,
+                                  "slots": acceptor_slots_dict}
 
     def get_base_pairs_dict(self):
         # TODO
@@ -123,12 +160,16 @@ class NucleicAcid(object):
 
 class RNA(NucleicAcid):
     def __init__(self):
-        super(self.__class__, self).__init__()
-        self.residue_bonds_dictionary = self.__get_residue_bonds_dictionary()
+        super(RNA, self).__init__()
+
+        # run internal methods
+        self.__get_residue_bonds_dictionary()
+        self.__get_donors_dictionary()
+        self.__get_acceptors_dictionary()
 
     def __get_residue_bonds_dictionary(self):
 
-        super(RNA, self).__get_residue_bonds_dictionary()
+        super(RNA, self)._get_residue_bonds_dictionary()
 
         backbone_bonds = [["P", "OP1"], ["P", "OP2"], ["P", "O5\'"], ["O5\'", "C5\'"], ["C5\'", "H5\'1"],
                           ["C5\'", "H5\'2"], ["C5\'", "C4\'"], ["C4\'", "H4\'"],
@@ -141,17 +182,16 @@ class RNA(NucleicAcid):
                           ["C5", "C4"], ["C4", "O4"], ["C4", "N3"], ["N3", "H3"], ["N3", "C2"], ["C2", "O2"])
                }
 
-        residue_dictionary.update(tmp)
+        self.residue_bonds_dictionary.update(tmp)
 
-        for key in residue_dictionary:
+        for key in self.residue_bonds_dictionary:
             for i in range(len(backbone_bonds)):
-                residue_dictionary[key] += (backbone_bonds[i],)
+                self.residue_bonds_dictionary[key] += (backbone_bonds[i],)
 
-        return residue_dictionary
+        # return self.base_bond_dictionary
 
+    def __get_donors_dictionary(self):
+        super(RNA, self)._get_donors_dictionary()
 
-nuc_acid = NucleicAcid()
-rna = RNA()
-
-print(nuc_acid.residue_bonds_dictionary)
-print(rna.residue_bonds_dictionary)
+    def __get_acceptors_dictionary(self):
+        pass
