@@ -153,8 +153,43 @@ class NucleicAcid(object):
 
         return base_pairs_dictionary
 
+    def _update_residue_bonds_dictionary(self, backbone_bonds, new_bases):
+
+        self.residue_bonds_dictionary.update(new_bases)
+
+        # add backbone bonds
+        for key in self.residue_bonds_dictionary:
+            for i in range(len(backbone_bonds)):
+                self.residue_bonds_dictionary[key] += (backbone_bonds[i],)
+
+    def _update_hydrogen_bond_dictionary(self, base_atoms, base_slots, backbone_atoms, backbone_slots,
+                                         update_donors=True):
+
+        if update_donors:
+            dictionary = self.donors_dictionary
+        else:
+            dictionary = self.acceptors_dictionary
+
+        dictionary["atoms"].update(base_atoms)
+        dictionary["slots"].update(base_slots)
+
+        for key in dictionary["atoms"]:
+            dictionary["atoms"][key] += backbone_atoms
+            dictionary["slots"][key].update(backbone_slots)
+
+    def _update_base_pairs_dictionary(self, new_base_pairs):
+
+        base_pair_types = tuple(self.base_pairs_dictionary.keys())
+        new_base_pair_types = tuple(new_base_pairs.keys())
+
+        for new_type in new_base_pair_types:
+            if new_type in base_pair_types:
+                self.base_pairs_dictionary[new_type].update(new_base_pairs[new_type])
+            else:
+                self.base_pairs_dictionary[new_type] = new_base_pairs[new_type]
 
 class RNA(NucleicAcid):
+    # TODO: AVOID DOUBLE NAMING!
     def __init__(self):
         super(RNA, self).__init__()
 
@@ -165,7 +200,6 @@ class RNA(NucleicAcid):
         self.__update_base_pairs_dictionary()
 
     def __update_residue_bonds_dictionary(self):
-
         backbone_bonds = [["P", "OP1"], ["P", "OP2"], ["P", "O5\'"], ["O5\'", "C5\'"], ["C5\'", "H5\'1"],
                           ["C5\'", "H5\'2"], ["C5\'", "C4\'"], ["C4\'", "H4\'"],
                           ["C4\'", "O4\'"], ["C4\'", "C3\'"], ["O4\'", "C1\'"], ["C1\'", "H1\'"], ["C1\'", "C2\'"],
@@ -173,39 +207,31 @@ class RNA(NucleicAcid):
                           ["C3\'", "O3\'"], ["C2\'", "H2\'1"], ["C2\'", "O2\'"], ["O2\'", "HO\'2"], ["O5\'", "H5T"],
                           ["O3'", "HO3\'"]]
 
-        tmp = {"uracil": (["C1\'", "N1"], ["N1", "C6"], ["N1", "C2"], ["C6", "H6"], ["C6", "C5"], ["C5", "H5"],
-                          ["C5", "C4"], ["C4", "O4"], ["C4", "N3"], ["N3", "H3"], ["N3", "C2"], ["C2", "O2"])
-               }
+        uracil = {"uracil": (["C1\'", "N1"], ["N1", "C6"], ["N1", "C2"], ["C6", "H6"], ["C6", "C5"], ["C5", "H5"],
+                             ["C5", "C4"], ["C4", "O4"], ["C4", "N3"], ["N3", "H3"], ["N3", "C2"], ["C2", "O2"])
+                  }
 
-        self.residue_bonds_dictionary.update(tmp)
-
-        # add backbone bonds
-        for key in self.residue_bonds_dictionary:
-            for i in range(len(backbone_bonds)):
-                self.residue_bonds_dictionary[key] += (backbone_bonds[i],)
+        self._update_residue_bonds_dictionary(backbone_bonds=backbone_bonds, new_bases=uracil)
 
     def __update_donors_dictionary(self):
-        tmp_atoms = {"uracil": ("H3",)}
-        tmp_slots = {"uracil": {"H3": 1}}
-
-        self.donors_dictionary["atoms"].update(tmp_atoms)
-        self.donors_dictionary["slots"].update(tmp_slots)
+        # uracil atoms
+        uracil_atoms = {"uracil": ("H3",)}
+        uracil_slots = {"uracil": {"H3": 1}}
 
         # add backbone atoms
         backbone_atoms = ("HO\'2",)
         backbone_slots = {"HO\'2": 1}
 
-        for key in self.donors_dictionary["atoms"]:
-            self.donors_dictionary["atoms"][key] += backbone_atoms
-            self.donors_dictionary["slots"][key].update(backbone_slots)
+        # update
+        self._update_hydrogen_bond_dictionary(base_atoms=uracil_atoms, base_slots=uracil_slots,
+                                              backbone_atoms=backbone_atoms, backbone_slots=backbone_slots,
+                                              update_donors=True)
 
     def __update_acceptors_dictionary(self):
-        tmp_atoms = {"uracil": ("O2", "O4")}
-        tmp_slots = {"uracil": {"O2": 2,
-                                "O4": 2}}
-
-        self.acceptors_dictionary["atoms"].update(tmp_atoms)
-        self.acceptors_dictionary["slots"].update(tmp_slots)
+        # uracil atoms
+        uracil_atoms = {"uracil": ("O2", "O4")}
+        uracil_slots = {"uracil": {"O2": 2,
+                                   "O4": 2}}
 
         # add backbone atoms
         backbone_atoms = ("O2\'", "O3\'", "O4\'", "O5\'", "OP1", "OP2")
@@ -216,9 +242,11 @@ class RNA(NucleicAcid):
                           "O4\'": 2,
                           "O5\'": 2}
 
-        for key in self.acceptors_dictionary["atoms"]:
-            self.acceptors_dictionary["atoms"][key] += backbone_atoms
-            self.acceptors_dictionary["slots"][key].update(backbone_slots)
+        self._update_hydrogen_bond_dictionary(base_atoms=uracil_atoms, base_slots=uracil_slots,
+                                              backbone_atoms=backbone_atoms, backbone_slots=backbone_slots,
+                                              update_donors=False)
 
     def __update_base_pairs_dictionary(self):
-        pass
+        new_base_pairs = {"watson-crick": {"adenine_uracil": (["N6", "O4"], ["N1", "N3"])}}
+
+        self._update_base_pairs_dictionary(new_base_pairs=new_base_pairs)
