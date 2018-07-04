@@ -80,6 +80,7 @@ class TestRNA(TestCase):
         self.assertDictEqual(reference, result)
 
     def test_get_donors_dictionary(self):
+        # Note: Order of elements is important
         from yeti.dictionaries.molecules.nucleic_acids import RNA
 
         ref_atoms_dict = {"adenine": ("H61", "H62", "HO\'2"),
@@ -123,6 +124,7 @@ class TestRNA(TestCase):
         self.assertDictEqual(reference, result)
 
     def test_get_acceptors_dictionary(self):
+        # Note: Order of elements is important
         from yeti.dictionaries.molecules.nucleic_acids import RNA
 
         ref_atoms_dict = {"adenine": ("N1", "N3", "N6", "N7", "O2\'", "O3\'", "O4\'", "O5\'", "OP1", "OP2"),
@@ -185,7 +187,7 @@ class TestRNA(TestCase):
                      "slots": ref_slots_dict}
 
         rna = RNA()
-        result = rna.donors_dictionary
+        result = rna.acceptors_dictionary
 
         self.assertDictEqual(reference, result)
 
