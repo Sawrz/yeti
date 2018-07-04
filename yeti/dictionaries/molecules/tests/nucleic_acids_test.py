@@ -191,3 +191,13 @@ class TestRNA(TestCase):
 
     def test_get_base_pairs_dictionary(self):
         from yeti.dictionaries.molecules.nucleic_acids import RNA
+
+        watson_crick_reference = {"adenine_uracil": (["N6", "O4"], ["N1", "N3"]),
+                                  "cytosine_guanine": (["N4", "O6"], ["N3", "N1"], ["O2", "N2"])}
+
+        reference = {"watson-crick": watson_crick_reference}
+
+        rna = RNA()
+        result = rna.base_pairs_dictionary
+
+        self.assertDictEqual(reference, result)
