@@ -82,26 +82,39 @@ class TestRNA(TestCase):
     def test_get_donors_dictionary(self):
         from yeti.dictionaries.molecules.nucleic_acids import RNA
 
-        ref_atoms_dict = {"adenine": (),
-                          "cytosine": (),
-                          "guanine": (),
-                          "uracil": ()
+        ref_atoms_dict = {"adenine": ("H61", "H62", "HO\'2"),
+                          "cytosine": ("H41", "H42", "HO\'2"),
+                          "guanine": ("H1", "H21", "H22", "HO\'2"),
+                          "uracil": ("H3", "HO\'2")
                           }
 
-        ref_bonds_dict = {"adenine": (["N6", "H61"], ["N6", "H62"], ["O2\'", "HO\'2"]),
-                          "cytosine": (["N4", "H41"], ["N4", "H42"], ["O2\'", "HO\'2"]),
-                          "guanine": (["N1", "H1"], ["N2", "H21"], ["N2", "H22"], ["O2\'", "HO\'2"]),
-                          "uracil": (["N3", "H3"], ["O2\'", "HO\'2"])
-                          }
+        ref_adenine_slots = {"H61": 1,
+                             "H62": 1,
+                             "HO\'2": 1
+                             }
 
-        ref_slots_dict = {"adenine": {},
-                          "cytosine": {},
-                          "guanine": {},
-                          "uracil": {}
+        ref_cytosine_slots = {"H41": 1,
+                              "H42": 1,
+                              "HO\'2": 1
+                              }
+
+        ref_guanine_slots = {"H1": 1,
+                             "H21": 1,
+                             "H22": 1,
+                             "HO\'2": 1,
+                             }
+
+        ref_uracil_slots = {"H3": 1,
+                            "HO\'2": 1
+                            }
+
+        ref_slots_dict = {"adenine": ref_adenine_slots,
+                          "cytosine": ref_cytosine_slots,
+                          "guanine": ref_guanine_slots,
+                          "uracil": ref_uracil_slots
                           }
 
         reference = {"atoms": ref_atoms_dict,
-                     "bonds": ref_bonds_dict,
                      "slots": ref_slots_dict}
 
         rna = RNA()
@@ -112,16 +125,10 @@ class TestRNA(TestCase):
     def test_get_acceptors_dictionary(self):
         from yeti.dictionaries.molecules.nucleic_acids import RNA
 
-        ref_atoms_dict = {"adenine": ("N1", "N3", "N6", "N7", "O2\'", "O3\'", "O4\'", "O5\'"),
-                          "cytosine": ("N3", "N4", "O2\'", "O3\'", "O4\'", "O5\'"),
-                          "guanine": ("N3", "N7", "O2\'", "O3\'", "O4\'", "O5\'"),
-                          "uracil": ("O2\'", "O3\'", "O4\'", "O5\'")
-                          }
-
-        ref_bonds_dict = {"adenine": (["P", "OP1"], ["P", "OP2"]),
-                          "cytosine": (["C2", "O2"], ["P", "OP1"], ["P", "OP2"]),
-                          "guanine": (["C6", "O6"], ["P", "OP1"], ["P", "OP2"]),
-                          "uracil": (["C2", "O2"], ["C4", "O4"], ["P", "OP1"], ["P", "OP2"])
+        ref_atoms_dict = {"adenine": ("N1", "N3", "N6", "N7", "O2\'", "O3\'", "O4\'", "O5\'", "OP1", "OP2"),
+                          "cytosine": ("N3", "N4", "O2", "O2\'", "O3\'", "O4\'", "O5\'", "OP1", "OP2"),
+                          "guanine": ("N3", "N7", "O6", "O2\'", "O3\'", "O4\'", "O5\'", "OP1", "OP2"),
+                          "uracil": ("O2", "O4", "O2\'", "O3\'", "O4\'", "O5\'", "OP1", "OP2")
                           }
 
         ref_adenine_slots = {"N1": 1,
@@ -175,7 +182,6 @@ class TestRNA(TestCase):
                           }
 
         reference = {"atoms": ref_atoms_dict,
-                     "bonds": ref_bonds_dict,
                      "slots": ref_slots_dict}
 
         rna = RNA()
@@ -184,4 +190,4 @@ class TestRNA(TestCase):
         self.assertDictEqual(reference, result)
 
     def test_get_base_pairs_dictionary(self):
-        pass
+        from yeti.dictionaries.molecules.nucleic_acids import RNA
