@@ -8,17 +8,17 @@ class NucleicAcid(object):
         The basic building class for standard RNA and DNA.
         """
 
-        self.dihedral_angles_dictionary = self.__get_dihedral_angles_dictionary()
-        self.distances_dict = self.__get_distances_dictionary()
+        self.dihedral_angles_dictionary = self.__create_dihedral_angles_dictionary()
+        self.distances_dict = self.__create_distances_dictionary()
         self.bonds_between_residues = ["O3\'", "P"]
 
-        self.residue_bonds_dictionary = self.__get_residue_bonds_dictionary()
-        self.donors_dictionary = self.__get_donors_dictionary()
-        self.acceptors_dictionary = self.__get_acceptors_dictionary()
+        self.residue_bonds_dictionary = self.__create_residue_bonds_dictionary()
+        self.donors_dictionary = self.__create_donors_dictionary()
+        self.acceptors_dictionary = self.__create_acceptors_dictionary()
 
-        self.base_pairs_dictionary = self.__get_base_pairs_dictionary()
+        self.base_pairs_dictionary = self.__create_base_pairs_dictionary()
 
-    def __get_dihedral_angles_dictionary(self):
+    def __create_dihedral_angles_dictionary(self):
         """
         Returns a dictionary of all dihedral angles in Nucleic Acids. The key is the name of the dihedral
         angle, according to conventions. The value is a list with 3 entries.
@@ -46,7 +46,7 @@ class NucleicAcid(object):
 
         return dihedral_angles_dictionary
 
-    def __get_distances_dictionary(self):
+    def __create_distances_dictionary(self):
         """
         Returns a dictionary of all typical distances in Nucleic Acids. The key is the internal naming for the
         distance. The value is a list with 2 entries.
@@ -61,7 +61,7 @@ class NucleicAcid(object):
 
         return distance_dict
 
-    def __get_residue_bonds_dictionary(self):
+    def __create_residue_bonds_dictionary(self):
         """
         Creates an attribute. That attribute is a dictionary, which contains a list of all bonds within the standard
         bases adenine, cytosine and guanine.
@@ -84,7 +84,7 @@ class NucleicAcid(object):
 
         return residue_bonds_dictionary
 
-    def __get_donors_dictionary(self):
+    def __create_donors_dictionary(self):
         """
         Creates an attribute. That attribute is a dictionary, which contains further dictionaries for donor atoms,
         bonds and slots for the standard bases adenine, cytosine and guanine.
@@ -109,7 +109,7 @@ class NucleicAcid(object):
 
         return donors_dictionary
 
-    def __get_acceptors_dictionary(self):
+    def __create_acceptors_dictionary(self):
         """
         Creates an attribute. That attribute is a dictionary, which contains further dictionaries for acceptor atoms,
         bonds and slots for the standard bases adenine, cytosine and guanine.
@@ -146,7 +146,7 @@ class NucleicAcid(object):
 
         return acceptors_dictionary
 
-    def __get_base_pairs_dictionary(self):
+    def __create_base_pairs_dictionary(self):
         watson_crick_dictionary = {"cytosine_guanine": (["N4", "O6"], ["N3", "N1"], ["O2", "N2"])}
 
         base_pairs_dictionary = {"watson-crick": watson_crick_dictionary}
@@ -189,17 +189,17 @@ class NucleicAcid(object):
                 self.base_pairs_dictionary[new_type] = new_base_pairs[new_type]
 
 class RNA(NucleicAcid):
-    # TODO: AVOID DOUBLE NAMING!
+
     def __init__(self):
         super(RNA, self).__init__()
 
         # run internal methods
-        self.__update_residue_bonds_dictionary()
-        self.__update_donors_dictionary()
-        self.__update_acceptors_dictionary()
-        self.__update_base_pairs_dictionary()
+        self.__get_residue_bonds_dictionary()
+        self.__get_donors_dictionary()
+        self.__get_acceptors_dictionary()
+        self.__get_base_pairs_dictionary()
 
-    def __update_residue_bonds_dictionary(self):
+    def __get_residue_bonds_dictionary(self):
         backbone_bonds = [["P", "OP1"], ["P", "OP2"], ["P", "O5\'"], ["O5\'", "C5\'"], ["C5\'", "H5\'1"],
                           ["C5\'", "H5\'2"], ["C5\'", "C4\'"], ["C4\'", "H4\'"],
                           ["C4\'", "O4\'"], ["C4\'", "C3\'"], ["O4\'", "C1\'"], ["C1\'", "H1\'"], ["C1\'", "C2\'"],
@@ -213,7 +213,7 @@ class RNA(NucleicAcid):
 
         self._update_residue_bonds_dictionary(backbone_bonds=backbone_bonds, new_bases=uracil)
 
-    def __update_donors_dictionary(self):
+    def __get_donors_dictionary(self):
         # uracil atoms
         uracil_atoms = {"uracil": ("H3",)}
         uracil_slots = {"uracil": {"H3": 1}}
@@ -227,7 +227,7 @@ class RNA(NucleicAcid):
                                               backbone_atoms=backbone_atoms, backbone_slots=backbone_slots,
                                               update_donors=True)
 
-    def __update_acceptors_dictionary(self):
+    def __get_acceptors_dictionary(self):
         # uracil atoms
         uracil_atoms = {"uracil": ("O2", "O4")}
         uracil_slots = {"uracil": {"O2": 2,
@@ -246,7 +246,7 @@ class RNA(NucleicAcid):
                                               backbone_atoms=backbone_atoms, backbone_slots=backbone_slots,
                                               update_donors=False)
 
-    def __update_base_pairs_dictionary(self):
+    def __get_base_pairs_dictionary(self):
         new_base_pairs = {"watson-crick": {"adenine_uracil": (["N6", "O4"], ["N1", "N3"])}}
 
         self._update_base_pairs_dictionary(new_base_pairs=new_base_pairs)
