@@ -188,6 +188,7 @@ class NucleicAcid(object):
             else:
                 self.base_pairs_dictionary[new_type] = new_base_pairs[new_type]
 
+
 class RNA(NucleicAcid):
 
     def __init__(self):
@@ -248,5 +249,67 @@ class RNA(NucleicAcid):
 
     def __get_base_pairs_dictionary(self):
         new_base_pairs = {"watson-crick": {"adenine_uracil": (["N6", "O4"], ["N1", "N3"])}}
+
+        self._update_base_pairs_dictionary(new_base_pairs=new_base_pairs)
+
+
+class DNA(NucleicAcid):
+
+    def __init__(self):
+        super(DNA, self).__init__()
+
+        # run internal methods
+        self.__get_residue_bonds_dictionary()
+        self.__get_donors_dictionary()
+        self.__get_acceptors_dictionary()
+        self.__get_base_pairs_dictionary()
+
+    def __get_residue_bonds_dictionary(self):
+        backbone_bonds = [["P", "OP1"], ["P", "OP2"], ["P", "O5\'"], ["O5\'", "C5\'"], ["C5\'", "H5\'1"],
+                          ["C5\'", "H5\'2"], ["C5\'", "C4\'"], ["C4\'", "H4\'"], ["C4\'", "O4\'"], ["C4\'", "C3\'"],
+                          ["O4\'", "C1\'"], ["C1\'", "H1\'"], ["C1\'", "C2\'"], ["C3\'", "H3\'"], ["C3\'", "C2\'"],
+                          ["C3\'", "O3\'"], ["C2\'", "H2\'1"], ["C2\'", "H2\'2"]]
+
+        uracil = {"thymine": (["C1\'", "N1"], ["N1", "C6"], ["N1", "C2"], ["C6", "H6"], ["C6", "C5"], ["C5", "C5M"],
+                              ["C5M", "H51"], ["C5M", "H52"], ["C5M", "H53"], ["C5", "C4"], ["C4", "O4"], ["C4", "N3"],
+                              ["N3", "H3"], ["N3", "C2"], ["C2", "O2"])
+                  }
+
+        self._update_residue_bonds_dictionary(backbone_bonds=backbone_bonds, new_bases=uracil)
+
+    def __get_donors_dictionary(self):
+        # uracil atoms
+        uracil_atoms = {"thymine": ("H3",)}
+        uracil_slots = {"thymine": {"H3": 1}}
+
+        # add backbone atoms
+        backbone_atoms = ()
+        backbone_slots = {}
+
+        # update
+        self._update_hydrogen_bond_dictionary(base_atoms=uracil_atoms, base_slots=uracil_slots,
+                                              backbone_atoms=backbone_atoms, backbone_slots=backbone_slots,
+                                              update_donors=True)
+
+    def __get_acceptors_dictionary(self):
+        # uracil atoms
+        uracil_atoms = {"thymine": ("O2", "O4")}
+        uracil_slots = {"thymine": {"O2": 2,
+                                    "O4": 2}}
+
+        # add backbone atoms
+        backbone_atoms = ("O3\'", "O4\'", "O5\'", "OP1", "OP2")
+        backbone_slots = {"OP1": 2,
+                          "OP2": 2,
+                          "O3\'": 2,
+                          "O4\'": 2,
+                          "O5\'": 2}
+
+        self._update_hydrogen_bond_dictionary(base_atoms=uracil_atoms, base_slots=uracil_slots,
+                                              backbone_atoms=backbone_atoms, backbone_slots=backbone_slots,
+                                              update_donors=False)
+
+    def __get_base_pairs_dictionary(self):
+        new_base_pairs = {"watson-crick": {"adenine_thymine": (["N6", "O4"], ["N1", "N3"])}}
 
         self._update_base_pairs_dictionary(new_base_pairs=new_base_pairs)
