@@ -7,6 +7,7 @@ class NucleicAcid(object):
         """
         The basic building class for standard RNA and DNA.
         """
+        self.derivations_dictionary = self.__create_derivations_dictionary()
 
         self.dihedral_angles_dictionary = self.__create_dihedral_angles_dictionary()
         self.distances_dict = self.__create_distances_dictionary()
@@ -17,6 +18,13 @@ class NucleicAcid(object):
         self.acceptors_dictionary = self.__create_acceptors_dictionary()
 
         self.base_pairs_dictionary = self.__create_base_pairs_dictionary()
+
+    def __create_derivations_dictionary(self):
+        derivations = {"adenine": "A",
+                       "guanine": "G",
+                       "cytosine": "C"}
+
+        return derivations
 
     def __create_dihedral_angles_dictionary(self):
         """
@@ -56,6 +64,7 @@ class NucleicAcid(object):
         :rtype: dict
         """
 
+        # TODO: Try to get rid of that dictionary or make it more generic
         distance_dict = {"PToP": (["P", "P"], "P to P"),
                          }
 
@@ -153,6 +162,9 @@ class NucleicAcid(object):
 
         return base_pairs_dictionary
 
+    def _update_derivations_dictionary(self, additional_derivations):
+        self.derivations_dictionary.update(additional_derivations)
+
     def _update_residue_bonds_dictionary(self, backbone_bonds, new_bases):
 
         self.residue_bonds_dictionary.update(new_bases)
@@ -195,10 +207,16 @@ class RNA(NucleicAcid):
         super(RNA, self).__init__()
 
         # run internal methods
+        self.__get_derivations_dictionary()
         self.__get_residue_bonds_dictionary()
         self.__get_donors_dictionary()
         self.__get_acceptors_dictionary()
         self.__get_base_pairs_dictionary()
+
+    def __get_derivations_dictionary(self):
+        derivations = {"uracil": "U"}
+
+        self._update_derivations_dictionary(additional_derivations=derivations)
 
     def __get_residue_bonds_dictionary(self):
         backbone_bonds = [["P", "OP1"], ["P", "OP2"], ["P", "O5\'"], ["O5\'", "C5\'"], ["C5\'", "H5\'1"],
@@ -259,10 +277,16 @@ class DNA(NucleicAcid):
         super(DNA, self).__init__()
 
         # run internal methods
+        self.__get_derivations_dictionary()
         self.__get_residue_bonds_dictionary()
         self.__get_donors_dictionary()
         self.__get_acceptors_dictionary()
         self.__get_base_pairs_dictionary()
+
+    def __get_derivations_dictionary(self):
+        derivations = {"thymine": "T"}
+
+        self._update_derivations_dictionary(additional_derivations=derivations)
 
     def __get_residue_bonds_dictionary(self):
         backbone_bonds = [["P", "OP1"], ["P", "OP2"], ["P", "O5\'"], ["O5\'", "C5\'"], ["C5\'", "H5\'1"],
@@ -313,3 +337,95 @@ class DNA(NucleicAcid):
         new_base_pairs = {"watson-crick": {"adenine_thymine": (["N6", "O4"], ["N1", "N3"])}}
 
         self._update_base_pairs_dictionary(new_base_pairs=new_base_pairs)
+
+
+class Protein(object):
+    def __init__(self):
+        self.bonds_between_residues = ["C", "N"]
+
+        self.__get_derivations_dictionary()
+
+    def __get_derivations_dictionary(self):
+        self.derivations = {"glycine": "Gly",
+                            "alanine": "Ala",
+                            "valine": "Val",
+                            "leucine": "Leu",
+                            "isoleucine": "Ile",
+                            "serine": "Ser",
+                            "threonine": "Thr",
+                            "proline": "Pro",
+                            "aspartic acid": "Asp",
+                            "glutamic acid": "Glu",
+                            "asparagine": "Asn",
+                            "glutamine": "Gln",
+                            "methionine": "Met",
+                            "cysteine": "Cys",
+                            "lysine": "Lys",
+                            "arginine": "Arg",
+                            "histidine": "His",
+                            "phenylalanine": "Phe",
+                            "tyrosine": "Tyr",
+                            "tryptophan": "Trp"}
+
+    def __get_dihedral_angles_dictionary(self):
+        # TODO: Get a clear idea about rotameric structures etc.
+        # TODO: Important non-dehedral angles?
+
+        backbone_dihedral_angles_dictionary = {"psi": (["N", "C_alpha", "C", "N"], [0, 0, 0, 1], r"$\psi$"),
+                                               "phi": (["C_alpha", "C", "N", "C_alpha"], [-1, -1, 0, 0], r"$\phi$"),
+                                               "omega": (["C", "N", "C_alpha", "C"], [-1, 0, 0, 0], r"$\omega$")
+                                               }
+
+        rotameric_structures_exclude = ["glycine", "alanine"]
+        rotameric_structures_dictionary = {"xi_1": ([], [0, 0, 0, 1], r"$\xi_1$"),
+                                           }
+
+    def __get_distances_dictionary(self):
+        # TODO: Are there important distances? C_alpha - C_alpha
+        pass
+
+    def __get_residue_bonds_dictionary(self):
+        # TODO: Get a clear idea about naming conventions
+        backbone_bonds = [["N", "H"], ["N", "C_alpha"], ["C_alpha", "H_alpha_1"], ["C_alpha", "C"], ["C", "O"]]
+
+        amino_acids = {"glycine": [["C_alpha", "H_alpha_2"]],
+                       "alanine": [["C_alpha", "C_beta"], ["C_beta", "H_beta_1"], ["C_beta", "H_beta_2"],
+                                   ["C_beta", "H_beta_3"]],
+                       "valine": [["C_alpha", "C_beta"], ["C_beta", "H_beta_1"], ["C_beta", "C_gamma"],
+                                  ["C_gamma", "H_gamma_1"], ["C_gamma", "H_gamma_2"], ["C_gamma", "H_gamma_3"],
+                                  ["C_beta", "C_delta"], ["C_delta", "H_gamma_1"], ["C_delta", "H_gamma_2"],
+                                  ["C_delta", "H_gamma_3"]],
+                       "leucine": [["C_alpha", "C_beta"], ["C_beta", "H_beta_1"], ["C_beta", "H_beta_2"],
+                                   ["C_beta", "C_gamma"], ["C_gamma", "H_gamma_1"], ["C_gamma", "C_delta"],
+                                   ["C_delta", "H_gamma_1"], ["C_delta", "H_gamma_2"], ["C_delta", "H_gamma_3"],
+                                   ["C_gamma", "C_epsilon"], ["C_epsilon", "H_epsilon_1"], ["C_epsilon", "H_epsilon_2"],
+                                   ["C_epsilon", "H_epsilon_3"]],
+                       "isoleucine": [[]],
+                       "serine": [[]],
+                       "threonine": [[]],
+                       "proline": [[]],
+                       "aspartic acid": [[]],
+                       "glutamic acid": [[]],
+                       "asparagine": [[]],
+                       "glutamine": [[]],
+                       "methionine": [[]],
+                       "cysteine": [[]],
+                       "lysine": [[]],
+                       "arginine": [[]],
+                       "histidine": [[]],
+                       "phenylalanine": [[]],
+                       "tyrosine": [[]],
+                       "tryptophan": [[]]
+                       }
+
+        protein_beginning = {"standard": [["H_start", "N"]]}
+
+        protein_end = {"standard": [["C", "O_end"], ["O_end", "H"]]}
+
+    def __get_donors_dictionary(self):
+        # TODO: What about Donors?
+        pass
+
+    def __get_acceptors_dictionary(self):
+        # TODO: What about Acceptors?
+        pass
