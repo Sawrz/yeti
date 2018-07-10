@@ -1,7 +1,142 @@
 from unittest import TestCase
 
 
+class TestBiomolecule(TestCase):
+    def test_set_bonds_between_residues(self):
+        from yeti.dictionaries.molecules.biomolecules import Biomolecule
+
+        reference = ("A", "B")
+
+        bio_mol = Biomolecule()
+        bio_mol.set_bonds_between_residues("A", "B")
+        result = bio_mol.bonds_between_residues
+
+        self.assertTupleEqual(reference, result)
+
+    def test_update_derivations_dictionary(self):
+        from yeti.dictionaries.molecules.biomolecules import Biomolecule
+
+        reference = {"argenine": "ARG",
+                     "lysine": "LYS"}
+
+        bio_mol = Biomolecule()
+        bio_mol.update_derivations_dictionary(derivations=reference)
+        result = bio_mol.derivations_dictionary
+
+        self.assertDictEqual(reference, result)
+
+    def test_update_dihedral_angle_dictionary(self):
+        from yeti.dictionaries.molecules.biomolecules import Biomolecule
+
+        reference = {"alpha": (["O3\'", "P", "O5\'", "C5\'"], [-1, 0, 0, 0], r"$\alpha$"),
+                     "beta": (["P", "O5\'", "C5\'", "C4\'"], [0, 0, 0, 0], r"$\beta$")}
+
+        bio_mol = Biomolecule()
+        bio_mol.update_dihedral_angle_dictionary(dihedral_angles=reference)
+        result = bio_mol.dihedral_angles_dictionary
+
+        self.assertDictEqual(reference, result)
+
+    def test_update_distances_dictionary(self):
+        from yeti.dictionaries.molecules.biomolecules import Biomolecule
+
+        reference = {"PToP": (["P", "P"], "P to P"),
+                     "PToMG": (["P", "MG"], "P to MG")}
+
+        bio_mol = Biomolecule()
+        bio_mol.update_distances_dictionary(distances=reference)
+        result = bio_mol.distances_dictionary
+
+        self.assertDictEqual(reference, result)
+
+    def test_update_backbone_bonds_dictionary(self):
+        from yeti.dictionaries.molecules.biomolecules import Biomolecule
+
+        reference = {"start": [["P", "OP1"], ["P", "OP2"], ["P", "O5\'"]],
+                     "end": [["P", "OP1"], ["P", "O5\'"]]}
+
+        bio_mol = Biomolecule()
+        bio_mol.update_backbone_bonds_dictionary(backbone_bonds=reference)
+        result = bio_mol.backbone_bonds_dictionary
+
+        self.assertDictEqual(reference, result)
+
+    def test_update_base_bonds_dictionary(self):
+        from yeti.dictionaries.molecules.biomolecules import Biomolecule
+
+        reference = {"A": [["P", "OP1"], ["P", "OP2"], ["P", "O5\'"]],
+                     "B": [["P", "OP1"], ["P", "O5\'"]]}
+
+        bio_mol = Biomolecule()
+        bio_mol.update_base_bonds_dictionary(new_bases=reference)
+        result = bio_mol.base_bonds_dictionary
+
+        self.assertDictEqual(reference, result)
+
+    def test_update_hydrogen_bond_dictionary_donor(self):
+        from yeti.dictionaries.molecules.biomolecules import Biomolecule
+
+        reference_atoms = {"adenine": ("H61", "H62")}
+
+        reference_slots = {"adenine": {"H61": 1,
+                                       "H62": 1}}
+
+        reference = {"atoms": reference_atoms,
+                     "slots": reference_slots}
+
+        bio_mol = Biomolecule()
+        bio_mol.update_hydrogen_bond_dictionary(atoms=reference_atoms, slots=reference_slots, update_donors=True)
+        result = bio_mol.donors_dictionary
+
+        self.assertDictEqual(reference, result)
+
+    def test_update_hydrogen_bond_dictionary_aceptor(self):
+        from yeti.dictionaries.molecules.biomolecules import Biomolecule
+
+        reference_atoms = {"adenine": ("H61", "H62")}
+
+        reference_slots = {"adenine": {"H61": 1,
+                                       "H62": 1}}
+
+        reference = {"atoms": reference_atoms,
+                     "slots": reference_slots}
+
+        bio_mol = Biomolecule()
+        bio_mol.update_hydrogen_bond_dictionary(atoms=reference_atoms, slots=reference_slots, update_donors=False)
+        result = bio_mol.acceptors_dictionary
+
+        self.assertDictEqual(reference, result)
+
+
+class TestNucleicAcid(TestCase):
+    def test_update_base_pairs_dictionary(self):
+        from yeti.dictionaries.molecules.biomolecules import NucleicAcid
+
+        new_pair_type = {"watson_trick": {"a_with_b": (["N3", "N1"], ["O2", "N2"])}}
+
+        watson_crick = {"cytosine_guanine": (["N4", "O6"], ["N3", "N1"], ["O2", "N2"])}
+        a_and_b = {"a_with_b": (["N3", "N1"], ["O2", "N2"])}
+
+        reference = {"watson-crick": watson_crick,
+                     "watson_trick": new_pair_type}
+
+        nuc_acid = NucleicAcid()
+        nuc_acid.update_base_pairs_dictionary(new_base_pairs=new_pair_type)
+        result = nuc_acid.base_pairs_dictionary
+
+        self.assertDictEqual(reference, result)
+
 class TestRNA(TestCase):
+    def test_set_bonds_between_residues(self):
+        from yeti.dictionaries.molecules.biomolecules import RNA
+
+        reference = ("O3\'", "P")
+
+        rna = RNA()
+        result = rna.bonds_between_residues
+
+        self.assertTupleEqual(reference, result)
+
     def test_get_derivations_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import RNA
 
@@ -45,7 +180,7 @@ class TestRNA(TestCase):
                      }
 
         rna = RNA()
-        result = rna.distances_dict
+        result = rna.distances_dictionary
 
         self.assertDictEqual(reference, result)
 
@@ -219,6 +354,17 @@ class TestRNA(TestCase):
 
 
 class TestDNA(TestCase):
+
+    def test_set_bonds_between_residues(self):
+        from yeti.dictionaries.molecules.biomolecules import DNA
+
+        reference = ("O3\'", "P")
+
+        dna = DNA()
+        result = dna.bonds_between_residues
+
+        self.assertTupleEqual(reference, result)
+
     def test_get_derivations_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import DNA
 
@@ -262,7 +408,7 @@ class TestDNA(TestCase):
                      }
 
         dna = DNA()
-        result = dna.distances_dict
+        result = dna.distances_dictionary
 
         self.assertDictEqual(reference, result)
 

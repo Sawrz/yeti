@@ -1,85 +1,77 @@
 # Reference for conventions is: Molecular Modeling and Simulation - An Interdisciplinary Guide - 2nd Edition by
 # Prof. Tamar Schlick
 
+
 class Biomolecule(object):
+    # TODO: Check input types
+
     def __init__(self):
         """
         The basic building class for biomolecules
         """
+
+        # DERIVATIONS
         self.derivations_dictionary = {}
 
+        # MEASURES
         self.dihedral_angles_dictionary = {}
-        self.distances_dict = {}
-        self.bonds_between_residues = [None, None]
+        self.distances_dictionary = {}
 
+        # COVALENT BONDS
+        self.bonds_between_residues = (None, None)
         self.backbone_bonds_dictionary = {}
         self.base_bonds_dictionary = {}
 
+        # HYDROGEN BONDS
         self.donors_dictionary = {"atoms": {},
                                   "slots": {}}
         self.acceptors_dictionary = {"atoms": {},
                                      "slots": {}}
 
-    def _update_derivations_dictionary(self, additional_derivations):
-        self.derivations_dictionary.update(additional_derivations)
+    def set_bonds_between_residues(self, atom_1, atom_2):
+        self.bonds_between_residues = (atom_1, atom_2)
 
-    def _update_backbone_bonds_dictionary(self, backbone_bonds):
+    def update_derivations_dictionary(self, derivations):
+        self.derivations_dictionary.update(derivations)
+
+    def update_dihedral_angle_dictionary(self, dihedral_angles):
+        self.dihedral_angles_dictionary.update(dihedral_angles)
+
+    def update_distances_dictionary(self, distances):
+        self.distances_dictionary.update(distances)
+
+    def update_backbone_bonds_dictionary(self, backbone_bonds):
         self.backbone_bonds_dictionary.update(backbone_bonds)
 
-    def _update_base_bonds_dictionary(self, new_bases):
-        self.residue_bonds_dictionary.update(new_bases)
+    def update_base_bonds_dictionary(self, new_bases):
+        self.base_bonds_dictionary.update(new_bases)
 
-    def _update_hydrogen_bond_dictionary(self, base_atoms, base_slots, backbone_atoms, backbone_slots,
-                                         update_donors=True):
+    def update_hydrogen_bond_dictionary(self, atoms, slots, update_donors=True):
 
         if update_donors:
             dictionary = self.donors_dictionary
         else:
             dictionary = self.acceptors_dictionary
 
-        dictionary["atoms"].update(base_atoms)
-        dictionary["slots"].update(base_slots)
-
-        for key in dictionary["atoms"]:
-            dictionary["atoms"][key] += backbone_atoms
-            dictionary["slots"][key].update(backbone_slots)
+        dictionary["atoms"].update(atoms)
+        dictionary["slots"].update(slots)
 
 
 class NucleicAcid(Biomolecule):
     def __init__(self):
         """
-        The basic building class for standard RNA and DNA.
+        Abstract class for RNA and DNA.
         """
-        self.derivations_dictionary = self.__create_derivations_dictionary()
 
-        self.dihedral_angles_dictionary = self.__create_dihedral_angles_dictionary()
-        self.distances_dict = self.__create_distances_dictionary()
-        self.bonds_between_residues = ["O3\'", "P"]
-
-        self.residue_bonds_dictionary = self.__create_base_bonds_dictionary()
-        self.donors_dictionary = self.__create_donors_dictionary()
-        self.acceptors_dictionary = self.__create_acceptors_dictionary()
-
-        self.base_pairs_dictionary = self.__create_base_pairs_dictionary()
-
-    def __create_derivations_dictionary(self):
+        # DERIVATIONS
         derivations = {"adenine": "A",
                        "guanine": "G",
                        "cytosine": "C"}
 
-        return derivations
+        self.update_derivations_dictionary(derivations=derivations)
 
-    def __create_dihedral_angles_dictionary(self):
-        """
-        Returns a dictionary of all dihedral angles in Nucleic Acids. The key is the name of the dihedral
-        angle, according to conventions. The value is a list with 3 entries.
-        First entry: List of the atom names (according to conventions) belonging to the dihedral.
-        Second entry: List of relative residue numbers to form a dihedral angle.
-        Third entry: Latex code for the dihedral name for plots.
-
-        :rtype: dict
-        """
-
+        # MEASURES
+        # Dihedral Angles
         dihedral_angles_dictionary = {"alpha": (["O3\'", "P", "O5\'", "C5\'"], [-1, 0, 0, 0], r"$\alpha$"),
                                       "beta": (["P", "O5\'", "C5\'", "C4\'"], [0, 0, 0, 0], r"$\beta$"),
                                       "gamma": (["O5\'", "C5\'", "C4\'", "C3\'"], [0, 0, 0, 0], r"$\gamma$"),
@@ -95,53 +87,35 @@ class NucleicAcid(Biomolecule):
                                       "chi_pu": (["O4\'", "C1\'", "N9", "C4"], [0, 0, 0, 0], r"$\chi_purine$")
                                       }
 
-        return dihedral_angles_dictionary
+        self.update_dihedral_angle_dictionary(dihedral_angles=dihedral_angles_dictionary)
 
-    def __create_distances_dictionary(self):
-        """
-        Returns a dictionary of all typical distances in Nucleic Acids. The key is the internal naming for the
-        distance. The value is a list with 2 entries.
-        First entry: List of the atom names (according to conventions) belonging to the distance.
-        Second entry: String of the distance name for plots.
+        ## Distances
+        distance_dict = {"PToP": (["P", "P"], "P to P")}
 
-        :rtype: dict
-        """
+        self.update_distances_dictionary(distances=distance_dict)
 
-        # TODO: Try to get rid of that dictionary or make it more generic
-        distance_dict = {"PToP": (["P", "P"], "P to P"),
-                         }
+        # COVALENT BONDS
+        self.set_bonds_between_residues("O3\'", "P")
 
-        return distance_dict
+        base_bonds_dictionary = {"adenine": (["C1\'", "N9"], ["N9", "C8"], ["N9", "C4"], ["C8", "H8"],
+                                             ["C8", "N7"], ["N7", "C5"], ["C5", "C6"], ["C5", "C4"],
+                                             ["C6", "N6"], ["C6", "N1"], ["N6", "H61"], ["N6", "H62"],
+                                             ["N1", "C2"], ["C2", "H2"], ["C2", "N3"], ["N3", "C4"]),
+                                 "cytosine": (["C1\'", "N1"], ["N1", "C6"], ["N1", "C2"], ["C6", "H6"],
+                                              ["C6", "C5"], ["C5", "H5"], ["C5", "C4"], ["C4", "N4"],
+                                              ["C4", "N3"], ["N4", "H41"], ["N4", "H42"], ["N3", "C2"],
+                                              ["C2", "O2"]),
+                                 "guanine": (["C1\'", "N9"], ["N9", "C8"], ["N9", "C4"], ["C8", "H8"],
+                                             ["C8", "N7"], ["N7", "C5"], ["C5", "C6"], ["C5", "C4"],
+                                             ["C6", "O6"], ["C6", "N1"], ["N1", "H1"], ["N1", "C2"],
+                                             ["C2", "N2"], ["C2", "N3"], ["N2", "H21"], ["N2", "H22"],
+                                             ["N3", "C4"])
+                                 }
 
-    def __create_base_bonds_dictionary(self):
-        """
-        Creates an attribute. That attribute is a dictionary, which contains a list of all bonds within the standard
-        bases adenine, cytosine and guanine.
-        """
+        self.update_base_bonds_dictionary(new_bases=base_bonds_dictionary)
 
-        residue_bonds_dictionary = {"adenine": (["C1\'", "N9"], ["N9", "C8"], ["N9", "C4"], ["C8", "H8"],
-                                                ["C8", "N7"], ["N7", "C5"], ["C5", "C6"], ["C5", "C4"],
-                                                ["C6", "N6"], ["C6", "N1"], ["N6", "H61"], ["N6", "H62"],
-                                                ["N1", "C2"], ["C2", "H2"], ["C2", "N3"], ["N3", "C4"]),
-                                    "cytosine": (["C1\'", "N1"], ["N1", "C6"], ["N1", "C2"], ["C6", "H6"],
-                                                 ["C6", "C5"], ["C5", "H5"], ["C5", "C4"], ["C4", "N4"],
-                                                 ["C4", "N3"], ["N4", "H41"], ["N4", "H42"], ["N3", "C2"],
-                                                 ["C2", "O2"]),
-                                    "guanine": (["C1\'", "N9"], ["N9", "C8"], ["N9", "C4"], ["C8", "H8"],
-                                                ["C8", "N7"], ["N7", "C5"], ["C5", "C6"], ["C5", "C4"],
-                                                ["C6", "O6"], ["C6", "N1"], ["N1", "H1"], ["N1", "C2"],
-                                                ["C2", "N2"], ["C2", "N3"], ["N2", "H21"], ["N2", "H22"],
-                                                ["N3", "C4"])
-                                    }
-
-        return residue_bonds_dictionary
-
-    def __create_donors_dictionary(self):
-        """
-        Creates an attribute. That attribute is a dictionary, which contains further dictionaries for donor atoms,
-        bonds and slots for the standard bases adenine, cytosine and guanine.
-        """
-
+        # HYDROGEN BONDS
+        # Donors
         donor_base_atoms_dict = {"adenine": ("H61", "H62"),
                                  "cytosine": ("H41", "H42"),
                                  "guanine": ("H1", "H21", "H22")
@@ -156,17 +130,10 @@ class NucleicAcid(Biomolecule):
                                         "H22": 1}
                             }
 
-        donors_dictionary = {"atoms": donor_base_atoms_dict,
-                             "slots": donor_slots_dict}
+        self.update_hydrogen_bond_dictionary(atoms=donor_base_atoms_dict, slots=donor_slots_dict,
+                                             update_donors=True)
 
-        return donors_dictionary
-
-    def __create_acceptors_dictionary(self):
-        """
-        Creates an attribute. That attribute is a dictionary, which contains further dictionaries for acceptor atoms,
-        bonds and slots for the standard bases adenine, cytosine and guanine.
-        """
-
+        # Acceptors
         acceptor_base_atoms_dict = {"adenine": ("N1", "N3", "N6", "N7"),
                                     "cytosine": ("N3", "N4", "O2"),
                                     "guanine": ("N3", "N7", "O6")
@@ -193,19 +160,14 @@ class NucleicAcid(Biomolecule):
                                "guanine": guanine_slots
                                }
 
-        acceptors_dictionary = {"atoms": acceptor_base_atoms_dict,
-                                "slots": acceptor_slots_dict}
+        self.update_hydrogen_bond_dictionary(atoms=acceptor_base_atoms_dict, slots=acceptor_slots_dict,
+                                             update_donors=False)
 
-        return acceptors_dictionary
-
-    def __create_base_pairs_dictionary(self):
+        # BASE PAIRS
         watson_crick_dictionary = {"cytosine_guanine": (["N4", "O6"], ["N3", "N1"], ["O2", "N2"])}
+        self.base_pairs_dictionary = {"watson-crick": watson_crick_dictionary}
 
-        base_pairs_dictionary = {"watson-crick": watson_crick_dictionary}
-
-        return base_pairs_dictionary
-
-    def _update_base_pairs_dictionary(self, new_base_pairs):
+    def update_base_pairs_dictionary(self, new_base_pairs):
 
         base_pair_types = tuple(self.base_pairs_dictionary.keys())
         new_base_pair_types = tuple(new_base_pairs.keys())
@@ -222,19 +184,13 @@ class RNA(NucleicAcid):
     def __init__(self):
         super(RNA, self).__init__()
 
-        # run internal methods
-        self.__get_derivations_dictionary()
-        self.__get_base_bonds_dictionary()
-        self.__get_donors_dictionary()
-        self.__get_acceptors_dictionary()
-        self.__get_base_pairs_dictionary()
-
-    def __get_derivations_dictionary(self):
+        # DERIVATIONS
         derivations = {"uracil": "U"}
 
-        self._update_derivations_dictionary(additional_derivations=derivations)
+        self.update_derivations_dictionary(derivations=derivations)
 
-    def __get_backbone_bonds_dictionary(self):
+        # COVALENT BONDS
+        # Backbone Bonds
         backbone_bonds = [["P", "OP1"], ["P", "OP2"], ["P", "O5\'"], ["O5\'", "C5\'"], ["C5\'", "H5\'1"],
                           ["C5\'", "H5\'2"], ["C5\'", "C4\'"], ["C4\'", "H4\'"],
                           ["C4\'", "O4\'"], ["C4\'", "C3\'"], ["O4\'", "C1\'"], ["C1\'", "H1\'"], ["C1\'", "C2\'"],
@@ -242,50 +198,42 @@ class RNA(NucleicAcid):
                           ["C3\'", "O3\'"], ["C2\'", "H2\'1"], ["C2\'", "O2\'"], ["O2\'", "HO\'2"], ["O5\'", "H5T"],
                           ["O3'", "HO3\'"]]
 
-    def __get_base_bonds_dictionary(self):
-        uracil = {"uracil": (["C1\'", "N1"], ["N1", "C6"], ["N1", "C2"], ["C6", "H6"], ["C6", "C5"], ["C5", "H5"],
-                             ["C5", "C4"], ["C4", "O4"], ["C4", "N3"], ["N3", "H3"], ["N3", "C2"], ["C2", "O2"])
-                  }
+        self.update_backbone_bonds_dictionary(backbone_bonds=backbone_bonds)
 
-        self._update_base_bonds_dictionary(new_bases=uracil)
+        # Base Bonds
+        base = {"uracil": (["C1\'", "N1"], ["N1", "C6"], ["N1", "C2"], ["C6", "H6"], ["C6", "C5"], ["C5", "H5"],
+                           ["C5", "C4"], ["C4", "O4"], ["C4", "N3"], ["N3", "H3"], ["N3", "C2"], ["C2", "O2"])
+                }
 
-    def __get_donors_dictionary(self):
-        # uracil atoms
-        uracil_atoms = {"uracil": ("H3",)}
-        uracil_slots = {"uracil": {"H3": 1}}
+        self.update_base_bonds_dictionary(new_bases=base)
 
-        # add backbone atoms
-        backbone_atoms = ("HO\'2",)
-        backbone_slots = {"HO\'2": 1}
+        # HYDROGEN BONDS
+        # Donors
+        donors = {"uracil": ("H3",),
+                  "backbone": ("HO\'2",)}
+        donor_slots = {"uracil": {"H3": 1},
+                       "backbone": {"HO\'2": 1}}
 
-        # update
-        self._update_hydrogen_bond_dictionary(base_atoms=uracil_atoms, base_slots=uracil_slots,
-                                              backbone_atoms=backbone_atoms, backbone_slots=backbone_slots,
-                                              update_donors=True)
+        self.update_hydrogen_bond_dictionary(atoms=donors, slots=donor_slots, update_donors=True)
 
-    def __get_acceptors_dictionary(self):
-        # uracil atoms
-        uracil_atoms = {"uracil": ("O2", "O4")}
-        uracil_slots = {"uracil": {"O2": 2,
-                                   "O4": 2}}
+        # Acceptors
+        acceptors = {"uracil": ("O2", "O4"),
+                     "backbone": ("O2\'", "O3\'", "O4\'", "O5\'", "OP1", "OP2")}
+        acceptor_slots = {"uracil": {"O2": 2,
+                                     "O4": 2},
+                          "backbone": {"OP1": 2,
+                                       "OP2": 2,
+                                       "O2\'": 2,
+                                       "O3\'": 2,
+                                       "O4\'": 2,
+                                       "O5\'": 2}}
 
-        # add backbone atoms
-        backbone_atoms = ("O2\'", "O3\'", "O4\'", "O5\'", "OP1", "OP2")
-        backbone_slots = {"OP1": 2,
-                          "OP2": 2,
-                          "O2\'": 2,
-                          "O3\'": 2,
-                          "O4\'": 2,
-                          "O5\'": 2}
+        self.update_hydrogen_bond_dictionary(atoms=acceptors, slots=acceptor_slots, update_donors=False)
 
-        self._update_hydrogen_bond_dictionary(base_atoms=uracil_atoms, base_slots=uracil_slots,
-                                              backbone_atoms=backbone_atoms, backbone_slots=backbone_slots,
-                                              update_donors=False)
-
-    def __get_base_pairs_dictionary(self):
+        # BASE PAIRS
         new_base_pairs = {"watson-crick": {"adenine_uracil": (["N6", "O4"], ["N1", "N3"])}}
 
-        self._update_base_pairs_dictionary(new_base_pairs=new_base_pairs)
+        self.update_base_pairs_dictionary(new_base_pairs=new_base_pairs)
 
 
 class DNA(NucleicAcid):
@@ -303,7 +251,7 @@ class DNA(NucleicAcid):
     def __get_derivations_dictionary(self):
         derivations = {"thymine": "T"}
 
-        self._update_derivations_dictionary(additional_derivations=derivations)
+        self.update_derivations_dictionary(additional_derivations=derivations)
 
     def __get_residue_bonds_dictionary(self):
         backbone_bonds = [["P", "OP1"], ["P", "OP2"], ["P", "O5\'"], ["O5\'", "C5\'"], ["C5\'", "H5\'1"],
@@ -316,7 +264,7 @@ class DNA(NucleicAcid):
                               ["N3", "H3"], ["N3", "C2"], ["C2", "O2"])
                   }
 
-        self._update_base_bonds_dictionary(backbone_bonds=backbone_bonds, new_bases=uracil)
+        self.update_base_bonds_dictionary(backbone_bonds=backbone_bonds, new_bases=uracil)
 
     def __get_donors_dictionary(self):
         # uracil atoms
@@ -328,9 +276,9 @@ class DNA(NucleicAcid):
         backbone_slots = {}
 
         # update
-        self._update_hydrogen_bond_dictionary(base_atoms=uracil_atoms, base_slots=uracil_slots,
-                                              backbone_atoms=backbone_atoms, backbone_slots=backbone_slots,
-                                              update_donors=True)
+        self.update_hydrogen_bond_dictionary(atoms=uracil_atoms, slots=uracil_slots,
+                                             backbone_atoms=backbone_atoms, backbone_slots=backbone_slots,
+                                             update_donors=True)
 
     def __get_acceptors_dictionary(self):
         # uracil atoms
@@ -346,14 +294,14 @@ class DNA(NucleicAcid):
                           "O4\'": 2,
                           "O5\'": 2}
 
-        self._update_hydrogen_bond_dictionary(base_atoms=uracil_atoms, base_slots=uracil_slots,
-                                              backbone_atoms=backbone_atoms, backbone_slots=backbone_slots,
-                                              update_donors=False)
+        self.update_hydrogen_bond_dictionary(atoms=uracil_atoms, slots=uracil_slots,
+                                             backbone_atoms=backbone_atoms, backbone_slots=backbone_slots,
+                                             update_donors=False)
 
     def __get_base_pairs_dictionary(self):
         new_base_pairs = {"watson-crick": {"adenine_thymine": (["N6", "O4"], ["N1", "N3"])}}
 
-        self._update_base_pairs_dictionary(new_base_pairs=new_base_pairs)
+        self.update_base_pairs_dictionary(new_base_pairs=new_base_pairs)
 
 
 class Protein(Biomolecule):
