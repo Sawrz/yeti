@@ -1,8 +1,51 @@
 # Reference for conventions is: Molecular Modeling and Simulation - An Interdisciplinary Guide - 2nd Edition by
 # Prof. Tamar Schlick
 
+class Biomolecule(object):
+    def __init__(self):
+        """
+        The basic building class for biomolecules
+        """
+        self.derivations_dictionary = {}
 
-class NucleicAcid(object):
+        self.dihedral_angles_dictionary = {}
+        self.distances_dict = {}
+        self.bonds_between_residues = [None, None]
+
+        self.backbone_bonds_dictionary = {}
+        self.base_bonds_dictionary = {}
+
+        self.donors_dictionary = {"atoms": {},
+                                  "slots": {}}
+        self.acceptors_dictionary = {"atoms": {},
+                                     "slots": {}}
+
+    def _update_derivations_dictionary(self, additional_derivations):
+        self.derivations_dictionary.update(additional_derivations)
+
+    def _update_backbone_bonds_dictionary(self, backbone_bonds):
+        self.backbone_bonds_dictionary.update(backbone_bonds)
+
+    def _update_base_bonds_dictionary(self, new_bases):
+        self.residue_bonds_dictionary.update(new_bases)
+
+    def _update_hydrogen_bond_dictionary(self, base_atoms, base_slots, backbone_atoms, backbone_slots,
+                                         update_donors=True):
+
+        if update_donors:
+            dictionary = self.donors_dictionary
+        else:
+            dictionary = self.acceptors_dictionary
+
+        dictionary["atoms"].update(base_atoms)
+        dictionary["slots"].update(base_slots)
+
+        for key in dictionary["atoms"]:
+            dictionary["atoms"][key] += backbone_atoms
+            dictionary["slots"][key].update(backbone_slots)
+
+
+class NucleicAcid(Biomolecule):
     def __init__(self):
         """
         The basic building class for standard RNA and DNA.
@@ -13,7 +56,7 @@ class NucleicAcid(object):
         self.distances_dict = self.__create_distances_dictionary()
         self.bonds_between_residues = ["O3\'", "P"]
 
-        self.residue_bonds_dictionary = self.__create_residue_bonds_dictionary()
+        self.residue_bonds_dictionary = self.__create_base_bonds_dictionary()
         self.donors_dictionary = self.__create_donors_dictionary()
         self.acceptors_dictionary = self.__create_acceptors_dictionary()
 
@@ -70,7 +113,7 @@ class NucleicAcid(object):
 
         return distance_dict
 
-    def __create_residue_bonds_dictionary(self):
+    def __create_base_bonds_dictionary(self):
         """
         Creates an attribute. That attribute is a dictionary, which contains a list of all bonds within the standard
         bases adenine, cytosine and guanine.
@@ -162,33 +205,6 @@ class NucleicAcid(object):
 
         return base_pairs_dictionary
 
-    def _update_derivations_dictionary(self, additional_derivations):
-        self.derivations_dictionary.update(additional_derivations)
-
-    def _update_residue_bonds_dictionary(self, backbone_bonds, new_bases):
-
-        self.residue_bonds_dictionary.update(new_bases)
-
-        # add backbone bonds
-        for key in self.residue_bonds_dictionary:
-            for i in range(len(backbone_bonds)):
-                self.residue_bonds_dictionary[key] += (backbone_bonds[i],)
-
-    def _update_hydrogen_bond_dictionary(self, base_atoms, base_slots, backbone_atoms, backbone_slots,
-                                         update_donors=True):
-
-        if update_donors:
-            dictionary = self.donors_dictionary
-        else:
-            dictionary = self.acceptors_dictionary
-
-        dictionary["atoms"].update(base_atoms)
-        dictionary["slots"].update(base_slots)
-
-        for key in dictionary["atoms"]:
-            dictionary["atoms"][key] += backbone_atoms
-            dictionary["slots"][key].update(backbone_slots)
-
     def _update_base_pairs_dictionary(self, new_base_pairs):
 
         base_pair_types = tuple(self.base_pairs_dictionary.keys())
@@ -208,7 +224,7 @@ class RNA(NucleicAcid):
 
         # run internal methods
         self.__get_derivations_dictionary()
-        self.__get_residue_bonds_dictionary()
+        self.__get_base_bonds_dictionary()
         self.__get_donors_dictionary()
         self.__get_acceptors_dictionary()
         self.__get_base_pairs_dictionary()
@@ -218,7 +234,7 @@ class RNA(NucleicAcid):
 
         self._update_derivations_dictionary(additional_derivations=derivations)
 
-    def __get_residue_bonds_dictionary(self):
+    def __get_backbone_bonds_dictionary(self):
         backbone_bonds = [["P", "OP1"], ["P", "OP2"], ["P", "O5\'"], ["O5\'", "C5\'"], ["C5\'", "H5\'1"],
                           ["C5\'", "H5\'2"], ["C5\'", "C4\'"], ["C4\'", "H4\'"],
                           ["C4\'", "O4\'"], ["C4\'", "C3\'"], ["O4\'", "C1\'"], ["C1\'", "H1\'"], ["C1\'", "C2\'"],
@@ -226,11 +242,12 @@ class RNA(NucleicAcid):
                           ["C3\'", "O3\'"], ["C2\'", "H2\'1"], ["C2\'", "O2\'"], ["O2\'", "HO\'2"], ["O5\'", "H5T"],
                           ["O3'", "HO3\'"]]
 
+    def __get_base_bonds_dictionary(self):
         uracil = {"uracil": (["C1\'", "N1"], ["N1", "C6"], ["N1", "C2"], ["C6", "H6"], ["C6", "C5"], ["C5", "H5"],
                              ["C5", "C4"], ["C4", "O4"], ["C4", "N3"], ["N3", "H3"], ["N3", "C2"], ["C2", "O2"])
                   }
 
-        self._update_residue_bonds_dictionary(backbone_bonds=backbone_bonds, new_bases=uracil)
+        self._update_base_bonds_dictionary(new_bases=uracil)
 
     def __get_donors_dictionary(self):
         # uracil atoms
@@ -299,7 +316,7 @@ class DNA(NucleicAcid):
                               ["N3", "H3"], ["N3", "C2"], ["C2", "O2"])
                   }
 
-        self._update_residue_bonds_dictionary(backbone_bonds=backbone_bonds, new_bases=uracil)
+        self._update_base_bonds_dictionary(backbone_bonds=backbone_bonds, new_bases=uracil)
 
     def __get_donors_dictionary(self):
         # uracil atoms
@@ -339,7 +356,7 @@ class DNA(NucleicAcid):
         self._update_base_pairs_dictionary(new_base_pairs=new_base_pairs)
 
 
-class Protein(object):
+class Protein(Biomolecule):
     def __init__(self):
         self.bonds_between_residues = ["C", "N"]
 
