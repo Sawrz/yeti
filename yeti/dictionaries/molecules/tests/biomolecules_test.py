@@ -391,7 +391,7 @@ class TestDNA(TestCase):
                      }
 
         dna = DNA()
-        result = dna.derivations_dictionary
+        result = dna.dihedral_angles_dictionary
 
         self.assertDictEqual(reference, result)
 
@@ -402,7 +402,7 @@ class TestDNA(TestCase):
                      }
 
         dna = DNA()
-        result = dna.derivations_dictionary
+        result = dna.distances_dictionary
 
         self.assertDictEqual(reference, result)
 
@@ -412,7 +412,7 @@ class TestDNA(TestCase):
         reference = ("O3\'", "P")
 
         dna = DNA()
-        result = dna.derivations_dictionary
+        result = dna.bonds_between_residues
 
         self.assertTupleEqual(reference, result)
 
@@ -426,7 +426,7 @@ class TestDNA(TestCase):
                                   ["C2\'", "H2\'2"])}
 
         dna = DNA()
-        result = dna.derivations_dictionary
+        result = dna.backbone_bonds_dictionary
 
         self.assertDictEqual(reference, result)
 
@@ -448,7 +448,7 @@ class TestDNA(TestCase):
                      }
 
         dna = DNA()
-        result = dna.derivations_dictionary
+        result = dna.base_bonds_dictionary
 
         self.assertDictEqual(reference, result)
 
@@ -492,7 +492,7 @@ class TestDNA(TestCase):
                      "slots": ref_slots_dict}
 
         dna = DNA()
-        result = dna.derivations_dictionary
+        result = dna.donors_dictionary
 
         self.assertDictEqual(reference, result)
 
@@ -543,7 +543,7 @@ class TestDNA(TestCase):
                      "slots": ref_slots_dict}
 
         dna = DNA()
-        result = dna.derivations_dictionary
+        result = dna.acceptors_dictionary
 
         self.assertDictEqual(reference, result)
 
@@ -556,6 +556,6 @@ class TestDNA(TestCase):
         reference = {"watson-crick": watson_crick_reference}
 
         dna = DNA()
-        result = dna.derivations_dictionary
+        result = dna.base_pairs_dictionary
 
         self.assertDictEqual(reference, result)
