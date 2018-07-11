@@ -62,6 +62,8 @@ class NucleicAcid(Biomolecule):
         """
         Abstract class for RNA and DNA.
         """
+        
+        super(NucleicAcid, self).__init__()
 
         # DERIVATIONS
         derivations = {"adenine": "A",

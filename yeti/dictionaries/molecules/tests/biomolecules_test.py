@@ -109,16 +109,16 @@ class TestBiomolecule(TestCase):
 
 
 class TestNucleicAcid(TestCase):
-    def test_update_base_pairs_dictionary(self):
+    def test_update_base_pairs_dictionary_new_pair_type(self):
         from yeti.dictionaries.molecules.biomolecules import NucleicAcid
 
-        new_pair_type = {"watson_trick": {"a_with_b": (["N3", "N1"], ["O2", "N2"])}}
+        new_base_combination = {"a_with_b": (["N3", "N1"], ["O2", "N2"])}
+        new_pair_type = {"watson-trick": new_base_combination}
 
         watson_crick = {"cytosine_guanine": (["N4", "O6"], ["N3", "N1"], ["O2", "N2"])}
-        a_and_b = {"a_with_b": (["N3", "N1"], ["O2", "N2"])}
 
         reference = {"watson-crick": watson_crick,
-                     "watson_trick": new_pair_type}
+                     "watson-trick": new_base_combination}
 
         nuc_acid = NucleicAcid()
         nuc_acid.update_base_pairs_dictionary(new_base_pairs=new_pair_type)
@@ -126,18 +126,27 @@ class TestNucleicAcid(TestCase):
 
         self.assertDictEqual(reference, result)
 
+    def test_update_base_pairs_dictionary_new_watson_crick(self):
+        from yeti.dictionaries.molecules.biomolecules import NucleicAcid
+
+        new_base_combination = {"a_with_b": (["N3", "N1"], ["O2", "N2"])}
+        new_pair_type = {"watson-crick": new_base_combination}
+
+        watson_crick = {"cytosine_guanine": (["N4", "O6"], ["N3", "N1"], ["O2", "N2"]),
+                        "a_with_b": (["N3", "N1"], ["O2", "N2"])}
+
+        reference = {"watson-crick": watson_crick}
+
+        nuc_acid = NucleicAcid()
+        nuc_acid.update_base_pairs_dictionary(new_base_pairs=new_pair_type)
+        result = nuc_acid.base_pairs_dictionary
+
+        self.assertDictEqual(reference, result)
+
+
 class TestRNA(TestCase):
-    def test_set_bonds_between_residues(self):
-        from yeti.dictionaries.molecules.biomolecules import RNA
 
-        reference = ("O3\'", "P")
-
-        rna = RNA()
-        result = rna.bonds_between_residues
-
-        self.assertTupleEqual(reference, result)
-
-    def test_get_derivations_dictionary(self):
+    def test_derivations_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import RNA
 
         reference = {"adenine": "A",
@@ -150,7 +159,7 @@ class TestRNA(TestCase):
 
         self.assertDictEqual(reference, result)
 
-    def test_get_dihedral_angles_dictionary(self):
+    def test_dihedral_angles_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import RNA
 
         reference = {"alpha": (["O3\'", "P", "O5\'", "C5\'"], [-1, 0, 0, 0], r"$\alpha$"),
@@ -173,7 +182,7 @@ class TestRNA(TestCase):
 
         self.assertDictEqual(reference, result)
 
-    def test_get_distances_dictionary(self):
+    def test_distances_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import RNA
 
         reference = {"PToP": (["P", "P"], "P to P"),
@@ -184,7 +193,17 @@ class TestRNA(TestCase):
 
         self.assertDictEqual(reference, result)
 
-    def test_get_backbone_bonds_dictionary(self):
+    def test_bonds_between_residues(self):
+        from yeti.dictionaries.molecules.biomolecules import RNA
+
+        reference = ("O3\'", "P")
+
+        rna = RNA()
+        result = rna.bonds_between_residues
+
+        self.assertTupleEqual(reference, result)
+
+    def test_backbone_bonds_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import RNA
 
         reference = {"start": (["O5\'", "C5\'"], ["C5\'", "H5\'1"], ["C5\'", "H5\'2"], ["C5\'", "C4\'"],
@@ -204,7 +223,7 @@ class TestRNA(TestCase):
 
         self.assertDictEqual(reference, result)
 
-    def test_get_base_bonds_dictionary(self):
+    def test_base_bonds_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import RNA
 
         reference = {"adenine": (["C1\'", "N9"], ["N9", "C8"], ["N9", "C4"], ["C8", "H8"], ["C8", "N7"],
@@ -227,40 +246,40 @@ class TestRNA(TestCase):
 
         self.assertDictEqual(reference, result)
 
-    def test_get_donors_dictionary(self):
+    def test_donors_dictionary(self):
         # Note: Order of elements is important
         from yeti.dictionaries.molecules.biomolecules import RNA
 
-        ref_atoms_dict = {"adenine": ("H61", "H62", "HO\'2"),
-                          "cytosine": ("H41", "H42", "HO\'2"),
-                          "guanine": ("H1", "H21", "H22", "HO\'2"),
-                          "uracil": ("H3", "HO\'2")
+        ref_atoms_dict = {"adenine": ("H61", "H62"),
+                          "cytosine": ("H41", "H42"),
+                          "guanine": ("H1", "H21", "H22"),
+                          "uracil": ("H3",),
+                          "backbone": ("HO\'2",)
                           }
 
         ref_adenine_slots = {"H61": 1,
-                             "H62": 1,
-                             "HO\'2": 1
+                             "H62": 1
                              }
 
         ref_cytosine_slots = {"H41": 1,
-                              "H42": 1,
-                              "HO\'2": 1
+                              "H42": 1
                               }
 
         ref_guanine_slots = {"H1": 1,
                              "H21": 1,
-                             "H22": 1,
-                             "HO\'2": 1,
+                             "H22": 1
                              }
 
-        ref_uracil_slots = {"H3": 1,
-                            "HO\'2": 1
+        ref_uracil_slots = {"H3": 1
                             }
+
+        ref_backbone_slots = {"HO\'2": 1}
 
         ref_slots_dict = {"adenine": ref_adenine_slots,
                           "cytosine": ref_cytosine_slots,
                           "guanine": ref_guanine_slots,
-                          "uracil": ref_uracil_slots
+                          "uracil": ref_uracil_slots,
+                          "backbone": ref_backbone_slots
                           }
 
         reference = {"atoms": ref_atoms_dict,
@@ -271,64 +290,49 @@ class TestRNA(TestCase):
 
         self.assertDictEqual(reference, result)
 
-    def test_get_acceptors_dictionary(self):
+    def test_acceptors_dictionary(self):
         # Note: Order of elements is important
         from yeti.dictionaries.molecules.biomolecules import RNA
 
-        ref_atoms_dict = {"adenine": ("N1", "N3", "N6", "N7", "O2\'", "O3\'", "O4\'", "O5\'", "OP1", "OP2"),
-                          "cytosine": ("N3", "N4", "O2", "O2\'", "O3\'", "O4\'", "O5\'", "OP1", "OP2"),
-                          "guanine": ("N3", "N7", "O6", "O2\'", "O3\'", "O4\'", "O5\'", "OP1", "OP2"),
-                          "uracil": ("O2", "O4", "O2\'", "O3\'", "O4\'", "O5\'", "OP1", "OP2")
+        ref_atoms_dict = {"adenine": ("N1", "N3", "N6", "N7"),
+                          "cytosine": ("N3", "N4", "O2"),
+                          "guanine": ("N3", "N7", "O6"),
+                          "uracil": ("O2", "O4"),
+                          "backbone": ("O2\'", "O3\'", "O4\'", "O5\'", "OP1", "OP2")
                           }
 
         ref_adenine_slots = {"N1": 1,
                              "N3": 1,
                              "N6": 1,
-                             "N7": 1,
-                             "OP1": 2,
-                             "OP2": 2,
-                             "O2\'": 2,
-                             "O3\'": 2,
-                             "O4\'": 2,
-                             "O5\'": 2
+                             "N7": 1
                              }
 
         ref_cytosine_slots = {"O2": 2,
                               "N3": 1,
-                              "N4": 1,
-                              "OP1": 2,
-                              "OP2": 2,
-                              "O2\'": 2,
-                              "O3\'": 2,
-                              "O4\'": 2,
-                              "O5\'": 2
+                              "N4": 1
                               }
 
         ref_guanine_slots = {"O6": 2,
                              "N3": 1,
-                             "N7": 1,
-                             "OP1": 2,
-                             "OP2": 2,
-                             "O2\'": 2,
-                             "O3\'": 2,
-                             "O4\'": 2,
-                             "O5\'": 2
+                             "N7": 1
                              }
 
         ref_uracil_slots = {"O2": 2,
-                            "O4": 2,
-                            "OP1": 2,
-                            "OP2": 2,
-                            "O2\'": 2,
-                            "O3\'": 2,
-                            "O4\'": 2,
-                            "O5\'": 2
+                            "O4": 2
                             }
+
+        ref_backbone_slots = {"OP1": 2,
+                              "OP2": 2,
+                              "O2\'": 2,
+                              "O3\'": 2,
+                              "O4\'": 2,
+                              "O5\'": 2}
 
         ref_slots_dict = {"adenine": ref_adenine_slots,
                           "cytosine": ref_cytosine_slots,
                           "guanine": ref_guanine_slots,
-                          "uracil": ref_uracil_slots
+                          "uracil": ref_uracil_slots,
+                          "backbone": ref_backbone_slots
                           }
 
         reference = {"atoms": ref_atoms_dict,
@@ -339,7 +343,7 @@ class TestRNA(TestCase):
 
         self.assertDictEqual(reference, result)
 
-    def test_get_base_pairs_dictionary(self):
+    def test_base_pairs_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import RNA
 
         watson_crick_reference = {"adenine_uracil": (["N6", "O4"], ["N1", "N3"]),
@@ -355,17 +359,7 @@ class TestRNA(TestCase):
 
 class TestDNA(TestCase):
 
-    def test_set_bonds_between_residues(self):
-        from yeti.dictionaries.molecules.biomolecules import DNA
-
-        reference = ("O3\'", "P")
-
-        dna = DNA()
-        result = dna.bonds_between_residues
-
-        self.assertTupleEqual(reference, result)
-
-    def test_get_derivations_dictionary(self):
+    def test_derivations_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import DNA
 
         reference = {"adenine": "A",
@@ -378,7 +372,7 @@ class TestDNA(TestCase):
 
         self.assertDictEqual(reference, result)
 
-    def test_get_dihedral_angles_dictionary(self):
+    def test_dihedral_angles_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import DNA
 
         reference = {"alpha": (["O3\'", "P", "O5\'", "C5\'"], [-1, 0, 0, 0], r"$\alpha$"),
@@ -397,67 +391,76 @@ class TestDNA(TestCase):
                      }
 
         dna = DNA()
-        result = dna.dihedral_angles_dictionary
+        result = dna.derivations_dictionary
 
         self.assertDictEqual(reference, result)
 
-    def test_get_distances_dictionary(self):
+    def test_distances_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import DNA
 
         reference = {"PToP": (["P", "P"], "P to P"),
                      }
 
         dna = DNA()
-        result = dna.distances_dictionary
+        result = dna.derivations_dictionary
 
         self.assertDictEqual(reference, result)
 
-    def test_get_residue_bonds_dictionary(self):
+    def test_bonds_between_residues(self):
+        from yeti.dictionaries.molecules.biomolecules import DNA
+
+        reference = ("O3\'", "P")
+
+        dna = DNA()
+        result = dna.derivations_dictionary
+
+        self.assertTupleEqual(reference, result)
+
+    def test_backbone_bonds_dictionary(self):
+        from yeti.dictionaries.molecules.biomolecules import DNA
+
+        reference = {"residual": (["P", "OP1"], ["P", "OP2"], ["P", "O5\'"], ["O5\'", "C5\'"], ["C5\'", "H5\'1"],
+                                  ["C5\'", "H5\'2"], ["C5\'", "C4\'"], ["C4\'", "H4\'"], ["C4\'", "O4\'"],
+                                  ["C4\'", "C3\'"], ["O4\'", "C1\'"], ["C1\'", "H1\'"], ["C1\'", "C2\'"],
+                                  ["C3\'", "H3\'"], ["C3\'", "C2\'"], ["C3\'", "O3\'"], ["C2\'", "H2\'1"],
+                                  ["C2\'", "H2\'2"])}
+
+        dna = DNA()
+        result = dna.derivations_dictionary
+
+        self.assertDictEqual(reference, result)
+
+    def test_base_bonds_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import DNA
 
         reference = {"adenine": (["C1\'", "N9"], ["N9", "C8"], ["N9", "C4"], ["C8", "H8"], ["C8", "N7"], ["N7", "C5"],
                                  ["C5", "C6"], ["C5", "C4"], ["C6", "N6"], ["C6", "N1"], ["N6", "H61"], ["N6", "H62"],
-                                 ["N1", "C2"], ["C2", "H2"], ["C2", "N3"], ["N3", "C4"], ["P", "OP1"], ["P", "OP2"],
-                                 ["P", "O5\'"], ["O5\'", "C5\'"], ["C5\'", "H5\'1"], ["C5\'", "H5\'2"],
-                                 ["C5\'", "C4\'"], ["C4\'", "H4\'"], ["C4\'", "O4\'"], ["C4\'", "C3\'"],
-                                 ["O4\'", "C1\'"], ["C1\'", "H1\'"], ["C1\'", "C2\'"], ["C3\'", "H3\'"],
-                                 ["C3\'", "C2\'"], ["C3\'", "O3\'"], ["C2\'", "H2\'1"], ["C2\'", "H2\'2"]),
+                                 ["N1", "C2"], ["C2", "H2"], ["C2", "N3"], ["N3", "C4"]),
                      "cytosine": (["C1\'", "N1"], ["N1", "C6"], ["N1", "C2"], ["C6", "H6"], ["C6", "C5"], ["C5", "H5"],
                                   ["C5", "C4"], ["C4", "N4"], ["C4", "N3"], ["N4", "H41"], ["N4", "H42"], ["N3", "C2"],
-                                  ["C2", "O2"], ["P", "OP1"], ["P", "OP2"], ["P", "O5\'"], ["O5\'", "C5\'"],
-                                  ["C5\'", "H5\'1"], ["C5\'", "H5\'2"], ["C5\'", "C4\'"], ["C4\'", "H4\'"],
-                                  ["C4\'", "O4\'"], ["C4\'", "C3\'"], ["O4\'", "C1\'"], ["C1\'", "H1\'"],
-                                  ["C1\'", "C2\'"], ["C3\'", "H3\'"], ["C3\'", "C2\'"], ["C3\'", "O3\'"],
-                                  ["C2\'", "H2\'1"], ["C2\'", "H2\'2"]),
+                                  ["C2", "O2"]),
                      "guanine": (["C1\'", "N9"], ["N9", "C8"], ["N9", "C4"], ["C8", "H8"], ["C8", "N7"], ["N7", "C5"],
                                  ["C5", "C6"], ["C5", "C4"], ["C6", "O6"], ["C6", "N1"], ["N1", "H1"], ["N1", "C2"],
-                                 ["C2", "N2"], ["C2", "N3"], ["N2", "H21"], ["N2", "H22"], ["N3", "C4"], ["P", "OP1"],
-                                 ["P", "OP2"], ["P", "O5\'"], ["O5\'", "C5\'"], ["C5\'", "H5\'1"], ["C5\'", "H5\'2"],
-                                 ["C5\'", "C4\'"], ["C4\'", "H4\'"], ["C4\'", "O4\'"], ["C4\'", "C3\'"],
-                                 ["O4\'", "C1\'"], ["C1\'", "H1\'"], ["C1\'", "C2\'"], ["C3\'", "H3\'"],
-                                 ["C3\'", "C2\'"], ["C3\'", "O3\'"], ["C2\'", "H2\'1"], ["C2\'", "H2\'2"]),
+                                 ["C2", "N2"], ["C2", "N3"], ["N2", "H21"], ["N2", "H22"], ["N3", "C4"]),
                      "thymine": (["C1\'", "N1"], ["N1", "C6"], ["N1", "C2"], ["C6", "H6"], ["C6", "C5"], ["C5", "C5M"],
                                  ["C5M", "H51"], ["C5M", "H52"], ["C5M", "H53"], ["C5", "C4"], ["C4", "O4"],
-                                 ["C4", "N3"], ["N3", "H3"], ["N3", "C2"], ["C2", "O2"], ["P", "OP1"], ["P", "OP2"],
-                                 ["P", "O5\'"], ["O5\'", "C5\'"], ["C5\'", "H5\'1"], ["C5\'", "H5\'2"],
-                                 ["C5\'", "C4\'"], ["C4\'", "H4\'"], ["C4\'", "O4\'"], ["C4\'", "C3\'"],
-                                 ["O4\'", "C1\'"], ["C1\'", "H1\'"], ["C1\'", "C2\'"], ["C3\'", "H3\'"],
-                                 ["C3\'", "C2\'"], ["C3\'", "O3\'"], ["C2\'", "H2\'1"], ["C2\'", "H2\'2"])
+                                 ["C4", "N3"], ["N3", "H3"], ["N3", "C2"], ["C2", "O2"])
                      }
 
         dna = DNA()
-        result = dna.residue_bonds_dictionary
+        result = dna.derivations_dictionary
 
         self.assertDictEqual(reference, result)
 
-    def test_get_donors_dictionary(self):
+    def test_donors_dictionary(self):
         # Note: Order of elements is important
         from yeti.dictionaries.molecules.biomolecules import DNA
 
         ref_atoms_dict = {"adenine": ("H61", "H62"),
                           "cytosine": ("H41", "H42"),
                           "guanine": ("H1", "H21", "H22"),
-                          "thymine": ("H3",)
+                          "thymine": ("H3",),
+                          "backbone": ()
                           }
 
         ref_adenine_slots = {"H61": 1,
@@ -476,85 +479,75 @@ class TestDNA(TestCase):
         ref_thymine_slots = {"H3": 1
                              }
 
+        ref_backbone_slots = {}
+
         ref_slots_dict = {"adenine": ref_adenine_slots,
                           "cytosine": ref_cytosine_slots,
                           "guanine": ref_guanine_slots,
-                          "thymine": ref_thymine_slots
+                          "thymine": ref_thymine_slots,
+                          "backbone": ref_backbone_slots
                           }
 
         reference = {"atoms": ref_atoms_dict,
                      "slots": ref_slots_dict}
 
         dna = DNA()
-        result = dna.donors_dictionary
+        result = dna.derivations_dictionary
 
         self.assertDictEqual(reference, result)
 
-    def test_get_acceptors_dictionary(self):
+    def test_acceptors_dictionary(self):
         # Note: Order of elements is important
         from yeti.dictionaries.molecules.biomolecules import DNA
 
-        ref_atoms_dict = {"adenine": ("N1", "N3", "N6", "N7", "O3\'", "O4\'", "O5\'", "OP1", "OP2"),
-                          "cytosine": ("N3", "N4", "O2", "O3\'", "O4\'", "O5\'", "OP1", "OP2"),
-                          "guanine": ("N3", "N7", "O6", "O3\'", "O4\'", "O5\'", "OP1", "OP2"),
-                          "thymine": ("O2", "O4", "O3\'", "O4\'", "O5\'", "OP1", "OP2")
+        ref_atoms_dict = {"adenine": ("N1", "N3", "N6", "N7"),
+                          "cytosine": ("N3", "N4", "O2"),
+                          "guanine": ("N3", "N7", "O6"),
+                          "thymine": ("O2", "O4"),
+                          "backbone": ("O3\'", "O4\'", "O5\'", "OP1", "OP2")
                           }
 
         ref_adenine_slots = {"N1": 1,
                              "N3": 1,
                              "N6": 1,
-                             "N7": 1,
-                             "OP1": 2,
-                             "OP2": 2,
-                             "O3\'": 2,
-                             "O4\'": 2,
-                             "O5\'": 2
+                             "N7": 1
                              }
 
         ref_cytosine_slots = {"O2": 2,
                               "N3": 1,
-                              "N4": 1,
-                              "OP1": 2,
-                              "OP2": 2,
-                              "O3\'": 2,
-                              "O4\'": 2,
-                              "O5\'": 2
+                              "N4": 1
                               }
 
         ref_guanine_slots = {"O6": 2,
                              "N3": 1,
-                             "N7": 1,
-                             "OP1": 2,
-                             "OP2": 2,
-                             "O3\'": 2,
-                             "O4\'": 2,
-                             "O5\'": 2
+                             "N7": 1
                              }
 
         ref_thymine_slots = {"O2": 2,
-                             "O4": 2,
-                             "OP1": 2,
-                             "OP2": 2,
-                             "O3\'": 2,
-                             "O4\'": 2,
-                             "O5\'": 2
+                             "O4": 2
                              }
+
+        ref_backbone_slots = {"OP1": 2,
+                              "OP2": 2,
+                              "O3\'": 2,
+                              "O4\'": 2,
+                              "O5\'": 2}
 
         ref_slots_dict = {"adenine": ref_adenine_slots,
                           "cytosine": ref_cytosine_slots,
                           "guanine": ref_guanine_slots,
-                          "thymine": ref_thymine_slots
-                          }
+                          "thymine": ref_thymine_slots,
+                          "backbone": ref_backbone_slots}
 
         reference = {"atoms": ref_atoms_dict,
                      "slots": ref_slots_dict}
 
         dna = DNA()
-        result = dna.acceptors_dictionary
+        result = dna.derivations_dictionary
 
         self.assertDictEqual(reference, result)
 
-    def test_get_base_pairs_dictionary(self):
+    def test_base_pairs_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import DNA
 
         watson_crick_reference = {"adenine_thymine": (["N6", "O4"], ["N1", "N3"]),
@@ -563,6 +556,6 @@ class TestDNA(TestCase):
         reference = {"watson-crick": watson_crick_reference}
 
         dna = DNA()
-        result = dna.base_pairs_dictionary
+        result = dna.derivations_dictionary
 
         self.assertDictEqual(reference, result)
