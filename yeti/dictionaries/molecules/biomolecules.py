@@ -1,10 +1,11 @@
 # Reference for conventions is: Molecular Modeling and Simulation - An Interdisciplinary Guide - 2nd Edition by
 # Prof. Tamar Schlick
 
+class BiomoleculesException(Exception):
+    pass
+
 
 class Biomolecule(object):
-    # TODO: Check input types
-
     def __init__(self):
         """
         The basic building class for biomolecules
@@ -29,24 +30,66 @@ class Biomolecule(object):
                                      "slots": {}}
 
     def set_bonds_between_residues(self, atom_1, atom_2):
+        if type(atom_1) is not str or type(atom_2) is not str:
+            raise BiomoleculesException("Parameter atom_1 and atom_2 need to be strings.")
+
         self.bonds_between_residues = (atom_1, atom_2)
 
     def update_derivations_dictionary(self, derivations):
+
+        if type(derivations) is not dict:
+            raise BiomoleculesException("Parameter derivations need to be a dictionary.")
+
+        if not all(type(value) is str for value in derivations.values()):
+            raise BiomoleculesException("Values of derivations need to be strings.")
+
         self.derivations_dictionary.update(derivations)
 
     def update_dihedral_angle_dictionary(self, dihedral_angles):
+
+        if type(dihedral_angles) is not dict:
+            raise BiomoleculesException("Parameter dihedral_angles need to be a dictionary.")
+
+        if not all(type(value) is tuple for value in dihedral_angles.values()):
+            raise BiomoleculesException("Values of dihedral_angles need to be tuples.")
+
+        if not all(type(value[0]) is tuple for value in dihedral_angles.values()):
+            raise BiomoleculesException("First Element need to be a tuple.")
+
+        if not all(len(value[0]) == 4 for value in dihedral_angles.values()):
+            raise BiomoleculesException("Exactly four strings for first element allowed.")
+
+        if not all(type(atom_name) is str for value in dihedral_angles.values() for atom_name in value[0]):
+            raise BiomoleculesException("First elements tuple can only contain strings.")
+
+        if not all(type(value[1]) is tuple for value in dihedral_angles.values()):
+            raise BiomoleculesException("Second Element need to be a tuple.")
+
+        if not all(len(value[1]) == 4 for value in dihedral_angles.values()):
+            raise BiomoleculesException("Exactly four integers for second element allowed.")
+
+        if not all(type(atom_name) is int for value in dihedral_angles.values() for atom_name in value[1]):
+            raise BiomoleculesException("Second elements tuple can only contain integers.")
+
+        if not all(type(value[2]) is str for value in dihedral_angles.values()):
+            raise BiomoleculesException("Third element need to be a string.")
+
         self.dihedral_angles_dictionary.update(dihedral_angles)
 
     def update_distances_dictionary(self, distances):
+        # TODO: Check input types
         self.distances_dictionary.update(distances)
 
     def update_backbone_bonds_dictionary(self, backbone_bonds):
+        # TODO: Check input types
         self.backbone_bonds_dictionary.update(backbone_bonds)
 
     def update_base_bonds_dictionary(self, new_bases):
+        # TODO: Check input types
         self.base_bonds_dictionary.update(new_bases)
 
     def update_hydrogen_bond_dictionary(self, atoms, slots, update_donors=True):
+        # TODO: Check input types
 
         if update_donors:
             dictionary = self.donors_dictionary
@@ -170,6 +213,7 @@ class NucleicAcid(Biomolecule):
         self.base_pairs_dictionary = {"watson-crick": watson_crick_dictionary}
 
     def update_base_pairs_dictionary(self, new_base_pairs):
+        # TODO: Check input types
 
         base_pair_types = tuple(self.base_pairs_dictionary.keys())
         new_base_pair_types = tuple(new_base_pairs.keys())

@@ -13,6 +13,26 @@ class TestBiomolecule(TestCase):
 
         self.assertTupleEqual(reference, result)
 
+    def test_set_bonds_between_residues_exception_false_parameter_type_1(self):
+        from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
+
+        bio_mol = Biomolecule()
+
+        with self.assertRaises(BiomoleculesException) as context:
+            bio_mol.set_bonds_between_residues(["A"], "B")
+
+        self.assertTrue("Parameter atom_1 and atom_2 need to be strings." == str(context.exception))
+
+    def test_set_bonds_between_residues_exception_false_parameter_type_2(self):
+        from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
+
+        bio_mol = Biomolecule()
+
+        with self.assertRaises(BiomoleculesException) as context:
+            bio_mol.set_bonds_between_residues("A", 1)
+
+        self.assertTrue("Parameter atom_1 and atom_2 need to be strings." == str(context.exception))
+
     def test_update_derivations_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import Biomolecule
 
@@ -25,17 +45,177 @@ class TestBiomolecule(TestCase):
 
         self.assertDictEqual(reference, result)
 
+    def test_update_derivations_dictionary_false_parameter_type(self):
+        from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
+
+        derivations = ["eggs", "butter"]
+
+        bio_mol = Biomolecule()
+
+        with self.assertRaises(BiomoleculesException) as context:
+            bio_mol.update_derivations_dictionary(derivations=derivations)
+
+        self.assertTrue("Parameter derivations need to be a dictionary." == str(context.exception))
+
+    def test_update_derivations_dictionary_false_parameter_type(self):
+        from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
+
+        derivations = {"ADE": "A",
+                       "THY": "T",
+                       "GUA": 7}
+
+        bio_mol = Biomolecule()
+
+        with self.assertRaises(BiomoleculesException) as context:
+            bio_mol.update_derivations_dictionary(derivations=derivations)
+
+        self.assertTrue("Values of derivations need to be strings." == str(context.exception))
+
     def test_update_dihedral_angle_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import Biomolecule
 
-        reference = {"alpha": (["O3\'", "P", "O5\'", "C5\'"], [-1, 0, 0, 0], r"$\alpha$"),
-                     "beta": (["P", "O5\'", "C5\'", "C4\'"], [0, 0, 0, 0], r"$\beta$")}
+        reference = {"alpha": (("O3\'", "P", "O5\'", "C5\'"), (-1, 0, 0, 0), r"$\alpha$"),
+                     "beta": (("P", "O5\'", "C5\'", "C4\'"), (0, 0, 0, 0), r"$\beta$")}
 
         bio_mol = Biomolecule()
         bio_mol.update_dihedral_angle_dictionary(dihedral_angles=reference)
         result = bio_mol.dihedral_angles_dictionary
 
         self.assertDictEqual(reference, result)
+
+    def test_update_dihedral_angle_dictionary_no_dictionary(self):
+        from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
+
+        dih_angles = [7, 3, 4, 5]
+
+        bio_mol = Biomolecule()
+
+        with self.assertRaises(BiomoleculesException) as context:
+            bio_mol.update_dihedral_angle_dictionary(dihedral_angles=dih_angles)
+
+        self.assertTrue("Parameter dihedral_angles need to be a dictionary." == str(context.exception))
+
+    def test_update_dihedral_angle_dictionary_value_no_tuple(self):
+        from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
+
+        dih_angles = {"alpha": [["O3\'", "P", "O5\'", "C5\'"], (-1, 0, 0, 0), r"$\alpha$"]}
+
+        bio_mol = Biomolecule()
+
+        with self.assertRaises(BiomoleculesException) as context:
+            bio_mol.update_dihedral_angle_dictionary(dihedral_angles=dih_angles)
+
+        self.assertTrue("Values of dihedral_angles need to be tuples." == str(context.exception))
+
+    def test_update_dihedral_angle_dictionary_first_element_no_tuple(self):
+        from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
+
+        dih_angles = {"alpha": (["O3\'", "P", "O5\'", "C5\'"], (-1, 0, 0, 0), r"$\alpha$")}
+
+        bio_mol = Biomolecule()
+
+        with self.assertRaises(BiomoleculesException) as context:
+            bio_mol.update_dihedral_angle_dictionary(dihedral_angles=dih_angles)
+
+        self.assertTrue("First Element need to be a tuple." == str(context.exception))
+
+    def test_update_dihedral_angle_dictionary_first_element_not_enough_elements(self):
+        from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
+
+        dih_angles = {"alpha": (("O3\'", "P", "O5\'"), (-1, 0, 0, 0), r"$\alpha$")}
+
+        bio_mol = Biomolecule()
+
+        with self.assertRaises(BiomoleculesException) as context:
+            bio_mol.update_dihedral_angle_dictionary(dihedral_angles=dih_angles)
+
+        self.assertTrue("Exactly four strings for first element allowed." == str(context.exception))
+
+    def test_update_dihedral_angle_dictionary_first_element_to_many_elements(self):
+        from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
+
+        dih_angles = {"alpha": (("O3\'", "P", "O5\'", "C5\'", "C1\'"), (-1, 0, 0, 0), r"$\alpha$")}
+
+        bio_mol = Biomolecule()
+
+        with self.assertRaises(BiomoleculesException) as context:
+            bio_mol.update_dihedral_angle_dictionary(dihedral_angles=dih_angles)
+
+        self.assertTrue("Exactly four strings for first element allowed." == str(context.exception))
+
+    def test_update_dihedral_angle_dictionary_first_element_no_strings(self):
+        from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
+
+        dih_angles = {"alpha": (("O3\'", 6, "O5\'", "C5\'"), (-1, 0, 0, 0), r"$\alpha$")}
+
+        bio_mol = Biomolecule()
+
+        with self.assertRaises(BiomoleculesException) as context:
+            bio_mol.update_dihedral_angle_dictionary(dihedral_angles=dih_angles)
+
+        self.assertTrue("First elements tuple can only contain strings." == str(context.exception))
+
+    def test_update_dihedral_angle_dictionary_second_element_no_tuple(self):
+        from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
+
+        dih_angles = {"alpha": (("O3\'", "P", "O5\'", "C5\'"), [-1, 0, 0, 0], r"$\alpha$")}
+
+        bio_mol = Biomolecule()
+
+        with self.assertRaises(BiomoleculesException) as context:
+            bio_mol.update_dihedral_angle_dictionary(dihedral_angles=dih_angles)
+
+        self.assertTrue("Second Element need to be a tuple." == str(context.exception))
+
+    def test_update_dihedral_angle_dictionary_second_element_not_enough_elements(self):
+        from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
+
+        dih_angles = {"alpha": (("O3\'", "P", "O5\'", "C5\'"), (-1, 0, 0), r"$\alpha$")}
+
+        bio_mol = Biomolecule()
+
+        with self.assertRaises(BiomoleculesException) as context:
+            bio_mol.update_dihedral_angle_dictionary(dihedral_angles=dih_angles)
+
+        self.assertTrue("Exactly four integers for second element allowed." == str(context.exception))
+
+    def test_update_dihedral_angle_dictionary_second_element_too_much_elements(self):
+        from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
+
+        dih_angles = {"alpha": (("O3\'", "P", "O5\'", "C5\'"), (-1, 0, 0, 0, 0), r"$\alpha$")}
+
+        bio_mol = Biomolecule()
+
+        with self.assertRaises(BiomoleculesException) as context:
+            bio_mol.update_dihedral_angle_dictionary(dihedral_angles=dih_angles)
+
+        self.assertTrue("Exactly four integers for second element allowed." == str(context.exception))
+
+    def test_update_dihedral_angle_dictionary_second_element_no_integers(self):
+        from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
+
+        dih_angles = {"alpha": (("O3\'", "P", "O5\'", "C5\'"), (-1, 0, "2", 0), r"$\alpha$")}
+
+        bio_mol = Biomolecule()
+
+        with self.assertRaises(BiomoleculesException) as context:
+            bio_mol.update_dihedral_angle_dictionary(dihedral_angles=dih_angles)
+
+        self.assertTrue("Second elements tuple can only contain integers." == str(context.exception))
+
+    def test_update_dihedral_angle_dictionary_third_element_no_string(self):
+        from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
+
+        dih_angles = {"alpha": (("O3\'", "P", "O5\'", "C5\'"), (-1, 0, 0, 0), ["stuff"])}
+
+        bio_mol = Biomolecule()
+
+        with self.assertRaises(BiomoleculesException) as context:
+            bio_mol.update_dihedral_angle_dictionary(dihedral_angles=dih_angles)
+
+        print(str(context.exception))
+
+        self.assertTrue("Third element need to be a string." == str(context.exception))
 
     def test_update_distances_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import Biomolecule
