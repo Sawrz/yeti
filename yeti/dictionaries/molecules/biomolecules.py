@@ -5,6 +5,7 @@ class BiomoleculesException(Exception):
     pass
 
 
+# TODO: keys need to be strings
 class Biomolecule(object):
     def __init__(self):
         """
@@ -24,10 +25,8 @@ class Biomolecule(object):
         self.base_bonds_dictionary = {}
 
         # HYDROGEN BONDS
-        self.donors_dictionary = {"atoms": {},
-                                  "slots": {}}
-        self.acceptors_dictionary = {"atoms": {},
-                                     "slots": {}}
+        self.donors_dictionary = {}
+        self.acceptors_dictionary = {}
 
     def set_bonds_between_residues(self, atom_1, atom_2):
         if type(atom_1) is not str or type(atom_2) is not str:
@@ -77,27 +76,84 @@ class Biomolecule(object):
         self.dihedral_angles_dictionary.update(dihedral_angles)
 
     def update_distances_dictionary(self, distances):
-        # TODO: Check input types
+        if type(distances) is not dict:
+            raise BiomoleculesException("Parameter distance need to be a dictionary.")
+
+        if not all(type(value) is tuple for value in distances.values()):
+            raise BiomoleculesException("Values of distances need to be tuples.")
+
+        if not all(type(value[0]) is tuple for value in distances.values()):
+            raise BiomoleculesException("First element need to be a tuple.")
+
+        if not all(len(value[0]) == 2 for value in distances.values()):
+            raise BiomoleculesException("Exactly two strings for first element allowed.")
+
+        if not all(type(atom_name) is str for value in distances.values() for atom_name in value[0]):
+            raise BiomoleculesException("First element only contains strings.")
+
+        if not all(type(value[1]) is str for value in distances.values()):
+            raise BiomoleculesException("Second element need to be a string.")
+
         self.distances_dictionary.update(distances)
 
     def update_backbone_bonds_dictionary(self, backbone_bonds):
-        # TODO: Check input types
+        if type(backbone_bonds) is not dict:
+            raise BiomoleculesException("Parameter backbone_bonds need to be a dictionary.")
+
+        if not all(type(value) is tuple for value in backbone_bonds.values()):
+            raise BiomoleculesException("Values of backbone_bonds need to be tuples.")
+
+        if not all(type(bond) is tuple for value in backbone_bonds.values() for bond in value):
+            raise BiomoleculesException("Bond type tuple only contains other tuples.")
+
+        if not all(type(atom) is str for value in backbone_bonds.values() for bond in value for atom in bond):
+            raise BiomoleculesException("Elements of bond tuples need to be strings.")
+
+        if not all(len(bond) == 2 for value in backbone_bonds.values() for bond in value):
+            raise BiomoleculesException("Exactly two strings for bond tuple are allowed.")
+
+        if not all(type(atom_name) is str for value in backbone_bonds.values() for atom_name in value[0]):
+            raise BiomoleculesException("First element only contains strings.")
+
         self.backbone_bonds_dictionary.update(backbone_bonds)
 
     def update_base_bonds_dictionary(self, new_bases):
-        # TODO: Check input types
+        if type(new_bases) is not dict:
+            raise BiomoleculesException("Parameter new_bases need to be a dictionary.")
+
+        if not all(type(value) is tuple for value in new_bases.values()):
+            raise BiomoleculesException("Values of new_bases need to be tuples.")
+
+        if not all(type(bond) is tuple for value in new_bases.values() for bond in value):
+            raise BiomoleculesException("Bond type tuple only contains other tuples.")
+
+        if not all(type(atom) is str for value in new_bases.values() for bond in value for atom in bond):
+            raise BiomoleculesException("Elements of bond tuples need to be strings.")
+
+        if not all(len(bond) == 2 for value in new_bases.values() for bond in value):
+            raise BiomoleculesException("Exactly two strings for bond tuple are allowed.")
+
+        if not all(type(atom_name) is str for value in new_bases.values() for atom_name in value[0]):
+            raise BiomoleculesException("First element only contains strings.")
+
         self.base_bonds_dictionary.update(new_bases)
 
-    def update_hydrogen_bond_dictionary(self, atoms, slots, update_donors=True):
-        # TODO: Check input types
+    def update_hydrogen_bond_dictionary(self, atoms, update_donors=True):
+        if type(atoms) is not dict:
+            raise BiomoleculesException("Parameter atoms need to be a dictionary.")
+
+        if not all(type(value) is dict for value in atoms.values()):
+            raise BiomoleculesException("Value of atoms need to be a dictionary.")
+
+        if not all(type(slot) is int for value_dict in atoms.values() for slot in value_dict.values()):
+            raise BiomoleculesException("Values of the value dictionary need to be integers.")
 
         if update_donors:
             dictionary = self.donors_dictionary
         else:
             dictionary = self.acceptors_dictionary
 
-        dictionary["atoms"].update(atoms)
-        dictionary["slots"].update(slots)
+        dictionary.update(atoms)
 
 
 class NucleicAcid(Biomolecule):
@@ -117,103 +173,105 @@ class NucleicAcid(Biomolecule):
 
         # MEASURES
         # Dihedral Angles
-        dihedral_angles_dictionary = {"alpha": (["O3\'", "P", "O5\'", "C5\'"], [-1, 0, 0, 0], r"$\alpha$"),
-                                      "beta": (["P", "O5\'", "C5\'", "C4\'"], [0, 0, 0, 0], r"$\beta$"),
-                                      "gamma": (["O5\'", "C5\'", "C4\'", "C3\'"], [0, 0, 0, 0], r"$\gamma$"),
-                                      "delta": (["C5\'", "C4\'", "C3\'", "O3\'"], [0, 0, 0, 0], r"$\delta$"),
-                                      "epsilon": (["C4\'", "C3\'", "O3\'", "P"], [0, 0, 0, 1], r"$\epsilon$"),
-                                      "zeta": (["C3\'", "O3\'", "P", "O5\'"], [0, 0, 1, 1], r"$\zeta$"),
-                                      "tau0": (["C4\'", "O4\'", "C1\'", "C2\'"], [0, 0, 0, 0], r"$\tau_0$"),
-                                      "tau1": (["O4\'", "C1\'", "C2\'", "C3\'"], [0, 0, 0, 0], r"$\tau_1$"),
-                                      "tau2": (["C1\'", "C2\'", "C3\'", "C4\'"], [0, 0, 0, 0], r"$\tau_2$"),
-                                      "tau3": (["C2\'", "C3\'", "C4\'", "O4\'"], [0, 0, 0, 0], r"$\tau_3$"),
-                                      "tau4": (["C3\'", "C4\'", "O4\'", "C1\'"], [0, 0, 0, 0], r"$\tau_4$"),
-                                      "chi_py": (["O4\'", "C1\'", "N1", "C2"], [0, 0, 0, 0], r"$\chi_pyrimidine$"),
-                                      "chi_pu": (["O4\'", "C1\'", "N9", "C4"], [0, 0, 0, 0], r"$\chi_purine$")
+        dihedral_angles_dictionary = {"alpha": (("O3\'", "P", "O5\'", "C5\'"), (-1, 0, 0, 0), r"$\alpha$"),
+                                      "beta": (("P", "O5\'", "C5\'", "C4\'"), (0, 0, 0, 0), r"$\beta$"),
+                                      "gamma": (("O5\'", "C5\'", "C4\'", "C3\'"), (0, 0, 0, 0), r"$\gamma$"),
+                                      "delta": (("C5\'", "C4\'", "C3\'", "O3\'"), (0, 0, 0, 0), r"$\delta$"),
+                                      "epsilon": (("C4\'", "C3\'", "O3\'", "P"), (0, 0, 0, 1), r"$\epsilon$"),
+                                      "zeta": (("C3\'", "O3\'", "P", "O5\'"), (0, 0, 1, 1), r"$\zeta$"),
+                                      "tau0": (("C4\'", "O4\'", "C1\'", "C2\'"), (0, 0, 0, 0), r"$\tau_0$"),
+                                      "tau1": (("O4\'", "C1\'", "C2\'", "C3\'"), (0, 0, 0, 0), r"$\tau_1$"),
+                                      "tau2": (("C1\'", "C2\'", "C3\'", "C4\'"), (0, 0, 0, 0), r"$\tau_2$"),
+                                      "tau3": (("C2\'", "C3\'", "C4\'", "O4\'"), (0, 0, 0, 0), r"$\tau_3$"),
+                                      "tau4": (("C3\'", "C4\'", "O4\'", "C1\'"), (0, 0, 0, 0), r"$\tau_4$"),
+                                      "chi_py": (("O4\'", "C1\'", "N1", "C2"), (0, 0, 0, 0), r"$\chi_pyrimidine$"),
+                                      "chi_pu": (("O4\'", "C1\'", "N9", "C4"), (0, 0, 0, 0), r"$\chi_purine$")
                                       }
 
         self.update_dihedral_angle_dictionary(dihedral_angles=dihedral_angles_dictionary)
 
         ## Distances
-        distance_dict = {"PToP": (["P", "P"], "P to P")}
+        distance_dict = {"PToP": (("P", "P"), "P to P")}
 
         self.update_distances_dictionary(distances=distance_dict)
 
         # COVALENT BONDS
         self.set_bonds_between_residues("O3\'", "P")
 
-        base_bonds_dictionary = {"adenine": (["C1\'", "N9"], ["N9", "C8"], ["N9", "C4"], ["C8", "H8"],
-                                             ["C8", "N7"], ["N7", "C5"], ["C5", "C6"], ["C5", "C4"],
-                                             ["C6", "N6"], ["C6", "N1"], ["N6", "H61"], ["N6", "H62"],
-                                             ["N1", "C2"], ["C2", "H2"], ["C2", "N3"], ["N3", "C4"]),
-                                 "cytosine": (["C1\'", "N1"], ["N1", "C6"], ["N1", "C2"], ["C6", "H6"],
-                                              ["C6", "C5"], ["C5", "H5"], ["C5", "C4"], ["C4", "N4"],
-                                              ["C4", "N3"], ["N4", "H41"], ["N4", "H42"], ["N3", "C2"],
-                                              ["C2", "O2"]),
-                                 "guanine": (["C1\'", "N9"], ["N9", "C8"], ["N9", "C4"], ["C8", "H8"],
-                                             ["C8", "N7"], ["N7", "C5"], ["C5", "C6"], ["C5", "C4"],
-                                             ["C6", "O6"], ["C6", "N1"], ["N1", "H1"], ["N1", "C2"],
-                                             ["C2", "N2"], ["C2", "N3"], ["N2", "H21"], ["N2", "H22"],
-                                             ["N3", "C4"])
+        base_bonds_dictionary = {"adenine": (("C1\'", "N9"), ("N9", "C8"), ("N9", "C4"), ("C8", "H8"),
+                                             ("C8", "N7"), ("N7", "C5"), ("C5", "C6"), ("C5", "C4"),
+                                             ("C6", "N6"), ("C6", "N1"), ("N6", "H61"), ("N6", "H62"),
+                                             ("N1", "C2"), ("C2", "H2"), ("C2", "N3"), ("N3", "C4")),
+                                 "cytosine": (("C1\'", "N1"), ("N1", "C6"), ("N1", "C2"), ("C6", "H6"),
+                                              ("C6", "C5"), ("C5", "H5"), ("C5", "C4"), ("C4", "N4"),
+                                              ("C4", "N3"), ("N4", "H41"), ("N4", "H42"), ("N3", "C2"),
+                                              ("C2", "O2")),
+                                 "guanine": (("C1\'", "N9"), ("N9", "C8"), ("N9", "C4"), ("C8", "H8"),
+                                             ("C8", "N7"), ("N7", "C5"), ("C5", "C6"), ("C5", "C4"),
+                                             ("C6", "O6"), ("C6", "N1"), ("N1", "H1"), ("N1", "C2"),
+                                             ("C2", "N2"), ("C2", "N3"), ("N2", "H21"), ("N2", "H22"),
+                                             ("N3", "C4"))
                                  }
 
         self.update_base_bonds_dictionary(new_bases=base_bonds_dictionary)
 
         # HYDROGEN BONDS
         # Donors
-        donor_base_atoms_dict = {"adenine": ("H61", "H62"),
-                                 "cytosine": ("H41", "H42"),
-                                 "guanine": ("H1", "H21", "H22")
-                                 }
+        donors_dict = {"adenine": {"H61": 1,
+                                   "H62": 1},
+                       "cytosine": {"H41": 1,
+                                    "H42": 1},
+                       "guanine": {"H1": 1,
+                                   "H21": 1,
+                                   "H22": 1}
+                       }
 
-        donor_slots_dict = {"adenine": {"H61": 1,
-                                        "H62": 1},
-                            "cytosine": {"H41": 1,
-                                         "H42": 1},
-                            "guanine": {"H1": 1,
-                                        "H21": 1,
-                                        "H22": 1}
-                            }
-
-        self.update_hydrogen_bond_dictionary(atoms=donor_base_atoms_dict, slots=donor_slots_dict,
-                                             update_donors=True)
+        self.update_hydrogen_bond_dictionary(atoms=donors_dict, update_donors=True)
 
         # Acceptors
-        acceptor_base_atoms_dict = {"adenine": ("N1", "N3", "N6", "N7"),
-                                    "cytosine": ("N3", "N4", "O2"),
-                                    "guanine": ("N3", "N7", "O6")
-                                    }
-
-        adenine_slots = {"N1": 1,
-                         "N3": 1,
-                         "N6": 1,
-                         "N7": 1
-                         }
-
-        cytosine_slots = {"O2": 2,
-                          "N3": 1,
-                          "N4": 1
+        acceptors_dict = {"adenine": {"N1": 1,
+                                      "N3": 1,
+                                      "N6": 1,
+                                      "N7": 1
+                                      },
+                          "cytosine": {"O2": 2,
+                                       "N3": 1,
+                                       "N4": 1
+                                       },
+                          "guanine": {"O6": 2,
+                                      "N3": 1,
+                                      "N7": 1
+                                      }
                           }
 
-        guanine_slots = {"O6": 2,
-                         "N3": 1,
-                         "N7": 1
-                         }
-
-        acceptor_slots_dict = {"adenine": adenine_slots,
-                               "cytosine": cytosine_slots,
-                               "guanine": guanine_slots
-                               }
-
-        self.update_hydrogen_bond_dictionary(atoms=acceptor_base_atoms_dict, slots=acceptor_slots_dict,
-                                             update_donors=False)
+        self.update_hydrogen_bond_dictionary(atoms=acceptors_dict, update_donors=False)
 
         # BASE PAIRS
-        watson_crick_dictionary = {"cytosine_guanine": (["N4", "O6"], ["N3", "N1"], ["O2", "N2"])}
+        watson_crick_dictionary = {"cytosine_guanine": (("N4", "O6"), ("N3", "N1"), ("O2", "N2"))}
         self.base_pairs_dictionary = {"watson-crick": watson_crick_dictionary}
 
     def update_base_pairs_dictionary(self, new_base_pairs):
-        # TODO: Check input types
+        if type(new_base_pairs) is not dict:
+            raise BiomoleculesException("Parameter new_base_pairs need to be a dictionary.")
+
+        if not all(type(value) is dict for value in new_base_pairs.values()):
+            raise BiomoleculesException("Value of new_base_pairs need to be a dictionary.")
+
+        if not all(type(base_pairs) is tuple for value in new_base_pairs.values() for base_pairs in value.values()):
+            raise BiomoleculesException("Value of the base pair dictionary need to be a tuple.")
+
+        if not all(type(bond) is tuple for value in new_base_pairs.values() for base_pairs in value.values() for bond in
+                   base_pairs):
+            raise BiomoleculesException("Base pair bonds need to be tuples.")
+
+        if not all(len(bond) == 2 for value in new_base_pairs.values() for base_pairs in value.values() for bond in
+                   base_pairs):
+            raise BiomoleculesException("Base pair bonds contains only two strings.")
+
+        if not all(
+                type(atom_name) is str for value in new_base_pairs.values() for base_pairs in value.values() for bond in
+                base_pairs for atom_name in bond):
+            raise BiomoleculesException("Base pair bonds contains only two strings.")
 
         base_pair_types = tuple(self.base_pairs_dictionary.keys())
         new_base_pair_types = tuple(new_base_pairs.keys())
@@ -237,11 +295,11 @@ class RNA(NucleicAcid):
 
         # COVALENT BONDS
         # Backbone Bonds
-        full_backbone_bond_list = [["P", "OP1"], ["P", "OP2"], ["P", "O5\'"], ["O5\'", "C5\'"], ["C5\'", "H5\'1"],
-                                   ["C5\'", "H5\'2"], ["C5\'", "C4\'"], ["C4\'", "H4\'"], ["C4\'", "O4\'"],
-                                   ["C4\'", "C3\'"], ["O4\'", "C1\'"], ["C1\'", "H1\'"], ["C1\'", "C2\'"],
-                                   ["C3\'", "H3\'"], ["C3\'", "C2\'"], ["C3\'", "O3\'"], ["C2\'", "H2\'1"],
-                                   ["C2\'", "O2\'"], ["O2\'", "HO\'2"], ["O5\'", "H5T"], ["O3'", "HO3\'"]]
+        full_backbone_bond_list = [("P", "OP1"), ("P", "OP2"), ("P", "O5\'"), ("O5\'", "C5\'"), ("C5\'", "H5\'1"),
+                                   ("C5\'", "H5\'2"), ("C5\'", "C4\'"), ("C4\'", "H4\'"), ("C4\'", "O4\'"),
+                                   ("C4\'", "C3\'"), ("O4\'", "C1\'"), ("C1\'", "H1\'"), ("C1\'", "C2\'"),
+                                   ("C3\'", "H3\'"), ("C3\'", "C2\'"), ("C3\'", "O3\'"), ("C2\'", "H2\'1"),
+                                   ("C2\'", "O2\'"), ("O2\'", "HO\'2"), ("O5\'", "H5T"), ("O3'", "HO3\'")]
 
         start_backbone_bond_list = full_backbone_bond_list.copy()
         for bond in full_backbone_bond_list:
@@ -255,36 +313,32 @@ class RNA(NucleicAcid):
         self.update_backbone_bonds_dictionary(backbone_bonds=backbone_bonds)
 
         # Base Bonds
-        base = {"uracil": (["C1\'", "N1"], ["N1", "C6"], ["N1", "C2"], ["C6", "H6"], ["C6", "C5"], ["C5", "H5"],
-                           ["C5", "C4"], ["C4", "O4"], ["C4", "N3"], ["N3", "H3"], ["N3", "C2"], ["C2", "O2"])}
+        base = {"uracil": (("C1\'", "N1"), ("N1", "C6"), ("N1", "C2"), ("C6", "H6"), ("C6", "C5"), ("C5", "H5"),
+                           ("C5", "C4"), ("C4", "O4"), ("C4", "N3"), ("N3", "H3"), ("N3", "C2"), ("C2", "O2"))}
 
         self.update_base_bonds_dictionary(new_bases=base)
 
         # HYDROGEN BONDS
         # Donors
-        donors = {"uracil": ("H3",),
-                  "backbone": ("HO\'2",)}
-        donor_slots = {"uracil": {"H3": 1},
-                       "backbone": {"HO\'2": 1}}
+        donors = {"uracil": {"H3": 1},
+                  "backbone": {"HO\'2": 1}}
 
-        self.update_hydrogen_bond_dictionary(atoms=donors, slots=donor_slots, update_donors=True)
+        self.update_hydrogen_bond_dictionary(atoms=donors, update_donors=True)
 
         # Acceptors
-        acceptors = {"uracil": ("O2", "O4"),
-                     "backbone": ("O2\'", "O3\'", "O4\'", "O5\'", "OP1", "OP2")}
-        acceptor_slots = {"uracil": {"O2": 2,
-                                     "O4": 2},
-                          "backbone": {"OP1": 2,
-                                       "OP2": 2,
-                                       "O2\'": 2,
-                                       "O3\'": 2,
-                                       "O4\'": 2,
-                                       "O5\'": 2}}
+        acceptors = {"uracil": {"O2": 2,
+                                "O4": 2},
+                     "backbone": {"OP1": 2,
+                                  "OP2": 2,
+                                  "O2\'": 2,
+                                  "O3\'": 2,
+                                  "O4\'": 2,
+                                  "O5\'": 2}}
 
-        self.update_hydrogen_bond_dictionary(atoms=acceptors, slots=acceptor_slots, update_donors=False)
+        self.update_hydrogen_bond_dictionary(atoms=acceptors, update_donors=False)
 
         # BASE PAIRS
-        new_base_pairs = {"watson-crick": {"adenine_uracil": (["N6", "O4"], ["N1", "N3"])}}
+        new_base_pairs = {"watson-crick": {"adenine_uracil": (("N6", "O4"), ("N1", "N3"))}}
 
         self.update_base_pairs_dictionary(new_base_pairs=new_base_pairs)
 
@@ -301,11 +355,11 @@ class DNA(NucleicAcid):
 
         # COVALENT BONDS
         # Backbone Bonds
-        full_backbone_bond_list = [["P", "OP1"], ["P", "OP2"], ["P", "O5\'"], ["O5\'", "C5\'"], ["C5\'", "H5\'1"],
-                                   ["C5\'", "H5\'2"], ["C5\'", "C4\'"], ["C4\'", "H4\'"], ["C4\'", "O4\'"],
-                                   ["C4\'", "C3\'"], ["O4\'", "C1\'"], ["C1\'", "H1\'"], ["C1\'", "C2\'"],
-                                   ["C3\'", "H3\'"], ["C3\'", "C2\'"], ["C3\'", "O3\'"], ["C2\'", "H2\'1"],
-                                   ["C2\'", "H2\'2"]]
+        full_backbone_bond_list = [("P", "OP1"), ("P", "OP2"), ("P", "O5\'"), ("O5\'", "C5\'"), ("C5\'", "H5\'1"),
+                                   ("C5\'", "H5\'2"), ("C5\'", "C4\'"), ("C4\'", "H4\'"), ("C4\'", "O4\'"),
+                                   ("C4\'", "C3\'"), ("O4\'", "C1\'"), ("C1\'", "H1\'"), ("C1\'", "C2\'"),
+                                   ("C3\'", "H3\'"), ("C3\'", "C2\'"), ("C3\'", "O3\'"), ("C2\'", "H2\'1"),
+                                   ("C2\'", "H2\'2")]
 
         backbone_bonds = {"residual": tuple(full_backbone_bond_list)
                           }
@@ -313,36 +367,33 @@ class DNA(NucleicAcid):
         self.update_backbone_bonds_dictionary(backbone_bonds=backbone_bonds)
 
         # Base Bonds
-        base = {"thymine": (["C1\'", "N1"], ["N1", "C6"], ["N1", "C2"], ["C6", "H6"], ["C6", "C5"], ["C5", "C5M"],
-                            ["C5M", "H51"], ["C5M", "H52"], ["C5M", "H53"], ["C5", "C4"], ["C4", "O4"], ["C4", "N3"],
-                            ["N3", "H3"], ["N3", "C2"], ["C2", "O2"])}
+        base = {"thymine": (("C1\'", "N1"), ("N1", "C6"), ("N1", "C2"), ("C6", "H6"), ("C6", "C5"), ("C5", "C5M"),
+                            ("C5M", "H51"), ("C5M", "H52"), ("C5M", "H53"), ("C5", "C4"), ("C4", "O4"), ("C4", "N3"),
+                            ("N3", "H3"), ("N3", "C2"), ("C2", "O2"))}
 
         self.update_base_bonds_dictionary(new_bases=base)
 
         # HYDROGEN BONDS
         # Donors
-        donors = {"thymine": ("H3",),
-                  "backbone": ()}
-        donor_slots = {"thymine": {"H3": 1},
-                       "backbone": {}}
+        donors = {"thymine": {"H3": 1},
+                  "backbone": {}}
 
-        self.update_hydrogen_bond_dictionary(atoms=donors, slots=donor_slots, update_donors=True)
+        self.update_hydrogen_bond_dictionary(atoms=donors, update_donors=True)
 
         # Acceptors
-        acceptors = {"thymine": ("O2", "O4"),
-                     "backbone": ("O3\'", "O4\'", "O5\'", "OP1", "OP2")}
-        acceptor_slots = {"thymine": {"O2": 2,
-                                      "O4": 2},
-                          "backbone": {"OP1": 2,
-                                       "OP2": 2,
-                                       "O3\'": 2,
-                                       "O4\'": 2,
-                                       "O5\'": 2}}
 
-        self.update_hydrogen_bond_dictionary(atoms=acceptors, slots=acceptor_slots, update_donors=False)
+        acceptors = {"thymine": {"O2": 2,
+                                 "O4": 2},
+                     "backbone": {"OP1": 2,
+                                  "OP2": 2,
+                                  "O3\'": 2,
+                                  "O4\'": 2,
+                                  "O5\'": 2}}
+
+        self.update_hydrogen_bond_dictionary(atoms=acceptors, update_donors=False)
 
         # BASE PAIRS
-        new_base_pairs = {"watson-crick": {"adenine_thymine": (["N6", "O4"], ["N1", "N3"])}}
+        new_base_pairs = {"watson-crick": {"adenine_thymine": (("N6", "O4"), ("N1", "N3"))}}
 
         self.update_base_pairs_dictionary(new_base_pairs=new_base_pairs)
 
