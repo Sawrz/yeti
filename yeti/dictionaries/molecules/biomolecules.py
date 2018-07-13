@@ -228,13 +228,13 @@ class Biomolecule(object):
         """
 
         if type(hydrogen_bond_atoms) is not dict:
-            raise BiomoleculesException("Parameter atoms need to be a dictionary.")
+            raise BiomoleculesException("Parameter hydrogen_bond_atoms need to be a dictionary.")
 
         if not all(type(key) is str for key in hydrogen_bond_atoms.keys()):
-            raise BiomoleculesException("Keys of atoms need to be a strings.")
+            raise BiomoleculesException("Keys of hydrogen_bond_atoms need to be a strings.")
 
         if not all(type(value) is dict for value in hydrogen_bond_atoms.values()):
-            raise BiomoleculesException("Values of atoms need to be a dictionaries.")
+            raise BiomoleculesException("Values of hydrogen_bond_atoms need to be a dictionaries.")
 
         if not all(type(slot) is int for value_dict in hydrogen_bond_atoms.values() for slot in value_dict.values()):
             raise BiomoleculesException("Values of the value dictionary need to be integers.")
