@@ -1,6 +1,7 @@
 # Reference for conventions is: Molecular Modeling and Simulation - An Interdisciplinary Guide - 2nd Edition by
 # Prof. Tamar Schlick
 
+
 class BiomoleculesException(Exception):
     pass
 
@@ -9,7 +10,7 @@ class BiomoleculesException(Exception):
 class Biomolecule(object):
     def __init__(self):
         """
-        The basic building class for biomolecules
+        Constructor class for all biomolecules in dictionary.
         """
 
         # DERIVATIONS
@@ -29,6 +30,15 @@ class Biomolecule(object):
         self.acceptors_dictionary = {}
 
     def set_bonds_between_residues(self, atom_1, atom_2):
+        """
+        Set the bond which connects two residues with each other.
+
+        :param atom_1: Name of first atom in bond.
+        :type atom_1: str
+        :param atom_2: Name of second atom in bond.
+        :type atom_2: str
+        """
+
         if type(atom_1) is not str or type(atom_2) is not str:
             raise BiomoleculesException("Parameter atom_1 and atom_2 need to be strings.")
 
@@ -190,7 +200,7 @@ class NucleicAcid(Biomolecule):
 
         self.update_dihedral_angle_dictionary(dihedral_angles=dihedral_angles_dictionary)
 
-        ## Distances
+        # Distances
         distance_dict = {"PToP": (("P", "P"), "P to P")}
 
         self.update_distances_dictionary(distances=distance_dict)
@@ -400,6 +410,8 @@ class DNA(NucleicAcid):
 
 class Protein(Biomolecule):
     def __init__(self):
+        super(Protein, self).__init__()
+        
         self.bonds_between_residues = ["C", "N"]
 
         self.__get_derivations_dictionary()
