@@ -6,7 +6,6 @@ class BiomoleculesException(Exception):
     pass
 
 
-# TODO: keys need to be strings
 class Biomolecule(object):
     def __init__(self):
         """
