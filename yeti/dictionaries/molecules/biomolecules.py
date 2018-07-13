@@ -145,6 +145,16 @@ class Biomolecule(object):
         self.distances_dictionary.update(distances)
 
     def update_backbone_bonds_dictionary(self, backbone_bonds):
+        """
+        Update dictionary which contains information about backbone bonds.
+
+        :param backbone_bonds: Dictionary containing backbone bonds assigned to a name.
+        :type backbone_bonds: dict of (tuple of (tuple of str))
+
+        Example input:
+        backbone_bonds = {"start": (("P", "OP1"), ("P", "OP2"))}
+        """
+
         if type(backbone_bonds) is not dict:
             raise BiomoleculesException("Parameter backbone_bonds need to be a dictionary.")
 
