@@ -345,6 +345,16 @@ class NucleicAcid(Biomolecule):
         self.base_pairs_dictionary = {"watson-crick": watson_crick_dictionary}
 
     def update_base_pairs_dictionary(self, new_base_pairs):
+        """
+        Update dictionary containing information about base pairs.
+
+        :param new_base_pairs: Dictionary with base pair information
+        :type new_base_pairs: dict of (dict of (tuple of (tuple of str)))
+
+        Example input:
+        new_base_pairs =  {"watson-crick": {"cytosine_guanine": (("N4", "O6"), ("N3", "N1"), ("O2", "N2"))}}
+        """
+
         if type(new_base_pairs) is not dict:
             raise BiomoleculesException("Parameter new_base_pairs need to be a dictionary.")
 
