@@ -57,7 +57,7 @@ class TestBiomolecule(TestCase):
 
         self.assertTrue("Parameter abbreviations need to be a dictionary." == str(context.exception))
 
-    def test_update_abbreviations_dictionary_wrong_value_type(self):
+    def test_update_abbreviations_dictionary_wrong_key_type(self):
         from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
 
         abbreviations = {"ADE": "A",
@@ -75,8 +75,8 @@ class TestBiomolecule(TestCase):
         from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
 
         abbreviations = {"ADE": "A",
-                         "THY": "T",
-                         "GUA": 7}
+                         "THY": 7,
+                         "GUA": "G"}
 
         bio_mol = Biomolecule()
 
@@ -109,10 +109,22 @@ class TestBiomolecule(TestCase):
 
         self.assertTrue("Parameter dihedral_angles need to be a dictionary." == str(context.exception))
 
-    def test_update_dihedral_angle_dictionary_value_no_tuple(self):
+    def test_update_dihedral_angle_dictionary_wrong_key_type(self):
         from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
 
-        dih_angles = {"alpha": [["O3\'", "P", "O5\'", "C5\'"], (-1, 0, 0, 0), r"$\alpha$"]}
+        dih_angles = {1: (("O3\'", "P", "O5\'", "C5\'"), (-1, 0, 0, 0), r"$\alpha$")}
+
+        bio_mol = Biomolecule()
+
+        with self.assertRaises(BiomoleculesException) as context:
+            bio_mol.update_dihedral_angle_dictionary(dihedral_angles=dih_angles)
+
+        self.assertTrue("Keys of dihedral_angles need to be strings." == str(context.exception))
+
+    def test_update_dihedral_angle_dictionary_wrong_value_type(self):
+        from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
+
+        dih_angles = {"alpha": [("O3\'", "P", "O5\'", "C5\'"), (-1, 0, 0, 0), r"$\alpha$"]}
 
         bio_mol = Biomolecule()
 
@@ -253,7 +265,20 @@ class TestBiomolecule(TestCase):
 
         self.assertTrue("Parameter distance need to be a dictionary." == str(context.exception))
 
-    def test_update_distances_dictionary_value_no_tuple(self):
+    def test_update_distances_dictionary_wrong_key_type(self):
+        from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
+
+        distances = {"PToMg": (("P", "Mg"), "P to Mg"),
+                     6: (("P", "P"), "P to P")}
+
+        bio_mol = Biomolecule()
+
+        with self.assertRaises(BiomoleculesException) as context:
+            bio_mol.update_distances_dictionary(distances=distances)
+
+        self.assertTrue("Keys of distances need to be strings." == str(context.exception))
+
+    def test_update_distances_dictionary_wrong_value_type(self):
         from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
 
         distances = {"PToMg": (("P", "Mg"), "P to Mg"),
@@ -350,7 +375,20 @@ class TestBiomolecule(TestCase):
 
         self.assertTrue("Parameter backbone_bonds need to be a dictionary." == str(context.exception))
 
-    def test_update_backbone_bonds_dictionary_values_no_tuples(self):
+    def test_update_backbone_bonds_dictionary_wrong_key_types(self):
+        from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
+
+        backbone_bonds = {"start": (("P", "OP1"), ("P", "OP2"), ("P", "O5\'")),
+                          0: (("P", "OP1"), ("P", "O5\'"))}
+
+        bio_mol = Biomolecule()
+
+        with self.assertRaises(BiomoleculesException) as context:
+            bio_mol.update_backbone_bonds_dictionary(backbone_bonds=backbone_bonds)
+
+        self.assertTrue("Values of backbone_bonds need to be tuples." == str(context.exception))
+
+    def test_update_backbone_bonds_dictionary_wrong_value_types(self):
         from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
 
         backbone_bonds = {"start": (("P", "OP1"), ("P", "OP2"), ("P", "O5\'")),
@@ -439,7 +477,19 @@ class TestBiomolecule(TestCase):
 
         self.assertTrue("Parameter new_bases need to be a dictionary." == str(context.exception))
 
-    def test_update_base_bonds_dictionary_values_no_tuples(self):
+    def test_update_base_bonds_dictionary_wrong_key_type(self):
+        from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
+
+        base_bonds = {3: (("P", "OP1"), ("P", "OP2"), ("P", "O5\'"))}
+
+        bio_mol = Biomolecule()
+
+        with self.assertRaises(BiomoleculesException) as context:
+            bio_mol.update_base_bonds_dictionary(new_bases=base_bonds)
+
+        self.assertTrue("Keys of new_bases need to be strings." == str(context.exception))
+
+    def test_update_base_bonds_dictionary_wrong_value_type(self):
         from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
 
         base_bonds = {"A": [("P", "OP1"), ("P", "OP2"), ("P", "O5\'")]}
@@ -527,7 +577,7 @@ class TestBiomolecule(TestCase):
 
         self.assertDictEqual(reference_atoms, result)
 
-    def test_update_hydrogen_bond_dictionary_atoms_no_dictionary(self):
+    def test_update_hydrogen_bond_dictionary_no_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
 
         new_atoms = 7
@@ -539,7 +589,24 @@ class TestBiomolecule(TestCase):
 
         self.assertTrue("Parameter atoms need to be a dictionary." == str(context.exception))
 
-    def test_update_hydrogen_bond_dictionary_atoms_value_not_dictionary(self):
+    def test_update_hydrogen_bond_dictionary_wrong_key_type(self):
+        from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
+
+        new_atoms = {"adenine": {"H61": 1,
+                                 "H62": 1},
+                     42: {"H61": 1,
+                          "H62": 1,
+                          "H63": 1}
+                     }
+
+        bio_mol = Biomolecule()
+
+        with self.assertRaises(BiomoleculesException) as context:
+            bio_mol.update_hydrogen_bond_dictionary(atoms=new_atoms)
+
+        self.assertTrue("Keys of atoms need to be a strings." == str(context.exception))
+
+    def test_update_hydrogen_bond_dictionary_wrong_value_type(self):
         from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
 
         new_atoms = {"adenine": {"H61": 1,
@@ -618,6 +685,18 @@ class TestNucleicAcid(TestCase):
 
         self.assertTrue("Parameter new_base_pairs need to be a dictionary." == str(context.exception))
 
+    def test_update_base_pairs_dictionary_wrong_value_type(self):
+        from yeti.dictionaries.molecules.biomolecules import NucleicAcid, BiomoleculesException
+
+        new_pair_type = {7: {"a_with_b": (("N3", "N1"), ("O2", "N2"))}}
+
+        nucleic_acid = NucleicAcid()
+
+        with self.assertRaises(BiomoleculesException) as context:
+            nucleic_acid.update_base_pairs_dictionary(new_base_pairs=new_pair_type)
+
+        self.assertTrue("Key of new_base_pairs need to be a string." == str(context.exception))
+
     def test_update_base_pairs_dictionary_base_pair_dict_no_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import NucleicAcid, BiomoleculesException
 
@@ -629,6 +708,18 @@ class TestNucleicAcid(TestCase):
             nucleic_acid.update_base_pairs_dictionary(new_base_pairs=new_pair_type)
 
         self.assertTrue("Value of new_base_pairs need to be a dictionary." == str(context.exception))
+
+    def test_update_base_pairs_dictionary_wrong_base_pair_key_type(self):
+        from yeti.dictionaries.molecules.biomolecules import NucleicAcid, BiomoleculesException
+
+        new_pair_type = {"watson-crick": {0: (("N3", "N1"), ("O2", "N2"))}}
+
+        nucleic_acid = NucleicAcid()
+
+        with self.assertRaises(BiomoleculesException) as context:
+            nucleic_acid.update_base_pairs_dictionary(new_base_pairs=new_pair_type)
+
+        self.assertTrue("Value of the base pair dictionary need to be a tuple." == str(context.exception))
 
     def test_update_base_pairs_dictionary_base_pair_value_no_tuple(self):
         from yeti.dictionaries.molecules.biomolecules import NucleicAcid, BiomoleculesException
