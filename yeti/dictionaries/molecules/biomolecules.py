@@ -13,8 +13,8 @@ class Biomolecule(object):
         Constructor class for all biomolecules in dictionary.
         """
 
-        # DERIVATIONS
-        self.derivations_dictionary = {}
+        # ABBREVIATION
+        self.abbreviation_dictionary = {}
 
         # MEASURES
         self.dihedral_angles_dictionary = {}
@@ -44,15 +44,24 @@ class Biomolecule(object):
 
         self.bonds_between_residues = (atom_1, atom_2)
 
-    def update_derivations_dictionary(self, derivations):
+    def update_abbreviation_dictionary(self, abbreviations):
+        """
+        Update the dictionary containing all abbreviations.
 
-        if type(derivations) is not dict:
-            raise BiomoleculesException("Parameter derivations need to be a dictionary.")
+        :param abbreviations: Dictionary with all abbreviations. For example: {"adenine": "A"}
+        :type abbreviations: dict
+        """
 
-        if not all(type(value) is str for value in derivations.values()):
-            raise BiomoleculesException("Values of derivations need to be strings.")
+        if type(abbreviations) is not dict:
+            raise BiomoleculesException("Parameter abbreviations need to be a dictionary.")
 
-        self.derivations_dictionary.update(derivations)
+        if not all(type(key) is str for key in abbreviations.keys()):
+            raise BiomoleculesException("Keys of abbreviations need to be strings.")
+        
+        if not all(type(value) is str for value in abbreviations.values()):
+            raise BiomoleculesException("Values of abbreviations need to be strings.")
+
+        self.abbreviation_dictionary.update(abbreviations)
 
     def update_dihedral_angle_dictionary(self, dihedral_angles):
 
@@ -174,12 +183,12 @@ class NucleicAcid(Biomolecule):
 
         super(NucleicAcid, self).__init__()
 
-        # DERIVATIONS
-        derivations = {"adenine": "A",
+        # abbreviations
+        abbreviations = {"adenine": "A",
                        "guanine": "G",
                        "cytosine": "C"}
 
-        self.update_derivations_dictionary(derivations=derivations)
+        self.update_abbreviation_dictionary(abbreviations=abbreviations)
 
         # MEASURES
         # Dihedral Angles
@@ -298,10 +307,10 @@ class RNA(NucleicAcid):
     def __init__(self):
         super(RNA, self).__init__()
 
-        # DERIVATIONS
-        derivations = {"uracil": "U"}
+        # abbreviations
+        abbreviations = {"uracil": "U"}
 
-        self.update_derivations_dictionary(derivations=derivations)
+        self.update_abbreviation_dictionary(abbreviations=abbreviations)
 
         # COVALENT BONDS
         # Backbone Bonds
@@ -358,10 +367,10 @@ class DNA(NucleicAcid):
     def __init__(self):
         super(DNA, self).__init__()
 
-        # DERIVATIONS
-        derivations = {"thymine": "T"}
+        # abbreviations
+        abbreviations = {"thymine": "T"}
 
-        self.update_derivations_dictionary(derivations=derivations)
+        self.update_abbreviation_dictionary(abbreviations=abbreviations)
 
         # COVALENT BONDS
         # Backbone Bonds
@@ -414,10 +423,10 @@ class Protein(Biomolecule):
         
         self.bonds_between_residues = ["C", "N"]
 
-        self.__get_derivations_dictionary()
+        self.__get_abbreviations_dictionary()
 
-    def __get_derivations_dictionary(self):
-        self.derivations = {"glycine": "Gly",
+    def __get_abbreviations_dictionary(self):
+        self.abbreviations = {"glycine": "Gly",
                             "alanine": "Ala",
                             "valine": "Val",
                             "leucine": "Leu",

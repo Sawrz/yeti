@@ -33,43 +33,57 @@ class TestBiomolecule(TestCase):
 
         self.assertTrue("Parameter atom_1 and atom_2 need to be strings." == str(context.exception))
 
-    def test_update_derivations_dictionary(self):
+    def test_update_abbreviations_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import Biomolecule
 
         reference = {"argenine": "ARG",
                      "lysine": "LYS"}
 
         bio_mol = Biomolecule()
-        bio_mol.update_derivations_dictionary(derivations=reference)
-        result = bio_mol.derivations_dictionary
+        bio_mol.update_abbreviation_dictionary(abbreviations=reference)
+        result = bio_mol.abbreviation_dictionary
 
         self.assertDictEqual(reference, result)
 
-    def test_update_derivations_dictionary_false_parameter_type(self):
+    def test_update_abbreviations_dictionary_no_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
 
-        derivations = ["eggs", "butter"]
+        abbreviations = ["eggs", "butter"]
 
         bio_mol = Biomolecule()
 
         with self.assertRaises(BiomoleculesException) as context:
-            bio_mol.update_derivations_dictionary(derivations=derivations)
+            bio_mol.update_abbreviation_dictionary(abbreviations=abbreviations)
 
-        self.assertTrue("Parameter derivations need to be a dictionary." == str(context.exception))
+        self.assertTrue("Parameter abbreviations need to be a dictionary." == str(context.exception))
 
-    def test_update_derivations_dictionary_false_parameter_type(self):
+    def test_update_abbreviations_dictionary_wrong_value_type(self):
         from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
 
-        derivations = {"ADE": "A",
-                       "THY": "T",
-                       "GUA": 7}
+        abbreviations = {"ADE": "A",
+                         7: "T",
+                         "GUA": "G"}
 
         bio_mol = Biomolecule()
 
         with self.assertRaises(BiomoleculesException) as context:
-            bio_mol.update_derivations_dictionary(derivations=derivations)
+            bio_mol.update_abbreviation_dictionary(abbreviations=abbreviations)
 
-        self.assertTrue("Values of derivations need to be strings." == str(context.exception))
+        self.assertTrue("Keys of abbreviations need to be strings." == str(context.exception))
+
+    def test_update_abbreviations_dictionary_wrong_value_type(self):
+        from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
+
+        abbreviations = {"ADE": "A",
+                         "THY": "T",
+                         "GUA": 7}
+
+        bio_mol = Biomolecule()
+
+        with self.assertRaises(BiomoleculesException) as context:
+            bio_mol.update_abbreviation_dictionary(abbreviations=abbreviations)
+
+        self.assertTrue("Values of abbreviations need to be strings." == str(context.exception))
 
     def test_update_dihedral_angle_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import Biomolecule
@@ -679,7 +693,7 @@ class TestNucleicAcid(TestCase):
 
 class TestRNA(TestCase):
 
-    def test_derivations_dictionary(self):
+    def test_abbreviations_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import RNA
 
         reference = {"adenine": "A",
@@ -688,7 +702,7 @@ class TestRNA(TestCase):
                      "uracil": "U"}
 
         rna = RNA()
-        result = rna.derivations_dictionary
+        result = rna.abbreviation_dictionary
 
         self.assertDictEqual(reference, result)
 
@@ -850,7 +864,7 @@ class TestRNA(TestCase):
 
 class TestDNA(TestCase):
 
-    def test_derivations_dictionary(self):
+    def test_abbreviations_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import DNA
 
         reference = {"adenine": "A",
@@ -859,7 +873,7 @@ class TestDNA(TestCase):
                      "thymine": "T"}
 
         dna = DNA()
-        result = dna.derivations_dictionary
+        result = dna.abbreviation_dictionary
 
         self.assertDictEqual(reference, result)
 
