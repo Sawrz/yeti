@@ -108,6 +108,9 @@ class Biomolecule(object):
         if type(distances) is not dict:
             raise BiomoleculesException("Parameter distance need to be a dictionary.")
 
+        if not all(type(key) is str for key in distances.keys()):
+            raise BiomoleculesException("Keys of distances need to be strings.")
+
         if not all(type(value) is tuple for value in distances.values()):
             raise BiomoleculesException("Values of distances need to be tuples.")
 
