@@ -619,7 +619,7 @@ class TestBiomolecule(TestCase):
         with self.assertRaises(BiomoleculesException) as context:
             bio_mol.update_hydrogen_bond_dictionary(atoms=new_atoms)
 
-        self.assertTrue("Value of atoms need to be a dictionary." == str(context.exception))
+        self.assertTrue("Values of atoms need to be a dictionaries." == str(context.exception))
 
     def test_update_hydrogen_bond_dictionary_atoms_dictionary_no_integers(self):
         from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException

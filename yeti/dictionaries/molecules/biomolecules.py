@@ -179,8 +179,21 @@ class Biomolecule(object):
         self.backbone_bonds_dictionary.update(backbone_bonds)
 
     def update_base_bonds_dictionary(self, new_bases):
+        """
+        Update dictionary which contains information about base bonds.
+
+        :param new_bases: Dictionary containing base bonds assigned to a name.
+        :type new_bases: dict of (tuple of (tuple of str))
+
+        Example input:
+        new_bases = {"fantasy_base": (("C1\'", "N1"), ("N1", "C6"))}
+        """
+
         if type(new_bases) is not dict:
             raise BiomoleculesException("Parameter new_bases need to be a dictionary.")
+
+        if not all(type(key) is str for key in new_bases.keys()):
+            raise BiomoleculesException("Keys of new_bases need to be strings.")
 
         if not all(type(value) is tuple for value in new_bases.values()):
             raise BiomoleculesException("Values of new_bases need to be tuples.")
@@ -203,8 +216,11 @@ class Biomolecule(object):
         if type(atoms) is not dict:
             raise BiomoleculesException("Parameter atoms need to be a dictionary.")
 
+        if not all(type(key) is str for key in atoms.keys()):
+            raise BiomoleculesException("Keys of atoms need to be a strings.")
+
         if not all(type(value) is dict for value in atoms.values()):
-            raise BiomoleculesException("Value of atoms need to be a dictionary.")
+            raise BiomoleculesException("Values of atoms need to be a dictionaries.")
 
         if not all(type(slot) is int for value_dict in atoms.values() for slot in value_dict.values()):
             raise BiomoleculesException("Values of the value dictionary need to be integers.")
