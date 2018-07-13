@@ -708,7 +708,7 @@ class TestNucleicAcid(TestCase):
         with self.assertRaises(BiomoleculesException) as context:
             nucleic_acid.update_base_pairs_dictionary(new_base_pairs=new_pair_type)
 
-        self.assertTrue("Key of new_base_pairs need to be a string." == str(context.exception))
+        self.assertTrue("Keys of new_base_pairs need to be a strings." == str(context.exception))
 
     def test_update_base_pairs_dictionary_base_pair_dict_no_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import NucleicAcid, BiomoleculesException
@@ -732,7 +732,7 @@ class TestNucleicAcid(TestCase):
         with self.assertRaises(BiomoleculesException) as context:
             nucleic_acid.update_base_pairs_dictionary(new_base_pairs=new_pair_type)
 
-        self.assertTrue("Value of the base pair dictionary need to be a tuple." == str(context.exception))
+        self.assertTrue("Keys of the base pair dictionary need to be a strings." == str(context.exception))
 
     def test_update_base_pairs_dictionary_base_pair_value_no_tuple(self):
         from yeti.dictionaries.molecules.biomolecules import NucleicAcid, BiomoleculesException

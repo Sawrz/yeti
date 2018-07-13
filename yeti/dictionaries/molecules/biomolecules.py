@@ -348,8 +348,14 @@ class NucleicAcid(Biomolecule):
         if type(new_base_pairs) is not dict:
             raise BiomoleculesException("Parameter new_base_pairs need to be a dictionary.")
 
+        if not all(type(key) is str for key in new_base_pairs.keys()):
+            raise BiomoleculesException("Keys of new_base_pairs need to be a strings.")
+
         if not all(type(value) is dict for value in new_base_pairs.values()):
             raise BiomoleculesException("Value of new_base_pairs need to be a dictionary.")
+
+        if not all(type(key) is str for value in new_base_pairs.values() for key in value.keys()):
+            raise BiomoleculesException("Keys of the base pair dictionary need to be a strings.")
 
         if not all(type(base_pairs) is tuple for value in new_base_pairs.values() for base_pairs in value.values()):
             raise BiomoleculesException("Value of the base pair dictionary need to be a tuple.")
