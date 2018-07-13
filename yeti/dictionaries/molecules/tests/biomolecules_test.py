@@ -560,7 +560,7 @@ class TestBiomolecule(TestCase):
                                        "H62": 1}}
 
         bio_mol = Biomolecule()
-        bio_mol.update_hydrogen_bond_dictionary(atoms=reference_atoms, update_donors=True)
+        bio_mol.update_hydrogen_bond_dictionary(hydrogen_bond_atoms=reference_atoms, update_donors=True)
         result = bio_mol.donors_dictionary
 
         self.assertDictEqual(reference_atoms, result)
@@ -572,7 +572,7 @@ class TestBiomolecule(TestCase):
                                        "H62": 1}}
 
         bio_mol = Biomolecule()
-        bio_mol.update_hydrogen_bond_dictionary(atoms=reference_atoms, update_donors=False)
+        bio_mol.update_hydrogen_bond_dictionary(hydrogen_bond_atoms=reference_atoms, update_donors=False)
         result = bio_mol.acceptors_dictionary
 
         self.assertDictEqual(reference_atoms, result)
@@ -585,7 +585,7 @@ class TestBiomolecule(TestCase):
         bio_mol = Biomolecule()
 
         with self.assertRaises(BiomoleculesException) as context:
-            bio_mol.update_hydrogen_bond_dictionary(atoms=new_atoms)
+            bio_mol.update_hydrogen_bond_dictionary(hydrogen_bond_atoms=new_atoms)
 
         self.assertTrue("Parameter atoms need to be a dictionary." == str(context.exception))
 
@@ -602,7 +602,7 @@ class TestBiomolecule(TestCase):
         bio_mol = Biomolecule()
 
         with self.assertRaises(BiomoleculesException) as context:
-            bio_mol.update_hydrogen_bond_dictionary(atoms=new_atoms)
+            bio_mol.update_hydrogen_bond_dictionary(hydrogen_bond_atoms=new_atoms)
 
         self.assertTrue("Keys of atoms need to be a strings." == str(context.exception))
 
@@ -617,7 +617,7 @@ class TestBiomolecule(TestCase):
         bio_mol = Biomolecule()
 
         with self.assertRaises(BiomoleculesException) as context:
-            bio_mol.update_hydrogen_bond_dictionary(atoms=new_atoms)
+            bio_mol.update_hydrogen_bond_dictionary(hydrogen_bond_atoms=new_atoms)
 
         self.assertTrue("Values of atoms need to be a dictionaries." == str(context.exception))
 
@@ -633,7 +633,7 @@ class TestBiomolecule(TestCase):
         bio_mol = Biomolecule()
 
         with self.assertRaises(BiomoleculesException) as context:
-            bio_mol.update_hydrogen_bond_dictionary(atoms=new_atoms)
+            bio_mol.update_hydrogen_bond_dictionary(hydrogen_bond_atoms=new_atoms)
 
         self.assertTrue("Values of the value dictionary need to be integers." == str(context.exception))
 

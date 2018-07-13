@@ -212,17 +212,31 @@ class Biomolecule(object):
 
         self.base_bonds_dictionary.update(new_bases)
 
-    def update_hydrogen_bond_dictionary(self, atoms, update_donors=True):
-        if type(atoms) is not dict:
+    def update_hydrogen_bond_dictionary(self, hydrogen_bond_atoms, update_donors=True):
+        """
+        Update the dictionary containing all information about hydrogen bond candidates for attachments and backbone.
+
+        :param hydrogen_bond_atoms: Dictionary containing attachment raltaion of atoms and the number of slots. Slots
+                                    is the number of hydrogen bonds an atom can have at the same time.
+        :type hydrogen_bond_atoms: dict of (dict of int)
+        :param update_donors: Update the donor or acceptor dictionary?
+        :type update_donors: bool
+
+        Example input:
+        hydrogen_bond_atoms = {"uracil": {"H3": 1},
+                               "backbone": {"HO\'2": 1}}
+        """
+
+        if type(hydrogen_bond_atoms) is not dict:
             raise BiomoleculesException("Parameter atoms need to be a dictionary.")
 
-        if not all(type(key) is str for key in atoms.keys()):
+        if not all(type(key) is str for key in hydrogen_bond_atoms.keys()):
             raise BiomoleculesException("Keys of atoms need to be a strings.")
 
-        if not all(type(value) is dict for value in atoms.values()):
+        if not all(type(value) is dict for value in hydrogen_bond_atoms.values()):
             raise BiomoleculesException("Values of atoms need to be a dictionaries.")
 
-        if not all(type(slot) is int for value_dict in atoms.values() for slot in value_dict.values()):
+        if not all(type(slot) is int for value_dict in hydrogen_bond_atoms.values() for slot in value_dict.values()):
             raise BiomoleculesException("Values of the value dictionary need to be integers.")
 
         if update_donors:
@@ -230,7 +244,7 @@ class Biomolecule(object):
         else:
             dictionary = self.acceptors_dictionary
 
-        dictionary.update(atoms)
+        dictionary.update(hydrogen_bond_atoms)
 
 
 class NucleicAcid(Biomolecule):
@@ -303,7 +317,7 @@ class NucleicAcid(Biomolecule):
                                    "H22": 1}
                        }
 
-        self.update_hydrogen_bond_dictionary(atoms=donors_dict, update_donors=True)
+        self.update_hydrogen_bond_dictionary(hydrogen_bond_atoms=donors_dict, update_donors=True)
 
         # Acceptors
         acceptors_dict = {"adenine": {"N1": 1,
@@ -321,7 +335,7 @@ class NucleicAcid(Biomolecule):
                                       }
                           }
 
-        self.update_hydrogen_bond_dictionary(atoms=acceptors_dict, update_donors=False)
+        self.update_hydrogen_bond_dictionary(hydrogen_bond_atoms=acceptors_dict, update_donors=False)
 
         # BASE PAIRS
         watson_crick_dictionary = {"cytosine_guanine": (("N4", "O6"), ("N3", "N1"), ("O2", "N2"))}
@@ -400,7 +414,7 @@ class RNA(NucleicAcid):
         donors = {"uracil": {"H3": 1},
                   "backbone": {"HO\'2": 1}}
 
-        self.update_hydrogen_bond_dictionary(atoms=donors, update_donors=True)
+        self.update_hydrogen_bond_dictionary(hydrogen_bond_atoms=donors, update_donors=True)
 
         # Acceptors
         acceptors = {"uracil": {"O2": 2,
@@ -412,7 +426,7 @@ class RNA(NucleicAcid):
                                   "O4\'": 2,
                                   "O5\'": 2}}
 
-        self.update_hydrogen_bond_dictionary(atoms=acceptors, update_donors=False)
+        self.update_hydrogen_bond_dictionary(hydrogen_bond_atoms=acceptors, update_donors=False)
 
         # BASE PAIRS
         new_base_pairs = {"watson-crick": {"adenine_uracil": (("N6", "O4"), ("N1", "N3"))}}
@@ -455,7 +469,7 @@ class DNA(NucleicAcid):
         donors = {"thymine": {"H3": 1},
                   "backbone": {}}
 
-        self.update_hydrogen_bond_dictionary(atoms=donors, update_donors=True)
+        self.update_hydrogen_bond_dictionary(hydrogen_bond_atoms=donors, update_donors=True)
 
         # Acceptors
 
@@ -467,7 +481,7 @@ class DNA(NucleicAcid):
                                   "O4\'": 2,
                                   "O5\'": 2}}
 
-        self.update_hydrogen_bond_dictionary(atoms=acceptors, update_donors=False)
+        self.update_hydrogen_bond_dictionary(hydrogen_bond_atoms=acceptors, update_donors=False)
 
         # BASE PAIRS
         new_base_pairs = {"watson-crick": {"adenine_thymine": (("N6", "O4"), ("N1", "N3"))}}
