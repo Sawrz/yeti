@@ -57,16 +57,26 @@ class Biomolecule(object):
 
         if not all(type(key) is str for key in abbreviations.keys()):
             raise BiomoleculesException("Keys of abbreviations need to be strings.")
-        
+
         if not all(type(value) is str for value in abbreviations.values()):
             raise BiomoleculesException("Values of abbreviations need to be strings.")
 
         self.abbreviation_dictionary.update(abbreviations)
 
     def update_dihedral_angle_dictionary(self, dihedral_angles):
+        """
+        Update dictionary of dihedral angles.
+
+        :param dihedral_angles: Dictionary of dihedral angles containing atom names, residue dependence and Latex
+                                code for the angle name.
+        :type dihedral_angles: dict of (tuple of str, tuple of int, str)
+        """
 
         if type(dihedral_angles) is not dict:
             raise BiomoleculesException("Parameter dihedral_angles need to be a dictionary.")
+
+        if not all(type(key) is str for key in dihedral_angles.keys()):
+            raise BiomoleculesException("Keys of dihedral_angles need to be strings.")
 
         if not all(type(value) is tuple for value in dihedral_angles.values()):
             raise BiomoleculesException("Values of dihedral_angles need to be tuples.")
@@ -185,8 +195,8 @@ class NucleicAcid(Biomolecule):
 
         # abbreviations
         abbreviations = {"adenine": "A",
-                       "guanine": "G",
-                       "cytosine": "C"}
+                         "guanine": "G",
+                         "cytosine": "C"}
 
         self.update_abbreviation_dictionary(abbreviations=abbreviations)
 
@@ -420,32 +430,32 @@ class DNA(NucleicAcid):
 class Protein(Biomolecule):
     def __init__(self):
         super(Protein, self).__init__()
-        
+
         self.bonds_between_residues = ["C", "N"]
 
         self.__get_abbreviations_dictionary()
 
     def __get_abbreviations_dictionary(self):
         self.abbreviations = {"glycine": "Gly",
-                            "alanine": "Ala",
-                            "valine": "Val",
-                            "leucine": "Leu",
-                            "isoleucine": "Ile",
-                            "serine": "Ser",
-                            "threonine": "Thr",
-                            "proline": "Pro",
-                            "aspartic acid": "Asp",
-                            "glutamic acid": "Glu",
-                            "asparagine": "Asn",
-                            "glutamine": "Gln",
-                            "methionine": "Met",
-                            "cysteine": "Cys",
-                            "lysine": "Lys",
-                            "arginine": "Arg",
-                            "histidine": "His",
-                            "phenylalanine": "Phe",
-                            "tyrosine": "Tyr",
-                            "tryptophan": "Trp"}
+                              "alanine": "Ala",
+                              "valine": "Val",
+                              "leucine": "Leu",
+                              "isoleucine": "Ile",
+                              "serine": "Ser",
+                              "threonine": "Thr",
+                              "proline": "Pro",
+                              "aspartic acid": "Asp",
+                              "glutamic acid": "Glu",
+                              "asparagine": "Asn",
+                              "glutamine": "Gln",
+                              "methionine": "Met",
+                              "cysteine": "Cys",
+                              "lysine": "Lys",
+                              "arginine": "Arg",
+                              "histidine": "His",
+                              "phenylalanine": "Phe",
+                              "tyrosine": "Tyr",
+                              "tryptophan": "Trp"}
 
     def __get_dihedral_angles_dictionary(self):
         # TODO: Get a clear idea about rotameric structures etc.
