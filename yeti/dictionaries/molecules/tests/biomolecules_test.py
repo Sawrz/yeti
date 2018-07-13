@@ -386,7 +386,7 @@ class TestBiomolecule(TestCase):
         with self.assertRaises(BiomoleculesException) as context:
             bio_mol.update_backbone_bonds_dictionary(backbone_bonds=backbone_bonds)
 
-        self.assertTrue("Values of backbone_bonds need to be tuples." == str(context.exception))
+        self.assertTrue("Keys of backbone_bonds need to be strings." == str(context.exception))
 
     def test_update_backbone_bonds_dictionary_wrong_value_types(self):
         from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException

@@ -48,8 +48,11 @@ class Biomolecule(object):
         """
         Update the dictionary containing all abbreviations.
 
-        :param abbreviations: Dictionary with all abbreviations. For example: {"adenine": "A"}
+        :param abbreviations: Dictionary with all abbreviations.
         :type abbreviations: dict
+
+        Example input:
+        abbreviations = {"adenine": "A"}
         """
 
         if type(abbreviations) is not dict:
@@ -70,6 +73,9 @@ class Biomolecule(object):
         :param dihedral_angles: Dictionary of dihedral angles containing atom names, residue dependence and Latex
                                 code for the angle name.
         :type dihedral_angles: dict of (tuple of str, tuple of int, str)
+
+        Example input:
+        dihedral_angles = {"alpha": (("O3\'", "P", "O5\'", "C5\'"), (-1, 0, 0, 0), r"$\alpha$")}
         """
 
         if type(dihedral_angles) is not dict:
@@ -105,6 +111,16 @@ class Biomolecule(object):
         self.dihedral_angles_dictionary.update(dihedral_angles)
 
     def update_distances_dictionary(self, distances):
+        """
+        Update dictionary of distances.
+
+        :param distances: Dictionary of distances containing atom names and Latex code for the distance name.
+        :type distances: dict of (tuple of str, str)
+
+        Example input:
+        distances = {"PToP": (("P", "P"), "P to P")}
+        """
+
         if type(distances) is not dict:
             raise BiomoleculesException("Parameter distance need to be a dictionary.")
 
@@ -131,6 +147,9 @@ class Biomolecule(object):
     def update_backbone_bonds_dictionary(self, backbone_bonds):
         if type(backbone_bonds) is not dict:
             raise BiomoleculesException("Parameter backbone_bonds need to be a dictionary.")
+
+        if not all(type(key) is str for key in backbone_bonds.keys()):
+            raise BiomoleculesException("Keys of backbone_bonds need to be strings.")
 
         if not all(type(value) is tuple for value in backbone_bonds.values()):
             raise BiomoleculesException("Values of backbone_bonds need to be tuples.")
