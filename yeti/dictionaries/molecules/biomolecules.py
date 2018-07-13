@@ -227,6 +227,9 @@ class Biomolecule(object):
                                "backbone": {"HO\'2": 1}}
         """
 
+        if type(update_donors) is not bool:
+            raise BiomoleculesException("Parameter update_donors need to be a boolean.")
+
         if type(hydrogen_bond_atoms) is not dict:
             raise BiomoleculesException("Parameter hydrogen_bond_atoms need to be a dictionary.")
 

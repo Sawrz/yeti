@@ -577,6 +577,19 @@ class TestBiomolecule(TestCase):
 
         self.assertDictEqual(reference_atoms, result)
 
+    def test_update_hydrogen_bond_dictionary_wrong_input_type_for_update_donors(self):
+        from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
+
+        new_atoms = {"adenine": {"H61": 1,
+                                 "H62": 1}}
+
+        bio_mol = Biomolecule()
+
+        with self.assertRaises(BiomoleculesException) as context:
+            bio_mol.update_hydrogen_bond_dictionary(hydrogen_bond_atoms=new_atoms, update_donors=7)
+
+        self.assertTrue("Parameter update_donors need to be a boolean." == str(context.exception))
+
     def test_update_hydrogen_bond_dictionary_no_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
 
@@ -587,7 +600,7 @@ class TestBiomolecule(TestCase):
         with self.assertRaises(BiomoleculesException) as context:
             bio_mol.update_hydrogen_bond_dictionary(hydrogen_bond_atoms=new_atoms)
 
-        self.assertTrue("Parameter atoms need to be a dictionary." == str(context.exception))
+        self.assertTrue("Parameter hydrogen_bond_atoms need to be a dictionary." == str(context.exception))
 
     def test_update_hydrogen_bond_dictionary_wrong_key_type(self):
         from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
@@ -604,7 +617,7 @@ class TestBiomolecule(TestCase):
         with self.assertRaises(BiomoleculesException) as context:
             bio_mol.update_hydrogen_bond_dictionary(hydrogen_bond_atoms=new_atoms)
 
-        self.assertTrue("Keys of atoms need to be a strings." == str(context.exception))
+        self.assertTrue("Keys of hydrogen_bond_atoms need to be a strings." == str(context.exception))
 
     def test_update_hydrogen_bond_dictionary_wrong_value_type(self):
         from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
@@ -619,7 +632,7 @@ class TestBiomolecule(TestCase):
         with self.assertRaises(BiomoleculesException) as context:
             bio_mol.update_hydrogen_bond_dictionary(hydrogen_bond_atoms=new_atoms)
 
-        self.assertTrue("Values of atoms need to be a dictionaries." == str(context.exception))
+        self.assertTrue("Values of hydrogen_bond_atoms need to be a dictionaries." == str(context.exception))
 
     def test_update_hydrogen_bond_dictionary_atoms_dictionary_no_integers(self):
         from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
