@@ -587,22 +587,33 @@ class Protein(Biomolecule):
 
         # Base Bonds
         # TODO: Protein Amino Acids
-        base_bonds_dictionary = {"adenine": (("C1\'", "N9"), ("N9", "C8"), ("N9", "C4"), ("C8", "H8"),
-                                             ("C8", "N7"), ("N7", "C5"), ("C5", "C6"), ("C5", "C4"),
-                                             ("C6", "N6"), ("C6", "N1"), ("N6", "H61"), ("N6", "H62"),
-                                             ("N1", "C2"), ("C2", "H2"), ("C2", "N3"), ("N3", "C4")),
-                                 "cytosine": (("C1\'", "N1"), ("N1", "C6"), ("N1", "C2"), ("C6", "H6"),
-                                              ("C6", "C5"), ("C5", "H5"), ("C5", "C4"), ("C4", "N4"),
-                                              ("C4", "N3"), ("N4", "H41"), ("N4", "H42"), ("N3", "C2"),
-                                              ("C2", "O2")),
-                                 "guanine": (("C1\'", "N9"), ("N9", "C8"), ("N9", "C4"), ("C8", "H8"),
-                                             ("C8", "N7"), ("N7", "C5"), ("C5", "C6"), ("C5", "C4"),
-                                             ("C6", "O6"), ("C6", "N1"), ("N1", "H1"), ("N1", "C2"),
-                                             ("C2", "N2"), ("C2", "N3"), ("N2", "H21"), ("N2", "H22"),
-                                             ("N3", "C4"))
-                                 }
+        amino_acids = {"glycine": (("CA", "HA2"),),
+                       "alanine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "HB3")),
+                       "valine": (("CA", "CB"), ("CB", "HB1"), ("CB", "CG1"), ("CG1", "HG11"), ("CG1", "HG12"),
+                                  ("CG1", "HG13"), ("CB", "CG2"), ("CG2", "HG21"), ("CG2", "HG22"), ("CG2", "HG23")),
+                       "leucine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "HG1"),
+                                   ("CG", "CD1"), ("CD1", "HD11"), ("CD1", "HD12"), ("CD1", "HD13"), ("CG", "CD2"),
+                                   ("CD2", "HD21"), ("CD2", "HD22"), ("CD2", "HD23")),
+                       "isoleucine": (()),
+                       "serine": (()),
+                       "threonine": (()),
+                       "proline": (()),
+                       "aspartic acid": (()),
+                       "glutamic acid": (()),
+                       "asparagine": (()),
+                       "glutamine": (()),
+                       "methionine": (()),
+                       "cysteine": (()),
+                       "lysine": (()),
+                       "arginine": (()),
+                       "histidine": (()),
+                       "phenylalanine": (()),
+                       "tyrosine": (()),
+                       "tryptophan": (())
+                       }
 
-        self.update_base_bonds_dictionary(new_bases=base_bonds_dictionary)
+        # TODO: rename update method
+        self.update_base_bonds_dictionary(new_bases=amino_acids)
 
         # HYDROGEN BONDS
         # Donors
@@ -637,48 +648,5 @@ class Protein(Biomolecule):
 
         self.update_hydrogen_bond_dictionary(hydrogen_bond_atoms=acceptors_dict, update_donors=False)
 
-    def __get_residue_bonds_dictionary(self):
-        # TODO: Get a clear idea about naming conventions
-        backbone_bonds = [["N", "H"], ["N", "C_alpha"], ["C_alpha", "H_alpha_1"], ["C_alpha", "C"], ["C", "O"]]
 
-        amino_acids = {"glycine": [["C_alpha", "H_alpha_2"]],
-                       "alanine": [["C_alpha", "C_beta"], ["C_beta", "H_beta_1"], ["C_beta", "H_beta_2"],
-                                   ["C_beta", "H_beta_3"]],
-                       "valine": [["C_alpha", "C_beta"], ["C_beta", "H_beta_1"], ["C_beta", "C_gamma"],
-                                  ["C_gamma", "H_gamma_1"], ["C_gamma", "H_gamma_2"], ["C_gamma", "H_gamma_3"],
-                                  ["C_beta", "C_delta"], ["C_delta", "H_gamma_1"], ["C_delta", "H_gamma_2"],
-                                  ["C_delta", "H_gamma_3"]],
-                       "leucine": [["C_alpha", "C_beta"], ["C_beta", "H_beta_1"], ["C_beta", "H_beta_2"],
-                                   ["C_beta", "C_gamma"], ["C_gamma", "H_gamma_1"], ["C_gamma", "C_delta"],
-                                   ["C_delta", "H_gamma_1"], ["C_delta", "H_gamma_2"], ["C_delta", "H_gamma_3"],
-                                   ["C_gamma", "C_epsilon"], ["C_epsilon", "H_epsilon_1"], ["C_epsilon", "H_epsilon_2"],
-                                   ["C_epsilon", "H_epsilon_3"]],
-                       "isoleucine": [[]],
-                       "serine": [[]],
-                       "threonine": [[]],
-                       "proline": [[]],
-                       "aspartic acid": [[]],
-                       "glutamic acid": [[]],
-                       "asparagine": [[]],
-                       "glutamine": [[]],
-                       "methionine": [[]],
-                       "cysteine": [[]],
-                       "lysine": [[]],
-                       "arginine": [[]],
-                       "histidine": [[]],
-                       "phenylalanine": [[]],
-                       "tyrosine": [[]],
-                       "tryptophan": [[]]
-                       }
 
-        protein_beginning = {"standard": [["H_start", "N"]]}
-
-        protein_end = {"standard": [["C", "O_end"], ["O_end", "H"]]}
-
-    def __get_donors_dictionary(self):
-        # TODO: What about Donors?
-        pass
-
-    def __get_acceptors_dictionary(self):
-        # TODO: What about Acceptors?
-        pass
