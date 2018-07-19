@@ -257,7 +257,7 @@ class NucleicAcid(Biomolecule):
 
         super(NucleicAcid, self).__init__()
 
-        # abbreviations
+        # ABBREVIATION
         abbreviations = {"adenine": "A",
                          "guanine": "G",
                          "cytosine": "C"}
@@ -519,48 +519,123 @@ class Protein(Biomolecule):
     def __init__(self):
         super(Protein, self).__init__()
 
-        self.bonds_between_residues = ["C", "N"]
+        # ABBREVIATION
+        abbreviations = {"glycine": "Gly",
+                         "alanine": "Ala",
+                         "valine": "Val",
+                         "leucine": "Leu",
+                         "isoleucine": "Ile",
+                         "serine": "Ser",
+                         "threonine": "Thr",
+                         "proline": "Pro",
+                         "aspartic acid": "Asp",
+                         "glutamic acid": "Glu",
+                         "asparagine": "Asn",
+                         "glutamine": "Gln",
+                         "methionine": "Met",
+                         "cysteine": "Cys",
+                         "lysine": "Lys",
+                         "arginine": "Arg",
+                         "histidine": "His",
+                         "phenylalanine": "Phe",
+                         "tyrosine": "Tyr",
+                         "tryptophan": "Trp",
+                         "acetyl_group": "Ace",
+                         "methylamine": "Nme"}
 
-        self.__get_abbreviations_dictionary()
+        self.update_abbreviation_dictionary(abbreviations=abbreviations)
 
-    def __get_abbreviations_dictionary(self):
-        self.abbreviations = {"glycine": "Gly",
-                              "alanine": "Ala",
-                              "valine": "Val",
-                              "leucine": "Leu",
-                              "isoleucine": "Ile",
-                              "serine": "Ser",
-                              "threonine": "Thr",
-                              "proline": "Pro",
-                              "aspartic acid": "Asp",
-                              "glutamic acid": "Glu",
-                              "asparagine": "Asn",
-                              "glutamine": "Gln",
-                              "methionine": "Met",
-                              "cysteine": "Cys",
-                              "lysine": "Lys",
-                              "arginine": "Arg",
-                              "histidine": "His",
-                              "phenylalanine": "Phe",
-                              "tyrosine": "Tyr",
-                              "tryptophan": "Trp"}
+        # MEASURES
+        # Dihedral Angles
+        dihedral_angles_dictionary = {"psi": (("N", "CA", "C", "N"), (0, 0, 0, 1), r"$\psi$"),
+                                      "phi": (("CA", "C", "N", "CA"), (-1, -1, 0, 0), r"$\phi$"),
+                                      "omega": (("C", "N", "CA", "C"), (-1, 0, 0, 0), r"$\omega$"),
+                                      "chi1": (("C", "CA", "CB", "CG"), (0, 0, 0, 0), r"$\chi_1$"),
+                                      "chi2": (("CA", "CB", "CG", "CD"), (0, 0, 0, 0), r"$\chi_2$"),
+                                      "chi3": (("CB", "CG", "CD", "CE"), (0, 0, 0, 0), r"$\chi_3$"),
+                                      "chi4": (("CG", "CD", "CE", "NZ"), (0, 0, 0, 0), r"$\chi_4$")
+                                      }
 
-    def __get_dihedral_angles_dictionary(self):
-        # TODO: Get a clear idea about rotameric structures etc.
-        # TODO: Important non-dehedral angles?
+        self.update_dihedral_angle_dictionary(dihedral_angles=dihedral_angles_dictionary)
 
-        backbone_dihedral_angles_dictionary = {"psi": (["N", "C_alpha", "C", "N"], [0, 0, 0, 1], r"$\psi$"),
-                                               "phi": (["C_alpha", "C", "N", "C_alpha"], [-1, -1, 0, 0], r"$\phi$"),
-                                               "omega": (["C", "N", "C_alpha", "C"], [-1, 0, 0, 0], r"$\omega$")
-                                               }
+        # Distances
+        distance_dict = {"CAToCA": (("CA", "CA"), r"$\C_(\alpha)$ to $\C_(\alpha)$")}
 
-        rotameric_structures_exclude = ["glycine", "alanine"]
-        rotameric_structures_dictionary = {"xi_1": ([], [0, 0, 0, 1], r"$\xi_1$"),
-                                           }
+        self.update_distances_dictionary(distances=distance_dict)
 
-    def __get_distances_dictionary(self):
-        # TODO: Are there important distances? C_alpha - C_alpha
-        pass
+        # COVALENT BONDS
+        # Backbone Bonds
+        self.set_bonds_between_residues("C", "N")
+
+        full_backbone_bond_list = [("N", "H"), ("N", "CA"), ("CA", "HA1"), ("CA", "C"), ("C", "O")]
+
+        start_backbone_bond_list = full_backbone_bond_list.copy()
+        start_backbone_bond_list.insert(0, ("HT", "N"))
+
+        end_backbone_bond_list = full_backbone_bond_list.copy()
+        end_backbone_bond_list += [("C", "OT"), ("OT", "HT")]
+
+        backbone_bonds = {"residual": tuple(full_backbone_bond_list),
+                          "start": tuple(start_backbone_bond_list),
+                          "end": tuple(end_backbone_bond_list),
+                          "acetyl_group": (("CH3", "HH31"), ("CH3", "HH32"), ("CH3", "HH33"), ("CH3", "C"), ("C", "O")),
+                          # TODO: is an H missing here? https://www.rcsb.org/ligand/NME
+                          "methylamine": (("CH3", "HH31"), ("CH3", "HH32"), ("CH3", "HH33"), ("CH3", "N"), ("N", "H"))
+                          }
+
+        self.update_backbone_bonds_dictionary(backbone_bonds=backbone_bonds)
+
+        # Base Bonds
+        # TODO: Protein Amino Acids
+        base_bonds_dictionary = {"adenine": (("C1\'", "N9"), ("N9", "C8"), ("N9", "C4"), ("C8", "H8"),
+                                             ("C8", "N7"), ("N7", "C5"), ("C5", "C6"), ("C5", "C4"),
+                                             ("C6", "N6"), ("C6", "N1"), ("N6", "H61"), ("N6", "H62"),
+                                             ("N1", "C2"), ("C2", "H2"), ("C2", "N3"), ("N3", "C4")),
+                                 "cytosine": (("C1\'", "N1"), ("N1", "C6"), ("N1", "C2"), ("C6", "H6"),
+                                              ("C6", "C5"), ("C5", "H5"), ("C5", "C4"), ("C4", "N4"),
+                                              ("C4", "N3"), ("N4", "H41"), ("N4", "H42"), ("N3", "C2"),
+                                              ("C2", "O2")),
+                                 "guanine": (("C1\'", "N9"), ("N9", "C8"), ("N9", "C4"), ("C8", "H8"),
+                                             ("C8", "N7"), ("N7", "C5"), ("C5", "C6"), ("C5", "C4"),
+                                             ("C6", "O6"), ("C6", "N1"), ("N1", "H1"), ("N1", "C2"),
+                                             ("C2", "N2"), ("C2", "N3"), ("N2", "H21"), ("N2", "H22"),
+                                             ("N3", "C4"))
+                                 }
+
+        self.update_base_bonds_dictionary(new_bases=base_bonds_dictionary)
+
+        # HYDROGEN BONDS
+        # Donors
+        # TODO: Protein Donors
+        donors_dict = {"adenine": {"H61": 1,
+                                   "H62": 1},
+                       "cytosine": {"H41": 1,
+                                    "H42": 1},
+                       "guanine": {"H1": 1,
+                                   "H21": 1,
+                                   "H22": 1}
+                       }
+
+        self.update_hydrogen_bond_dictionary(hydrogen_bond_atoms=donors_dict, update_donors=True)
+
+        # Acceptors
+        # TODO: Protein Acceptors
+        acceptors_dict = {"adenine": {"N1": 1,
+                                      "N3": 1,
+                                      "N6": 1,
+                                      "N7": 1
+                                      },
+                          "cytosine": {"O2": 2,
+                                       "N3": 1,
+                                       "N4": 1
+                                       },
+                          "guanine": {"O6": 2,
+                                      "N3": 1,
+                                      "N7": 1
+                                      }
+                          }
+
+        self.update_hydrogen_bond_dictionary(hydrogen_bond_atoms=acceptors_dict, update_donors=False)
 
     def __get_residue_bonds_dictionary(self):
         # TODO: Get a clear idea about naming conventions
