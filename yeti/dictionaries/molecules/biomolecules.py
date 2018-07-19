@@ -252,7 +252,7 @@ class Biomolecule(object):
 class NucleicAcid(Biomolecule):
     def __init__(self):
         """
-        Abstract class for RNA and DNA.
+        Constructor class for RNA and DNA.
         """
 
         super(NucleicAcid, self).__init__()
@@ -395,9 +395,13 @@ class NucleicAcid(Biomolecule):
 class RNA(NucleicAcid):
 
     def __init__(self):
+        """
+        Contains all information to build and evaluate DNA.
+        """
+
         super(RNA, self).__init__()
 
-        # abbreviations
+        # ABBREVIATION
         abbreviations = {"uracil": "U"}
 
         self.update_abbreviation_dictionary(abbreviations=abbreviations)
@@ -455,9 +459,13 @@ class RNA(NucleicAcid):
 class DNA(NucleicAcid):
 
     def __init__(self):
+        """
+        Contains all information to build and evaluate DNA.
+        """
+
         super(DNA, self).__init__()
 
-        # abbreviations
+        # ABBREVIATION
         abbreviations = {"thymine": "T"}
 
         self.update_abbreviation_dictionary(abbreviations=abbreviations)
