@@ -540,7 +540,7 @@ class Protein(Biomolecule):
                          "phenylalanine": "Phe",
                          "tyrosine": "Tyr",
                          "tryptophan": "Trp",
-                         "acetyl_group": "Ace",
+                         "acetyl group": "Ace",
                          "methylamine": "Nme"}
 
         self.update_abbreviation_dictionary(abbreviations=abbreviations)
@@ -606,8 +606,8 @@ class Protein(Biomolecule):
                                          ("CG", "OD2")),
                        "glutamic acid": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "HG1"),
                                          ("CG", "HG2"), ("CG", "CD"), ("CD", "OE1"), ("CD", "OE2")),
-                       "asparagine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "OD"),
-                                      ("CG", "ND"), ("ND", "HND1"), ("ND", "HND2")),
+                       "asparagine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "OD1"),
+                                      ("CG", "ND2"), ("ND2", "HD21"), ("ND2", "HD22")),
                        "glutamine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "HG1"),
                                      ("CG", "HG2"), ("CG", "CD"), ("CD", "OE"), ("CD", "NE"), ("NE", "HNE1"),
                                      ("ND", "HNE2")),
@@ -632,7 +632,7 @@ class Protein(Biomolecule):
                        }
 
         # TODO: rename update method
-        self.update_base_bonds_dictionary(new_bases=amino_acids)
+        #self.update_base_bonds_dictionary(new_bases=amino_acids)
 
         # HYDROGEN BONDS
         # Donors

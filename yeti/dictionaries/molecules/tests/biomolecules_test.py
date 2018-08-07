@@ -1126,3 +1126,125 @@ class TestDNA(TestCase):
         result = dna.base_pairs_dictionary
 
         self.assertDictEqual(reference, result)
+
+
+class TestProtein(TestCase):
+    def test_abbreviations_dictionary(self):
+        from yeti.dictionaries.molecules.biomolecules import Protein
+
+        reference = {"glycine": "Gly",
+                     "alanine": "Ala",
+                     "valine": "Val",
+                     "leucine": "Leu",
+                     "isoleucine": "Ile",
+                     "serine": "Ser",
+                     "threonine": "Thr",
+                     "proline": "Pro",
+                     "aspartic acid": "Asp",
+                     "glutamic acid": "Glu",
+                     "asparagine": "Asn",
+                     "glutamine": "Gln",
+                     "methionine": "Met",
+                     "cysteine": "Cys",
+                     "lysine": "Lys",
+                     "arginine": "Arg",
+                     "histidine": "His",
+                     "phenylalanine": "Phe",
+                     "tyrosine": "Tyr",
+                     "tryptophan": "Trp",
+                     "acetyl group": "Ace",
+                     "methylamine": "Nme"}
+
+        protein = Protein()
+        result = protein.abbreviation_dictionary
+
+        self.assertDictEqual(reference, result)
+
+    def test_dihedral_angles_dictionary(self):
+        from yeti.dictionaries.molecules.biomolecules import Protein
+
+        # TODO: Fill dictionary
+        reference = {}
+
+        protein = Protein()
+        result = protein.dihedral_angles_dictionary
+
+        self.assertDictEqual(reference, result)
+
+    def test_distances_dictionary(self):
+        from yeti.dictionaries.molecules.biomolecules import Protein
+
+        # TODO: Fill dictionary
+        reference = {"glycine": (("CA", "HA2"),),
+                     "alanine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "HB3")),
+                     "valine": (("CA", "CB"), ("CB", "HB1"), ("CB", "CG1"), ("CG1", "HG11"), ("CG1", "HG12"),
+                                ("CG1", "HG13"), ("CB", "CG2"), ("CG2", "HG21"), ("CG2", "HG22"), ("CG2", "HG23")),
+                     "leucine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "HG1"), ("CG", "CD1"),
+                                 ("CD1", "HD11"), ("CD1", "HD12"), ("CD1", "HD13"), ("CG", "CD2"), ("CD2", "HD21"),
+                                 ("CD2", "HD22"), ("CD2", "HD23")),
+                     "isoleucine": (),
+                     "serine": (),
+                     "threonine": (),
+                     "proline": (),
+                     "aspartic acid": (),
+                     "glutamic acid": (),
+                     "asparagine": (),
+                     "glutamine": (),
+                     "methionine": (),
+                     "cysteine": (),
+                     "lysine": (),
+                     "arginine": (),
+                     "histidine": (),
+                     "phenylalanine": (),
+                     "tyrosine": (),
+                     "tryptophan": ()
+                     }
+
+        protein = Protein()
+        result = protein.distances_dictionary
+
+        self.assertDictEqual(reference, result)
+
+    def test_backbone_bonds_dictionary(self):
+        from yeti.dictionaries.molecules.biomolecules import Protein
+
+        # TODO: Fill dictionary
+        reference = {}
+
+        protein = Protein()
+        result = protein.backbone_bonds_dictionary
+
+        self.assertDictEqual(reference, result)
+
+    def test_amino_acid_dictionary(self):
+        from yeti.dictionaries.molecules.biomolecules import Protein
+
+        # TODO: Fill dictionary
+        reference = {}
+
+        protein = Protein()
+        result = protein.base_bonds_dictionary
+
+        self.assertDictEqual(reference, result)
+
+    def test_acceptors_dictionary(self):
+        from yeti.dictionaries.molecules.biomolecules import Protein
+
+        # TODO: Fill dictionary
+        reference = {}
+
+        protein = Protein()
+        result = protein.acceptors_dictionary
+
+        self.assertDictEqual(reference, result)
+
+    def test_donors_dictionary(self):
+        from yeti.dictionaries.molecules.biomolecules import Protein
+
+        # TODO: Fill dictionary
+        reference = {}
+
+        protein = Protein()
+        result = protein.donors_dictionary
+
+        self.assertDictEqual(reference, result)
