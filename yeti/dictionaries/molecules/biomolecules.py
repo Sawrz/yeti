@@ -22,6 +22,7 @@ class Biomolecule(object):
         # COVALENT BONDS
         self.bonds_between_residues = (None, None)
         self.backbone_bonds_dictionary = {}
+        self.termini_bonds_dictionary = {}
         self.side_chain_bonds_dictionary = {}
 
         # HYDROGEN BONDS
@@ -176,6 +177,40 @@ class Biomolecule(object):
             raise BiomoleculesException("First element only contains strings.")
 
         self.backbone_bonds_dictionary.update(backbone_bonds)
+
+    def update_termini_bonds_dictionary(self, termini_bonds):
+        """
+        Update dictionary which contains information about termini bonds.
+
+        :param termini_bonds: Dictionary containing backbone bonds assigned to a name.
+        :type termini_bonds: dict of (tuple of (tuple of str))
+
+        Example input:
+        backbone_bonds = {"start": (("P", "OP1"), ("P", "OP2"))}
+        """
+
+        if type(termini_bonds) is not dict:
+            raise BiomoleculesException("Parameter termini_bonds need to be a dictionary.")
+
+        if not all(type(key) is str for key in termini_bonds.keys()):
+            raise BiomoleculesException("Keys of termini_bonds need to be strings.")
+
+        if not all(type(value) is tuple for value in termini_bonds.values()):
+            raise BiomoleculesException("Values of termini_bonds need to be tuples.")
+
+        if not all(type(bond) is tuple for value in termini_bonds.values() for bond in value):
+            raise BiomoleculesException("Bond type tuple only contains other tuples.")
+
+        if not all(type(atom) is str for value in termini_bonds.values() for bond in value for atom in bond):
+            raise BiomoleculesException("Elements of bond tuples need to be strings.")
+
+        if not all(len(bond) == 2 for value in termini_bonds.values() for bond in value):
+            raise BiomoleculesException("Exactly two strings for bond tuple are allowed.")
+
+        if not all(type(atom_name) is str for value in termini_bonds.values() for atom_name in value[0]):
+            raise BiomoleculesException("First element only contains strings.")
+
+        self.termini_bonds_dictionary.update(termini_bonds)
 
     def update_side_chain_bonds_dictionary(self, new_side_chain):
         """
@@ -559,7 +594,7 @@ class Protein(Biomolecule):
         self.update_dihedral_angle_dictionary(dihedral_angles=dihedral_angles_dictionary)
 
         # Distances
-        distance_dict = {"CAToCA": (("CA", "CA"), r"$\C_(\alpha)$ to $\C_(\alpha)$")}
+        distance_dict = {"CA_CA": (("CA", "CA"), r"$\C_{\alpha}$ to $\C_{\alpha}$")}
 
         self.update_distances_dictionary(distances=distance_dict)
 
@@ -569,21 +604,13 @@ class Protein(Biomolecule):
 
         full_backbone_bond_list = [("N", "H"), ("N", "CA"), ("CA", "HA1"), ("CA", "C"), ("C", "O")]
 
-        start_backbone_bond_list = full_backbone_bond_list.copy()
-        start_backbone_bond_list.insert(0, ("HT", "N"))
-
-        end_backbone_bond_list = full_backbone_bond_list.copy()
-        end_backbone_bond_list += [("C", "OT"), ("OT", "HT")]
-
-        backbone_bonds = {"residual": tuple(full_backbone_bond_list),
-                          "start": tuple(start_backbone_bond_list),
-                          "end": tuple(end_backbone_bond_list),
-                          "acetyl_group": (("CH3", "HH31"), ("CH3", "HH32"), ("CH3", "HH33"), ("CH3", "C"), ("C", "O")),
-                          # TODO: is an H missing here? https://www.rcsb.org/ligand/NME
-                          "methylamine": (("CH3", "HH31"), ("CH3", "HH32"), ("CH3", "HH33"), ("CH3", "N"), ("N", "H"))
+        backbone_bonds = {"residual": tuple(full_backbone_bond_list)
                           }
 
         self.update_backbone_bonds_dictionary(backbone_bonds=backbone_bonds)
+
+        # Termini Bonds
+
 
         # Base Bonds
         # TODO: Protein Amino Acids

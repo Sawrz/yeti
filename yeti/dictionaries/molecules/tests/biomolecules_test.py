@@ -453,6 +453,108 @@ class TestBiomolecule(TestCase):
 
         self.assertTrue("Exactly two strings for bond tuple are allowed." == str(context.exception))
 
+    def test_update_termini_bonds_dictionary(self):
+        from yeti.dictionaries.molecules.biomolecules import Biomolecule
+
+        reference = {"start": (("P", "OP1"), ("P", "OP2"), ("P", "O5\'")),
+                     "end": (("P", "OP1"), ("P", "O5\'"))}
+
+        bio_mol = Biomolecule()
+        bio_mol.update_termini_bonds_dictionary(termini_bonds=reference)
+        result = bio_mol.backbone_bonds_dictionary
+
+        self.assertDictEqual(reference, result)
+
+    def test_update_termini_bonds_dictionary_no_dictionary(self):
+        from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
+
+        backbone_bonds = (("P", "OP1"), ("P", "OP2"), ("P", "O5\'"))
+
+        bio_mol = Biomolecule()
+
+        with self.assertRaises(BiomoleculesException) as context:
+            bio_mol.update_termini_bonds_dictionary(termini_bonds=backbone_bonds)
+
+        self.assertTrue("Parameter termini_bonds need to be a dictionary." == str(context.exception))
+
+    def test_update_termini_bonds_dictionary_wrong_key_types(self):
+        from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
+
+        backbone_bonds = {"start": (("P", "OP1"), ("P", "OP2"), ("P", "O5\'")),
+                          0: (("P", "OP1"), ("P", "O5\'"))}
+
+        bio_mol = Biomolecule()
+
+        with self.assertRaises(BiomoleculesException) as context:
+            bio_mol.update_termini_bonds_dictionary(termini_bonds=backbone_bonds)
+
+        self.assertTrue("Keys of termini_bonds need to be strings." == str(context.exception))
+
+    def test_update_termini_bonds_dictionary_wrong_value_types(self):
+        from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
+
+        backbone_bonds = {"start": (("P", "OP1"), ("P", "OP2"), ("P", "O5\'")),
+                          "end": [("P", "OP1"), ("P", "O5\'")]}
+
+        bio_mol = Biomolecule()
+
+        with self.assertRaises(BiomoleculesException) as context:
+            bio_mol.update_termini_bonds_dictionary(termini_bonds=backbone_bonds)
+
+        self.assertTrue("Values of termini_bonds need to be tuples." == str(context.exception))
+
+    def test_update_termini_bonds_dictionary_tuple_elements_no_tuples(self):
+        from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
+
+        backbone_bonds = {"start": (("P", "OP1"), ("P", "OP2"), ("P", "O5\'")),
+                          "end": (("P", "OP1"), ["P", "O5\'"])}
+
+        bio_mol = Biomolecule()
+
+        with self.assertRaises(BiomoleculesException) as context:
+            bio_mol.update_termini_bonds_dictionary(termini_bonds=backbone_bonds)
+
+        self.assertTrue("Bond type tuple only contains other tuples." == str(context.exception))
+
+    def test_update_termini_bonds_dictionary_tuple_elements_no_strings(self):
+        from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
+
+        backbone_bonds = {"start": (("P", "OP1"), ("P", "OP2"), ("P", "O5\'")),
+                          "end": (("P", "OP1"), ("8", 7))}
+
+        bio_mol = Biomolecule()
+
+        with self.assertRaises(BiomoleculesException) as context:
+            bio_mol.update_termini_bonds_dictionary(termini_bonds=backbone_bonds)
+
+        self.assertTrue("Elements of bond tuples need to be strings." == str(context.exception))
+
+    def test_update_termini_bonds_dictionary_tuple_elements_too_many(self):
+        from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
+
+        backbone_bonds = {"start": (("P", "OP1"), ("P", "OP2", "Popeye"), ("P", "O5\'")),
+                          "end": (("P", "OP1"), ("P", "O5\'"))}
+
+        bio_mol = Biomolecule()
+
+        with self.assertRaises(BiomoleculesException) as context:
+            bio_mol.update_termini_bonds_dictionary(termini_bonds=backbone_bonds)
+
+        self.assertTrue("Exactly two strings for bond tuple are allowed." == str(context.exception))
+
+    def test_update_termini_bonds_dictionary_tuple_elements_not_enough(self):
+        from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
+
+        backbone_bonds = {"start": (("P", "OP1"), ("P", "OP2"), ("P", "O5\'")),
+                          "end": (("P", "OP1"), ("O5\'",))}
+
+        bio_mol = Biomolecule()
+
+        with self.assertRaises(BiomoleculesException) as context:
+            bio_mol.update_termini_bonds_dictionary(termini_bonds=backbone_bonds)
+
+        self.assertTrue("Exactly two strings for bond tuple are allowed." == str(context.exception))
+
     def test_update_base_bonds_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import Biomolecule
 
@@ -857,12 +959,7 @@ class TestRNA(TestCase):
     def test_backbone_bonds_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import RNA
 
-        reference = {"start": (("O5\'", "C5\'"), ("C5\'", "H5\'1"), ("C5\'", "H5\'2"), ("C5\'", "C4\'"),
-                               ("C4\'", "H4\'"), ("C4\'", "O4\'"), ("C4\'", "C3\'"), ("O4\'", "C1\'"), ("C1\'", "H1\'"),
-                               ("C1\'", "C2\'"), ("C3\'", "H3\'"), ("C3\'", "C2\'"), ("C3\'", "O3\'"),
-                               ("C2\'", "H2\'1"), ("C2\'", "O2\'"), ("O2\'", "HO\'2"), ("O5\'", "H5T"),
-                               ("O3'", "HO3\'")),
-                     "residual": (("P", "OP1"), ("P", "OP2"), ("P", "O5\'"), ("O5\'", "C5\'"),
+        reference = {"residual": (("P", "OP1"), ("P", "OP2"), ("P", "O5\'"), ("O5\'", "C5\'"),
                                   ("C5\'", "H5\'1"), ("C5\'", "H5\'2"), ("C5\'", "C4\'"), ("C4\'", "H4\'"),
                                   ("C4\'", "O4\'"), ("C4\'", "C3\'"), ("O4\'", "C1\'"), ("C1\'", "H1\'"),
                                   ("C1\'", "C2\'"), ("C3\'", "H3\'"), ("C3\'", "C2\'"), ("C3\'", "O3\'"),
@@ -871,6 +968,20 @@ class TestRNA(TestCase):
 
         rna = RNA()
         result = rna.backbone_bonds_dictionary
+
+        self.assertDictEqual(reference, result)
+
+    def test_termini_bonds_dictionary(self):
+        from yeti.dictionaries.molecules.biomolecules import RNA
+
+        reference = {"p_capping": (("O5\'", "C5\'"), ("C5\'", "H5\'1"), ("C5\'", "H5\'2"), ("C5\'", "C4\'"),
+                                   ("C4\'", "H4\'"), ("C4\'", "O4\'"), ("C4\'", "C3\'"), ("O4\'", "C1\'"),
+                                   ("C1\'", "H1\'"), ("C1\'", "C2\'"), ("C3\'", "H3\'"), ("C3\'", "C2\'"),
+                                   ("C3\'", "O3\'"), ("C2\'", "H2\'1"), ("C2\'", "O2\'"), ("O2\'", "HO\'2"),
+                                   ("O5\'", "H5T"), ("O3'", "HO3\'"))}
+
+        rna = RNA()
+        result = rna.termini_bonds_dictionary
 
         self.assertDictEqual(reference, result)
 
@@ -1038,6 +1149,16 @@ class TestDNA(TestCase):
 
         self.assertDictEqual(reference, result)
 
+    def test_termini_bonds_dictionary(self):
+        from yeti.dictionaries.molecules.biomolecules import DNA
+
+        reference = {}
+
+        dna = DNA()
+        result = dna.termini_bonds_dictionary
+
+        self.assertDictEqual(reference, result)
+
     def test_base_bonds_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import DNA
 
@@ -1186,14 +1307,34 @@ class TestProtein(TestCase):
 
         self.assertDictEqual(reference, result)
 
+    def test_bonds_between_residues(self):
+        from yeti.dictionaries.molecules.biomolecules import Protein
+
+        reference = ("C", "N")
+
+        protein = Protein()
+        result = protein.bonds_between_residues
+
+        self.assertTupleEqual(reference, result)
+
     def test_backbone_bonds_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import Protein
 
-        # TODO: Fill dictionary
-        reference = {}
+        reference = {"residual": (("N", "H"), ("N", "CA"), ("CA", "HA1"), ("CA", "C"), ("C", "O"))}
 
         protein = Protein()
         result = protein.backbone_bonds_dictionary
+
+        self.assertDictEqual(reference, result)
+
+    def test_termini_bonds_dictionary(self):
+        from yeti.dictionaries.molecules.biomolecules import Protein
+
+        reference = {"acetyl group": (("C", "O"), ("C", "CH3"), ("CH3", "HH31"), ("CH3", "HH32"), ("CH3", "HH33")),
+                     "methylamine": (("N", "H"), ("N", "CH3"), ("CH3", "HH31"), ("CH3", "HH32"), ("CH3", "HH33"))}
+
+        protein = Protein()
+        result = protein.termini_bonds_dictionary
 
         self.assertDictEqual(reference, result)
 
@@ -1248,8 +1389,7 @@ class TestProtein(TestCase):
                      "tryptophan": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "CD1"),
                                     ("CG", "CD2"), ("CD2", "HD21"), ("CD2", "NE2"), ("NE2", "HE21"), ("NE2", "CZ2"),
                                     ("CZ2", "CH2"), ("CH2", "HH21"), ("CH2", "CTH2"), ("CTH2", "HTH21"), ("CD1", "CZ2"),
-                                    ("CD1", "CE3"), ("CE3", "HE31"), ("CE3", "CZ3"), ("CZ3", "HZ31"), ("CZ3", "CTH2"))
-                     }
+                                    ("CD1", "CE3"), ("CE3", "HE31"), ("CE3", "CZ3"), ("CZ3", "HZ31"), ("CZ3", "CTH2"))}
 
         protein = Protein()
         result = protein.side_chain_bonds_dictionary
