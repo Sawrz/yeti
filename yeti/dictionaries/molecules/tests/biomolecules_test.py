@@ -1213,9 +1213,17 @@ class TestProtein(TestCase):
                      "histidine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "CD1"),
                                    ("CD1", "HD11"), ("CG", "ND2"), ("ND2", "HD21"), ("CD1", "NE1"), ("NE1", "HE11"),
                                    ("ND2", "CE2"), ("CE2", "HE21"), ("NE1", "CE2")),
-                     "phenylalanine": (("CA", "CB"),),
-                     "tyrosine": (("CA", "CB"),),
-                     "tryptophan": (("CA", "CB"),)
+                     "phenylalanine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "CD1"),
+                                       ("CD1", "HD11"), ("CG", "CD2"), ("CD2", "HD21"), ("CD1", "CE1"), ("CE1", "HE11"),
+                                       ("CD2", "CE2"), ("CE2", "HE21"), ("CE1", "CZ"), ("CE2", "CZ"), ("CZ", "HZ1")),
+                     "tyrosine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "CD1"),
+                                  ("CD1", "HD11"), ("CG", "CD2"), ("CD2", "HD21"), ("CD1", "CE1"), ("CE1", "HE11"),
+                                  ("CD2", "CE2"), ("CE2", "HE21"), ("CE1", "CZ"), ("CE2", "CZ"), ("CZ", "OH"),
+                                  ("OH", "HH1")),
+                     "tryptophan": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "CD1"),
+                                    ("CG", "CD2"), ("CD2", "HD21"), ("CD2", "NE2"), ("NE2", "HE21"), ("NE2", "CZ2"),
+                                    ("CZ2", "CH2"), ("CH2", "HH21"), ("CH2", "CTH2"), ("CTH2", "HTH21"), ("CD1", "CZ2"),
+                                    ("CD1", "CE3"), ("CE3", "HE31"), ("CE3", "CZ3"), ("CZ3", "HZ31"), ("CZ3", "CTH2"))
                      }
 
         protein = Protein()
