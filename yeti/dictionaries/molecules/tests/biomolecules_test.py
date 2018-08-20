@@ -836,7 +836,7 @@ class TestRNA(TestCase):
     def test_distances_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import RNA
 
-        reference = {"PToP": (("P", "P"), "P to P"),
+        reference = {"P_P": (("P", "P"), "P to P"),
                      }
 
         rna = RNA()
@@ -1007,7 +1007,7 @@ class TestDNA(TestCase):
     def test_distances_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import DNA
 
-        reference = {"PToP": (("P", "P"), "P to P")}
+        reference = {"P_P": (("P", "P"), "P to P")}
 
         dna = DNA()
         result = dna.distances_dictionary
@@ -1179,8 +1179,7 @@ class TestProtein(TestCase):
     def test_distances_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import Protein
 
-        # TODO: Fill dictionary
-        reference = {}
+        reference = {"CA_CA": (("CA", "CA"), r'$C_{\alpha}$ to $C_{\alpha}$')}
 
         protein = Protein()
         result = protein.distances_dictionary

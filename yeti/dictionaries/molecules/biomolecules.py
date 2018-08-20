@@ -284,7 +284,7 @@ class NucleicAcid(Biomolecule):
         self.update_dihedral_angle_dictionary(dihedral_angles=dihedral_angles_dictionary)
 
         # Distances
-        distance_dict = {"PToP": (("P", "P"), "P to P")}
+        distance_dict = {"P_P": (("P", "P"), "P to P")}
 
         self.update_distances_dictionary(distances=distance_dict)
 
