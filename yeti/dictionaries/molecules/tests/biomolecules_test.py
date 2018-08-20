@@ -1174,7 +1174,6 @@ class TestProtein(TestCase):
     def test_distances_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import Protein
 
-        # TODO: Fill dictionary
         reference = {"glycine": (("CA", "HA2"),),
                      "alanine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "HB3")),
                      "valine": (("CA", "CB"), ("CB", "HB1"), ("CB", "CG1"), ("CG1", "HG11"), ("CG1", "HG12"),
@@ -1188,8 +1187,8 @@ class TestProtein(TestCase):
                      "serine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "OG"), ("OG", "HG1")),
                      "threonine": (("CA", "CB"), ("CB", "HB1"), ("CB", "OG1"), ("OG1", "HG11"), ("CB", "CG2"),
                                    ("CG2", "HG21"), ("CG2", "HG22"), ("CG2", "HG23")),
-                     "proline": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "HG1"),("CG", "HG2"),
-                                 ("CG", "CD"), ("CD", "HD1"),("CD", "HD2"), ("CD", "N")),
+                     "proline": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "HG1"), ("CG", "HG2"),
+                                 ("CG", "CD"), ("CD", "HD1"), ("CD", "HD2"), ("CD", "N")),
                      "aspartic acid": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "OD1"),
                                        ("CG", "OD2")),
                      "glutamic acid": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "HG1"),
@@ -1207,9 +1206,9 @@ class TestProtein(TestCase):
                                 ("CG", "CD"), ("CD", "HD1"), ("CD", "HD2"), ("CD", "CE"), ("CE", "HE1"), ("CE", "HE2"),
                                 ("CE", "NZ"), ("NZ", "HZ1"), ("NZ", "HZ2"), ("NZ", "HZ3")),
                      "arginine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "HG1"),
-                                  ("CG", "HG2"), ("CG", "CD"), ("CD", "HD1"), ("CD", "HD2"), ("CD", "NE"), ("NE", "HE"),
-                                  ("NE", "CZ"), ("CZ", "NH1"), ("NH1", "HH11"), ("NH1", "HH12"), ("CZ", "NH2"),
-                                  ("NH2", "HH21"), ("NH2", "HH22")),
+                                  ("CG", "HG2"), ("CG", "CD"), ("CD", "HD1"), ("CD", "HD2"), ("CD", "NE"),
+                                  ("NE", "HE1"),("NE", "CZ"), ("CZ", "NH1"), ("NH1", "HH11"), ("NH1", "HH12"),
+                                  ("CZ", "NH2"), ("NH2", "HH21"), ("NH2", "HH22")),
                      "histidine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "CD1"),
                                    ("CD1", "HD11"), ("CG", "ND2"), ("ND2", "HD21"), ("CD1", "NE1"), ("NE1", "HE11"),
                                    ("ND2", "CE2"), ("CE2", "HE21"), ("NE1", "CE2")),
