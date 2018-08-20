@@ -626,9 +626,9 @@ class Protein(Biomolecule):
                        "histidine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "CD"),
                                      ("CD", "HD1"), ("CG", "ND"), ("ND", "HND1"), ("CD", "NE"), ("NE", "HNE1"),
                                      ("ND", "CE"), ("CE", "HE1")),
-                       "phenylalanine": (()),
-                       "tyrosine": (()),
-                       "tryptophan": (())
+                       "phenylalanine": (),
+                       "tyrosine": (),
+                       "tryptophan": ()
                        }
 
         self.update_side_chain_bonds_dictionary(new_side_chain=amino_acids)

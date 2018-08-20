@@ -1174,6 +1174,28 @@ class TestProtein(TestCase):
     def test_distances_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import Protein
 
+        # TODO: Fill dictionary
+        reference = {}
+
+        protein = Protein()
+        result = protein.distances_dictionary
+
+        self.assertDictEqual(reference, result)
+
+    def test_backbone_bonds_dictionary(self):
+        from yeti.dictionaries.molecules.biomolecules import Protein
+
+        # TODO: Fill dictionary
+        reference = {}
+
+        protein = Protein()
+        result = protein.backbone_bonds_dictionary
+
+        self.assertDictEqual(reference, result)
+
+    def test_amino_acid_dictionary(self):
+        from yeti.dictionaries.molecules.biomolecules import Protein
+
         reference = {"glycine": (("CA", "HA2"),),
                      "alanine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "HB3")),
                      "valine": (("CA", "CB"), ("CB", "HB1"), ("CB", "CG1"), ("CG1", "HG11"), ("CG1", "HG12"),
@@ -1226,35 +1248,14 @@ class TestProtein(TestCase):
                      }
 
         protein = Protein()
-        result = protein.distances_dictionary
+        result = protein.side_chain_bonds_dictionary
 
         for amino_acid in reference.keys():
+            print(amino_acid)
             tmp_reference = reference[amino_acid]
             tmp_result = result[amino_acid]
 
             self.assertTupleEqual(tmp_reference, tmp_result)
-
-        self.assertDictEqual(reference, result)
-
-    def test_backbone_bonds_dictionary(self):
-        from yeti.dictionaries.molecules.biomolecules import Protein
-
-        # TODO: Fill dictionary
-        reference = {}
-
-        protein = Protein()
-        result = protein.backbone_bonds_dictionary
-
-        self.assertDictEqual(reference, result)
-
-    def test_amino_acid_dictionary(self):
-        from yeti.dictionaries.molecules.biomolecules import Protein
-
-        # TODO: Fill dictionary
-        reference = {}
-
-        protein = Protein()
-        result = protein.side_chain_bonds_dictionary
 
         self.assertDictEqual(reference, result)
 
