@@ -461,7 +461,7 @@ class TestBiomolecule(TestCase):
 
         bio_mol = Biomolecule()
         bio_mol.update_termini_bonds_dictionary(termini_bonds=reference)
-        result = bio_mol.backbone_bonds_dictionary
+        result = bio_mol.termini_bonds_dictionary
 
         self.assertDictEqual(reference, result)
 

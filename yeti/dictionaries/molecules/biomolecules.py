@@ -449,16 +449,19 @@ class RNA(NucleicAcid):
                                    ("C3\'", "H3\'"), ("C3\'", "C2\'"), ("C3\'", "O3\'"), ("C2\'", "H2\'1"),
                                    ("C2\'", "O2\'"), ("O2\'", "HO\'2"), ("O5\'", "H5T"), ("O3'", "HO3\'")]
 
-        start_backbone_bond_list = full_backbone_bond_list.copy()
-        for bond in full_backbone_bond_list:
-            if "P" in bond:
-                start_backbone_bond_list.remove(bond)
-
-        backbone_bonds = {"start": tuple(start_backbone_bond_list),
-                          "residual": tuple(full_backbone_bond_list)
-                          }
+        backbone_bonds = {"residual": tuple(full_backbone_bond_list)}
 
         self.update_backbone_bonds_dictionary(backbone_bonds=backbone_bonds)
+
+        # Termini Bonds
+        p_capping_terminus = full_backbone_bond_list.copy()
+        for bond in full_backbone_bond_list:
+            if "P" in bond:
+                p_capping_terminus.remove(bond)
+
+        termini_bonds = {"p_capping": tuple(p_capping_terminus)}
+
+        self.update_termini_bonds_dictionary(termini_bonds=termini_bonds)
 
         # Base Bonds
         base = {"uracil": (("C1\'", "N1"), ("N1", "C6"), ("N1", "C2"), ("C6", "H6"), ("C6", "C5"), ("C5", "H5"),
@@ -604,13 +607,15 @@ class Protein(Biomolecule):
 
         full_backbone_bond_list = [("N", "H"), ("N", "CA"), ("CA", "HA1"), ("CA", "C"), ("C", "O")]
 
-        backbone_bonds = {"residual": tuple(full_backbone_bond_list)
-                          }
+        backbone_bonds = {"residual": tuple(full_backbone_bond_list)}
 
         self.update_backbone_bonds_dictionary(backbone_bonds=backbone_bonds)
 
         # Termini Bonds
+        # TODO: Protein Termini Bonds
+        termini_bonds = {}
 
+        self.update_termini_bonds_dictionary(termini_bonds=termini_bonds)
 
         # Base Bonds
         # TODO: Protein Amino Acids
@@ -692,6 +697,3 @@ class Protein(Biomolecule):
                           }
 
         self.update_hydrogen_bond_dictionary(hydrogen_bond_atoms=acceptors_dict, update_donors=False)
-
-
-
