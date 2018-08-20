@@ -1163,8 +1163,13 @@ class TestProtein(TestCase):
     def test_dihedral_angles_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import Protein
 
-        # TODO: Fill dictionary
-        reference = {}
+        reference = {"psi": (("N", "CA", "C", "N"), (0, 0, 0, 1), r'$\psi$'),
+                     "phi": (("C", "N", "CA", "C"), (-1, 0, 0, 0), r'$\phi$'),
+                     "omega": (("CA", "C", "N", "CA"), (0, 0, 1, 1), r'$\omega$'),
+                     "chi1": (("N", "CA", "CB", "CG"), (0, 0, 0, 0), r'$\chi_1$'),
+                     "chi2": (("CA", "CB", "CG", "CD"), (0, 0, 0, 0), r'$\chi_2$'),
+                     "chi3": (("CB", "CG", "CD", "CE"), (0, 0, 0, 0), r'$\chi_3$'),
+                     "chi4": (("CG", "CD", "CE", "NZ"), (0, 0, 0, 0), r'$\chi_4$')}
 
         protein = Protein()
         result = protein.dihedral_angles_dictionary
