@@ -460,8 +460,8 @@ class TestBiomolecule(TestCase):
                      "B": (("P", "OP1"), ("P", "O5\'"))}
 
         bio_mol = Biomolecule()
-        bio_mol.update_base_bonds_dictionary(new_bases=reference)
-        result = bio_mol.base_bonds_dictionary
+        bio_mol.update_side_chain_bonds_dictionary(new_side_chain=reference)
+        result = bio_mol.side_chain_bonds_dictionary
 
         self.assertDictEqual(reference, result)
 
@@ -473,7 +473,7 @@ class TestBiomolecule(TestCase):
         bio_mol = Biomolecule()
 
         with self.assertRaises(BiomoleculesException) as context:
-            bio_mol.update_base_bonds_dictionary(new_bases=base_bonds)
+            bio_mol.update_side_chain_bonds_dictionary(new_side_chain=base_bonds)
 
         self.assertTrue("Parameter new_bases need to be a dictionary." == str(context.exception))
 
@@ -485,9 +485,9 @@ class TestBiomolecule(TestCase):
         bio_mol = Biomolecule()
 
         with self.assertRaises(BiomoleculesException) as context:
-            bio_mol.update_base_bonds_dictionary(new_bases=base_bonds)
+            bio_mol.update_side_chain_bonds_dictionary(new_side_chain=base_bonds)
 
-        self.assertTrue("Keys of new_bases need to be strings." == str(context.exception))
+        self.assertTrue("Keys of new_side_chain need to be strings." == str(context.exception))
 
     def test_update_base_bonds_dictionary_wrong_value_type(self):
         from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
@@ -497,9 +497,9 @@ class TestBiomolecule(TestCase):
         bio_mol = Biomolecule()
 
         with self.assertRaises(BiomoleculesException) as context:
-            bio_mol.update_base_bonds_dictionary(new_bases=base_bonds)
+            bio_mol.update_side_chain_bonds_dictionary(new_side_chain=base_bonds)
 
-        self.assertTrue("Values of new_bases need to be tuples." == str(context.exception))
+        self.assertTrue("Values of new_side_chain need to be tuples." == str(context.exception))
 
     def test_update_base_bonds_dictionary_tuple_elements_no_tuples(self):
         from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
@@ -510,7 +510,7 @@ class TestBiomolecule(TestCase):
         bio_mol = Biomolecule()
 
         with self.assertRaises(BiomoleculesException) as context:
-            bio_mol.update_base_bonds_dictionary(new_bases=base_bonds)
+            bio_mol.update_side_chain_bonds_dictionary(new_side_chain=base_bonds)
 
         self.assertTrue("Bond type tuple only contains other tuples." == str(context.exception))
 
@@ -523,7 +523,7 @@ class TestBiomolecule(TestCase):
         bio_mol = Biomolecule()
 
         with self.assertRaises(BiomoleculesException) as context:
-            bio_mol.update_base_bonds_dictionary(new_bases=base_bonds)
+            bio_mol.update_side_chain_bonds_dictionary(new_side_chain=base_bonds)
 
         self.assertTrue("Elements of bond tuples need to be strings." == str(context.exception))
 
@@ -536,7 +536,7 @@ class TestBiomolecule(TestCase):
         bio_mol = Biomolecule()
 
         with self.assertRaises(BiomoleculesException) as context:
-            bio_mol.update_base_bonds_dictionary(new_bases=base_bonds)
+            bio_mol.update_side_chain_bonds_dictionary(new_side_chain=base_bonds)
 
         self.assertTrue("Exactly two strings for bond tuple are allowed." == str(context.exception))
 
@@ -549,7 +549,7 @@ class TestBiomolecule(TestCase):
         bio_mol = Biomolecule()
 
         with self.assertRaises(BiomoleculesException) as context:
-            bio_mol.update_base_bonds_dictionary(new_bases=base_bonds)
+            bio_mol.update_side_chain_bonds_dictionary(new_side_chain=base_bonds)
 
         self.assertTrue("Exactly two strings for bond tuple are allowed." == str(context.exception))
 
@@ -893,7 +893,7 @@ class TestRNA(TestCase):
                      }
 
         rna = RNA()
-        result = rna.base_bonds_dictionary
+        result = rna.side_chain_bonds_dictionary
 
         self.assertDictEqual(reference, result)
 
@@ -1056,7 +1056,7 @@ class TestDNA(TestCase):
                      }
 
         dna = DNA()
-        result = dna.base_bonds_dictionary
+        result = dna.side_chain_bonds_dictionary
 
         self.assertDictEqual(reference, result)
 
@@ -1207,7 +1207,7 @@ class TestProtein(TestCase):
                                 ("CE", "NZ"), ("NZ", "HZ1"), ("NZ", "HZ2"), ("NZ", "HZ3")),
                      "arginine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "HG1"),
                                   ("CG", "HG2"), ("CG", "CD"), ("CD", "HD1"), ("CD", "HD2"), ("CD", "NE"),
-                                  ("NE", "HE1"),("NE", "CZ"), ("CZ", "NH1"), ("NH1", "HH11"), ("NH1", "HH12"),
+                                  ("NE", "HE1"), ("NE", "CZ"), ("CZ", "NH1"), ("NH1", "HH11"), ("NH1", "HH12"),
                                   ("CZ", "NH2"), ("NH2", "HH21"), ("NH2", "HH22")),
                      "histidine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "CD1"),
                                    ("CD1", "HD11"), ("CG", "ND2"), ("ND2", "HD21"), ("CD1", "NE1"), ("NE1", "HE11"),
@@ -1227,6 +1227,12 @@ class TestProtein(TestCase):
 
         protein = Protein()
         result = protein.distances_dictionary
+
+        for amino_acid in reference.keys():
+            tmp_reference = reference[amino_acid]
+            tmp_result = result[amino_acid]
+
+            self.assertTupleEqual(tmp_reference, tmp_result)
 
         self.assertDictEqual(reference, result)
 
@@ -1248,7 +1254,7 @@ class TestProtein(TestCase):
         reference = {}
 
         protein = Protein()
-        result = protein.base_bonds_dictionary
+        result = protein.side_chain_bonds_dictionary
 
         self.assertDictEqual(reference, result)
 

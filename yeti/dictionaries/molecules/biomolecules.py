@@ -22,7 +22,7 @@ class Biomolecule(object):
         # COVALENT BONDS
         self.bonds_between_residues = (None, None)
         self.backbone_bonds_dictionary = {}
-        self.base_bonds_dictionary = {}
+        self.side_chain_bonds_dictionary = {}
 
         # HYDROGEN BONDS
         self.donors_dictionary = {}
@@ -177,39 +177,39 @@ class Biomolecule(object):
 
         self.backbone_bonds_dictionary.update(backbone_bonds)
 
-    def update_base_bonds_dictionary(self, new_bases):
+    def update_side_chain_bonds_dictionary(self, new_side_chain):
         """
-        Update dictionary which contains information about base bonds.
+        Update dictionary which contains information about side chain bonds.
 
-        :param new_bases: Dictionary containing base bonds assigned to a name.
-        :type new_bases: dict of (tuple of (tuple of str))
+        :param new_side_chain: Dictionary containing base bonds assigned to a name.
+        :type new_side_chain: dict of (tuple of (tuple of str))
 
         Example input:
         new_bases = {"fantasy_base": (("C1\'", "N1"), ("N1", "C6"))}
         """
 
-        if type(new_bases) is not dict:
+        if type(new_side_chain) is not dict:
             raise BiomoleculesException("Parameter new_bases need to be a dictionary.")
 
-        if not all(type(key) is str for key in new_bases.keys()):
-            raise BiomoleculesException("Keys of new_bases need to be strings.")
+        if not all(type(key) is str for key in new_side_chain.keys()):
+            raise BiomoleculesException("Keys of new_side_chain need to be strings.")
 
-        if not all(type(value) is tuple for value in new_bases.values()):
-            raise BiomoleculesException("Values of new_bases need to be tuples.")
+        if not all(type(value) is tuple for value in new_side_chain.values()):
+            raise BiomoleculesException("Values of new_side_chain need to be tuples.")
 
-        if not all(type(bond) is tuple for value in new_bases.values() for bond in value):
+        if not all(type(bond) is tuple for value in new_side_chain.values() for bond in value):
             raise BiomoleculesException("Bond type tuple only contains other tuples.")
 
-        if not all(type(atom) is str for value in new_bases.values() for bond in value for atom in bond):
+        if not all(type(atom) is str for value in new_side_chain.values() for bond in value for atom in bond):
             raise BiomoleculesException("Elements of bond tuples need to be strings.")
 
-        if not all(len(bond) == 2 for value in new_bases.values() for bond in value):
+        if not all(len(bond) == 2 for value in new_side_chain.values() for bond in value):
             raise BiomoleculesException("Exactly two strings for bond tuple are allowed.")
 
-        if not all(type(atom_name) is str for value in new_bases.values() for atom_name in value[0]):
+        if not all(type(atom_name) is str for value in new_side_chain.values() for atom_name in value[0]):
             raise BiomoleculesException("First element only contains strings.")
 
-        self.base_bonds_dictionary.update(new_bases)
+        self.side_chain_bonds_dictionary.update(new_side_chain)
 
     def update_hydrogen_bond_dictionary(self, hydrogen_bond_atoms, update_donors=True):
         """
@@ -306,7 +306,7 @@ class NucleicAcid(Biomolecule):
                                              ("N3", "C4"))
                                  }
 
-        self.update_base_bonds_dictionary(new_bases=base_bonds_dictionary)
+        self.update_side_chain_bonds_dictionary(new_side_chain=base_bonds_dictionary)
 
         # HYDROGEN BONDS
         # Donors
@@ -429,7 +429,7 @@ class RNA(NucleicAcid):
         base = {"uracil": (("C1\'", "N1"), ("N1", "C6"), ("N1", "C2"), ("C6", "H6"), ("C6", "C5"), ("C5", "H5"),
                            ("C5", "C4"), ("C4", "O4"), ("C4", "N3"), ("N3", "H3"), ("N3", "C2"), ("C2", "O2"))}
 
-        self.update_base_bonds_dictionary(new_bases=base)
+        self.update_side_chain_bonds_dictionary(new_side_chain=base)
 
         # HYDROGEN BONDS
         # Donors
@@ -488,7 +488,7 @@ class DNA(NucleicAcid):
                             ("C5M", "H51"), ("C5M", "H52"), ("C5M", "H53"), ("C5", "C4"), ("C4", "O4"), ("C4", "N3"),
                             ("N3", "H3"), ("N3", "C2"), ("C2", "O2"))}
 
-        self.update_base_bonds_dictionary(new_bases=base)
+        self.update_side_chain_bonds_dictionary(new_side_chain=base)
 
         # HYDROGEN BONDS
         # Donors
@@ -631,8 +631,7 @@ class Protein(Biomolecule):
                        "tryptophan": (())
                        }
 
-        # TODO: rename update method
-        #self.update_base_bonds_dictionary(new_bases=amino_acids)
+        self.update_side_chain_bonds_dictionary(new_side_chain=amino_acids)
 
         # HYDROGEN BONDS
         # Donors
