@@ -586,9 +586,9 @@ class Protein(Biomolecule):
         # MEASURES
         # Dihedral Angles
         dihedral_angles_dictionary = {"psi": (("N", "CA", "C", "N"), (0, 0, 0, 1), r"$\psi$"),
-                                      "phi": (("CA", "C", "N", "CA"), (-1, -1, 0, 0), r"$\phi$"),
-                                      "omega": (("C", "N", "CA", "C"), (-1, 0, 0, 0), r"$\omega$"),
-                                      "chi1": (("C", "CA", "CB", "CG"), (0, 0, 0, 0), r"$\chi_1$"),
+                                      "phi": (("C", "N", "CA", "C"), (-1, 0, 0, 0), r"$\phi$"),
+                                      "omega": (("CA", "C", "N", "CA"), (0, 0, 1, 1), r"$\omega$"),
+                                      "chi1": (("N", "CA", "CB", "CG"), (0, 0, 0, 0), r"$\chi_1$"),
                                       "chi2": (("CA", "CB", "CG", "CD"), (0, 0, 0, 0), r"$\chi_2$"),
                                       "chi3": (("CB", "CG", "CD", "CE"), (0, 0, 0, 0), r"$\chi_3$"),
                                       "chi4": (("CG", "CD", "CE", "NZ"), (0, 0, 0, 0), r"$\chi_4$")}
@@ -596,7 +596,7 @@ class Protein(Biomolecule):
         self.update_dihedral_angle_dictionary(dihedral_angles=dihedral_angles_dictionary)
 
         # Distances
-        distance_dict = {"CA_CA": (("CA", "CA"), r"$\C_{\alpha}$ to $\C_{\alpha}$")}
+        distance_dict = {"CA_CA": (("CA", "CA"), r"$C_{\alpha}$ to $C_{\alpha}$")}
 
         self.update_distances_dictionary(distances=distance_dict)
 
@@ -609,8 +609,8 @@ class Protein(Biomolecule):
         self.update_backbone_bonds_dictionary(backbone_bonds=backbone_bonds)
 
         # Termini Bonds
-        termini_bonds = {"acetyl group": (("C", "O"), ("C", "CH3"), ("CH3", "HH31"), ("CH3", "HH32"), ("CH3", "HH32")),
-                         "methylamine": (("N", "H"), ("N", "CH3"), ("CH3", "HH31"), ("CH3", "HH32"), ("CH3", "HH32"))}
+        termini_bonds = {"acetyl group": (("C", "O"), ("C", "CH3"), ("CH3", "HH31"), ("CH3", "HH32"), ("CH3", "HH33")),
+                         "methylamine": (("N", "H"), ("N", "CH3"), ("CH3", "HH31"), ("CH3", "HH32"), ("CH3", "HH33"))}
 
         self.update_termini_bonds_dictionary(termini_bonds=termini_bonds)
 
@@ -625,9 +625,9 @@ class Protein(Biomolecule):
                        "isoleucine": (("CA", "CB"), ("CB", "HB1"), ("CB", "CG1"), ("CG1", "HG11"), ("CG1", "HG12"),
                                       ("CG1", "HG13"), ("CB", "CG2"), ("CG2", "HG21"), ("CG2", "HG22"), ("CG2", "CD"),
                                       ("CD", "HD1"), ("CD", "HD2"), ("CD", "HD3")),
-                       "serine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "OG"), ("OG", "HG")),
-                       "threonine": (("CA", "CB"), ("CB", "HB1"), ("CB", "OG"), ("OG", "HOG"), ("CB", "CG"),
-                                     ("CG", "HG1"), ("CG", "HG2"), ("CG", "HG3")),
+                       "serine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "OG"), ("OG", "HG1")),
+                       "threonine": (("CA", "CB"), ("CB", "HB1"), ("CB", "OG1"), ("OG1", "HG11"), ("CB", "CG2"),
+                                     ("CG2", "HG21"), ("CG2", "HG22"), ("CG2", "HG23")),
                        "proline": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "HG1"),
                                    ("CG", "HG2"), ("CG", "CD"), ("CD", "HD1"), ("CD", "HD2"), ("CD", "N")),
                        "aspartic acid": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "OD1"),
@@ -637,23 +637,23 @@ class Protein(Biomolecule):
                        "asparagine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "OD1"),
                                       ("CG", "ND2"), ("ND2", "HD21"), ("ND2", "HD22")),
                        "glutamine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "HG1"),
-                                     ("CG", "HG2"), ("CG", "CD"), ("CD", "OE"), ("CD", "NE"), ("NE", "HNE1"),
-                                     ("ND", "HNE2")),
+                                     ("CG", "HG2"), ("CG", "CD"), ("CD", "OE1"), ("CD", "NE2"), ("NE2", "HE21"),
+                                     ("NE2", "HE22")),
                        "methionine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "HG1"),
                                       ("CG", "HG2"), ("CG", "SD"), ("SD", "CE"), ("CE", "HE1"), ("CE", "HE2"),
                                       ("CE", "HE3")),
-                       "cysteine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "SG"), ("SG", "HSG1")),
+                       "cysteine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "SG"), ("SG", "HG1")),
                        "lysine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "HG1"),
                                   ("CG", "HG2"), ("CG", "CD"), ("CD", "HD1"), ("CD", "HD2"), ("CD", "CE"),
-                                  ("CE", "HE1"), ("CE", "HE2"), ("CE", "NZ"), ("NZ", "HNZ1"), ("NZ", "HNZ2"),
-                                  ("NZ", "HNZ3")),
+                                  ("CE", "HE1"), ("CE", "HE2"), ("CE", "NZ"), ("NZ", "HZ1"), ("NZ", "HZ2"),
+                                  ("NZ", "HZ3")),
                        "arginine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "HG1"),
                                     ("CG", "HG2"), ("CG", "CD"), ("CD", "HD1"), ("CD", "HD2"), ("CD", "NE"),
-                                    ("NE", "HNE"), ("NE", "CZ"), ("CZ", "NI1"), ("NI1", "HNI11"), ("NI1", "HNI12"),
-                                    ("CZ", "NI2"), ("NI2", "HNI21"), ("NI2", "HNI22")),
-                       "histidine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "CD"),
-                                     ("CD", "HD1"), ("CG", "ND"), ("ND", "HND1"), ("CD", "NE"), ("NE", "HNE1"),
-                                     ("ND", "CE"), ("CE", "HE1")),
+                                    ("NE", "HE1"), ("NE", "CZ"), ("CZ", "NH1"), ("NH1", "HH11"), ("NH1", "HH12"),
+                                    ("CZ", "NH2"), ("NH2", "HH21"), ("NH2", "HH22")),
+                       "histidine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "CD1"),
+                                     ("CD1", "HD11"), ("CG", "ND2"), ("ND2", "HD21"), ("CD1", "NE1"), ("NE1", "HE11"),
+                                     ("ND2", "CE2"), ("CE2", "HE21"), ("NE1", "CE2")),
                        "phenylalanine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "CD1"),
                                          ("CD1", "HD11"), ("CG", "CD2"), ("CD2", "HD21"), ("CD1", "CE1"),
                                          ("CE1", "HE11"), ("CD2", "CE2"), ("CE2", "HE21"), ("CE1", "CZ"), ("CE2", "CZ"),
@@ -664,7 +664,7 @@ class Protein(Biomolecule):
                                     ("OH", "HH1")),
                        "tryptophan": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "CD1"),
                                       ("CD1", "CE1"), ("CE1", "HE11"), ("CE1", "CZ1"), ("CZ1", "HZ11"), ("CG", "CD2"),
-                                      ("CD2", "HD21"), ("CD2", "NE2"), ("NE2", "HE2"), ("NE2", "CZ2"), ("CZ2", "CH2"),
+                                      ("CD2", "HD21"), ("CD2", "NE2"), ("NE2", "HE21"), ("NE2", "CZ2"), ("CZ2", "CH2"),
                                       ("CH2", "HH21"), ("CH2", "CTH2"), ("CTH2", "HTH21"), ("CD1", "CZ2"),
                                       ("CZ1", "CTH2"))}
 
