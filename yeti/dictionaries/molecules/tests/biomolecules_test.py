@@ -910,6 +910,13 @@ class TestRNA(TestCase):
         rna = RNA()
         result = rna.abbreviation_dictionary
 
+        for base in reference.keys():
+            print(base)
+            tmp_reference = reference[base]
+            tmp_result = result[base]
+
+            self.assertEqual(tmp_reference, tmp_result)
+
         self.assertDictEqual(reference, result)
 
     def test_dihedral_angles_dictionary(self):
@@ -933,6 +940,13 @@ class TestRNA(TestCase):
         rna = RNA()
         result = rna.dihedral_angles_dictionary
 
+        for dihedral in reference.keys():
+            print(dihedral)
+            tmp_reference = reference[dihedral]
+            tmp_result = result[dihedral]
+
+            self.assertTupleEqual(tmp_reference, tmp_result)
+
         self.assertDictEqual(reference, result)
 
     def test_distances_dictionary(self):
@@ -943,6 +957,13 @@ class TestRNA(TestCase):
 
         rna = RNA()
         result = rna.distances_dictionary
+
+        for distance in reference.keys():
+            print(distance)
+            tmp_reference = reference[distance]
+            tmp_result = result[distance]
+
+            self.assertTupleEqual(tmp_reference, tmp_result)
 
         self.assertDictEqual(reference, result)
 
@@ -969,6 +990,13 @@ class TestRNA(TestCase):
         rna = RNA()
         result = rna.backbone_bonds_dictionary
 
+        for bond_class in reference.keys():
+            print(bond_class)
+            tmp_reference = reference[bond_class]
+            tmp_result = result[bond_class]
+
+            self.assertTupleEqual(tmp_reference, tmp_result)
+
         self.assertDictEqual(reference, result)
 
     def test_termini_bonds_dictionary(self):
@@ -982,6 +1010,13 @@ class TestRNA(TestCase):
 
         rna = RNA()
         result = rna.termini_bonds_dictionary
+
+        for terminus_bonds in reference.keys():
+            print(terminus_bonds)
+            tmp_reference = reference[terminus_bonds]
+            tmp_result = result[terminus_bonds]
+
+            self.assertTupleEqual(tmp_reference, tmp_result)
 
         self.assertDictEqual(reference, result)
 
@@ -1006,6 +1041,13 @@ class TestRNA(TestCase):
         rna = RNA()
         result = rna.side_chain_bonds_dictionary
 
+        for base in reference.keys():
+            print(base)
+            tmp_reference = reference[base]
+            tmp_result = result[base]
+
+            self.assertTupleEqual(tmp_reference, tmp_result)
+
         self.assertDictEqual(reference, result)
 
     def test_donors_dictionary(self):
@@ -1028,6 +1070,13 @@ class TestRNA(TestCase):
 
         rna = RNA()
         result = rna.donors_dictionary
+
+        for base in reference.keys():
+            print(base)
+            tmp_reference = reference[base]
+            tmp_result = result[base]
+
+            self.assertDictEqual(tmp_reference, tmp_result)
 
         self.assertDictEqual(reference, result)
 
@@ -1061,6 +1110,13 @@ class TestRNA(TestCase):
         rna = RNA()
         result = rna.acceptors_dictionary
 
+        for base in reference.keys():
+            print(base)
+            tmp_reference = reference[base]
+            tmp_result = result[base]
+
+            self.assertDictEqual(tmp_reference, tmp_result)
+
         self.assertDictEqual(reference, result)
 
     def test_base_pairs_dictionary(self):
@@ -1073,6 +1129,14 @@ class TestRNA(TestCase):
 
         rna = RNA()
         result = rna.base_pairs_dictionary
+
+        for base_pair_type in reference.keys():
+            for base in reference[base_pair_type]:
+                print(base_pair_type, base)
+                tmp_reference = reference[base_pair_type][base]
+                tmp_result = result[base_pair_type][base]
+
+                self.assertTupleEqual(tmp_reference, tmp_result)
 
         self.assertDictEqual(reference, result)
 
@@ -1089,6 +1153,13 @@ class TestDNA(TestCase):
 
         dna = DNA()
         result = dna.abbreviation_dictionary
+
+        for base in reference.keys():
+            print(base)
+            tmp_reference = reference[base]
+            tmp_result = result[base]
+
+            self.assertEqual(tmp_reference, tmp_result)
 
         self.assertDictEqual(reference, result)
 
@@ -1113,6 +1184,13 @@ class TestDNA(TestCase):
         dna = DNA()
         result = dna.dihedral_angles_dictionary
 
+        for dihedral in reference.keys():
+            print(dihedral)
+            tmp_reference = reference[dihedral]
+            tmp_result = result[dihedral]
+
+            self.assertTupleEqual(tmp_reference, tmp_result)
+
         self.assertDictEqual(reference, result)
 
     def test_distances_dictionary(self):
@@ -1122,6 +1200,13 @@ class TestDNA(TestCase):
 
         dna = DNA()
         result = dna.distances_dictionary
+
+        for distance in reference.keys():
+            print(distance)
+            tmp_reference = reference[distance]
+            tmp_result = result[distance]
+
+            self.assertTupleEqual(tmp_reference, tmp_result)
 
         self.assertDictEqual(reference, result)
 
@@ -1147,6 +1232,13 @@ class TestDNA(TestCase):
         dna = DNA()
         result = dna.backbone_bonds_dictionary
 
+        for bond_class in reference.keys():
+            print(bond_class)
+            tmp_reference = reference[bond_class]
+            tmp_result = result[bond_class]
+
+            self.assertTupleEqual(tmp_reference, tmp_result)
+
         self.assertDictEqual(reference, result)
 
     def test_termini_bonds_dictionary(self):
@@ -1156,6 +1248,13 @@ class TestDNA(TestCase):
 
         dna = DNA()
         result = dna.termini_bonds_dictionary
+
+        for terminus_bonds in reference.keys():
+            print(terminus_bonds)
+            tmp_reference = reference[terminus_bonds]
+            tmp_result = result[terminus_bonds]
+
+            self.assertTupleEqual(tmp_reference, tmp_result)
 
         self.assertDictEqual(reference, result)
 
@@ -1179,6 +1278,13 @@ class TestDNA(TestCase):
         dna = DNA()
         result = dna.side_chain_bonds_dictionary
 
+        for base in reference.keys():
+            print(base)
+            tmp_reference = reference[base]
+            tmp_result = result[base]
+
+            self.assertTupleEqual(tmp_reference, tmp_result)
+
         self.assertDictEqual(reference, result)
 
     def test_donors_dictionary(self):
@@ -1201,6 +1307,13 @@ class TestDNA(TestCase):
 
         dna = DNA()
         result = dna.donors_dictionary
+
+        for base in reference.keys():
+            print(base)
+            tmp_reference = reference[base]
+            tmp_result = result[base]
+
+            self.assertDictEqual(tmp_reference, tmp_result)
 
         self.assertDictEqual(reference, result)
 
@@ -1233,6 +1346,13 @@ class TestDNA(TestCase):
         dna = DNA()
         result = dna.acceptors_dictionary
 
+        for base in reference.keys():
+            print(base)
+            tmp_reference = reference[base]
+            tmp_result = result[base]
+
+            self.assertDictEqual(tmp_reference, tmp_result)
+
         self.assertDictEqual(reference, result)
 
     def test_base_pairs_dictionary(self):
@@ -1245,6 +1365,14 @@ class TestDNA(TestCase):
 
         dna = DNA()
         result = dna.base_pairs_dictionary
+
+        for base_pair_type in reference.keys():
+            for base in reference[base_pair_type]:
+                print(base_pair_type, base)
+                tmp_reference = reference[base_pair_type][base]
+                tmp_result = result[base_pair_type][base]
+
+                self.assertTupleEqual(tmp_reference, tmp_result)
 
         self.assertDictEqual(reference, result)
 
@@ -1279,6 +1407,13 @@ class TestProtein(TestCase):
         protein = Protein()
         result = protein.abbreviation_dictionary
 
+        for amino_acid in reference.keys():
+            print(amino_acid)
+            tmp_reference = reference[amino_acid]
+            tmp_result = result[amino_acid]
+
+            self.assertEqual(tmp_reference, tmp_result)
+
         self.assertDictEqual(reference, result)
 
     def test_dihedral_angles_dictionary(self):
@@ -1295,6 +1430,13 @@ class TestProtein(TestCase):
         protein = Protein()
         result = protein.dihedral_angles_dictionary
 
+        for dihedral in reference.keys():
+            print(dihedral)
+            tmp_reference = reference[dihedral]
+            tmp_result = result[dihedral]
+
+            self.assertTupleEqual(tmp_reference, tmp_result)
+
         self.assertDictEqual(reference, result)
 
     def test_distances_dictionary(self):
@@ -1304,6 +1446,13 @@ class TestProtein(TestCase):
 
         protein = Protein()
         result = protein.distances_dictionary
+
+        for distance in reference.keys():
+            print(distance)
+            tmp_reference = reference[distance]
+            tmp_result = result[distance]
+
+            self.assertTupleEqual(tmp_reference, tmp_result)
 
         self.assertDictEqual(reference, result)
 
@@ -1325,6 +1474,13 @@ class TestProtein(TestCase):
         protein = Protein()
         result = protein.backbone_bonds_dictionary
 
+        for bond_class in reference.keys():
+            print(bond_class)
+            tmp_reference = reference[bond_class]
+            tmp_result = result[bond_class]
+
+            self.assertTupleEqual(tmp_reference, tmp_result)
+
         self.assertDictEqual(reference, result)
 
     def test_termini_bonds_dictionary(self):
@@ -1335,6 +1491,13 @@ class TestProtein(TestCase):
 
         protein = Protein()
         result = protein.termini_bonds_dictionary
+
+        for terminus_bonds in reference.keys():
+            print(terminus_bonds)
+            tmp_reference = reference[terminus_bonds]
+            tmp_result = result[terminus_bonds]
+
+            self.assertTupleEqual(tmp_reference, tmp_result)
 
         self.assertDictEqual(reference, result)
 
@@ -1368,7 +1531,7 @@ class TestProtein(TestCase):
                      "methionine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "HG1"),
                                     ("CG", "HG2"), ("CG", "SD"), ("SD", "CE"), ("CE", "HE1"), ("CE", "HE2"),
                                     ("CE", "HE3")),
-                     "cysteine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "SG"), ("SG", "HG")),
+                     "cysteine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "SG"), ("SG", "HG1")),
                      "lysine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "HG1"), ("CG", "HG2"),
                                 ("CG", "CD"), ("CD", "HD1"), ("CD", "HD2"), ("CD", "CE"), ("CE", "HE1"), ("CE", "HE2"),
                                 ("CE", "NZ"), ("NZ", "HZ1"), ("NZ", "HZ2"), ("NZ", "HZ3")),
@@ -1387,9 +1550,10 @@ class TestProtein(TestCase):
                                   ("CD2", "CE2"), ("CE2", "HE21"), ("CE1", "CZ"), ("CE2", "CZ"), ("CZ", "OH"),
                                   ("OH", "HH1")),
                      "tryptophan": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "CD1"),
-                                    ("CG", "CD2"), ("CD2", "HD21"), ("CD2", "NE2"), ("NE2", "HE21"), ("NE2", "CZ2"),
-                                    ("CZ2", "CH2"), ("CH2", "HH21"), ("CH2", "CTH2"), ("CTH2", "HTH21"), ("CD1", "CZ2"),
-                                    ("CD1", "CE3"), ("CE3", "HE31"), ("CE3", "CZ3"), ("CZ3", "HZ31"), ("CZ3", "CTH2"))}
+                                    ("CD1", "CE1"), ("CE1", "HE11"), ("CE1", "CZ1"), ("CZ1", "HZ11"), ("CG", "CD2"),
+                                    ("CD2", "HD21"), ("CD2", "NE2"), ("NE2", "HE21"), ("NE2", "CZ2"), ("CZ2", "CH2"),
+                                    ("CH2", "HH21"), ("CH2", "CTH2"), ("CTH2", "HTH21"), ("CD1", "CZ2"),
+                                    ("CZ1", "CTH2"))}
 
         protein = Protein()
         result = protein.side_chain_bonds_dictionary
@@ -1412,6 +1576,13 @@ class TestProtein(TestCase):
         protein = Protein()
         result = protein.acceptors_dictionary
 
+        for base in reference.keys():
+            print(base)
+            tmp_reference = reference[base]
+            tmp_result = result[base]
+
+            self.assertDictEqual(tmp_reference, tmp_result)
+
         self.assertDictEqual(reference, result)
 
     def test_donors_dictionary(self):
@@ -1422,5 +1593,12 @@ class TestProtein(TestCase):
 
         protein = Protein()
         result = protein.donors_dictionary
+
+        for base in reference.keys():
+            print(base)
+            tmp_reference = reference[base]
+            tmp_result = result[base]
+
+            self.assertDictEqual(tmp_reference, tmp_result)
 
         self.assertDictEqual(reference, result)
