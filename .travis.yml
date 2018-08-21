@@ -7,7 +7,7 @@ python:
   - "3.4"
   - "3.5"
   - "3.6"
-  - "3.7"
+  #- "3.7" not working yet
   - "3.7-dev" #development branch
 
 # command to install dependencies
