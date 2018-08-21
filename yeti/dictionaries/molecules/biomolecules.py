@@ -173,9 +173,6 @@ class Biomolecule(object):
         if not all(len(bond) == 2 for value in backbone_bonds.values() for bond in value):
             raise BiomoleculesException("Exactly two strings for bond tuple are allowed.")
 
-        if not all(type(atom_name) is str for value in backbone_bonds.values() for atom_name in value[0]):
-            raise BiomoleculesException("First element only contains strings.")
-
         self.backbone_bonds_dictionary.update(backbone_bonds)
 
     def update_termini_bonds_dictionary(self, termini_bonds):
@@ -207,9 +204,6 @@ class Biomolecule(object):
         if not all(len(bond) == 2 for value in termini_bonds.values() for bond in value):
             raise BiomoleculesException("Exactly two strings for bond tuple are allowed.")
 
-        if not all(type(atom_name) is str for value in termini_bonds.values() for atom_name in value[0]):
-            raise BiomoleculesException("First element only contains strings.")
-
         self.termini_bonds_dictionary.update(termini_bonds)
 
     def update_side_chain_bonds_dictionary(self, new_side_chain):
@@ -240,9 +234,6 @@ class Biomolecule(object):
 
         if not all(len(bond) == 2 for value in new_side_chain.values() for bond in value):
             raise BiomoleculesException("Exactly two strings for bond tuple are allowed.")
-
-        if not all(type(atom_name) is str for value in new_side_chain.values() for atom_name in value[0]):
-            raise BiomoleculesException("First element only contains strings.")
 
         self.side_chain_bonds_dictionary.update(new_side_chain)
 
