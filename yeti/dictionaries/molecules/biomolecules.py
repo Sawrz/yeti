@@ -591,8 +591,7 @@ class Protein(Biomolecule):
                                       "chi1": (("C", "CA", "CB", "CG"), (0, 0, 0, 0), r"$\chi_1$"),
                                       "chi2": (("CA", "CB", "CG", "CD"), (0, 0, 0, 0), r"$\chi_2$"),
                                       "chi3": (("CB", "CG", "CD", "CE"), (0, 0, 0, 0), r"$\chi_3$"),
-                                      "chi4": (("CG", "CD", "CE", "NZ"), (0, 0, 0, 0), r"$\chi_4$")
-                                      }
+                                      "chi4": (("CG", "CD", "CE", "NZ"), (0, 0, 0, 0), r"$\chi_4$")}
 
         self.update_dihedral_angle_dictionary(dihedral_angles=dihedral_angles_dictionary)
 
@@ -605,20 +604,17 @@ class Protein(Biomolecule):
         # Backbone Bonds
         self.set_bonds_between_residues("C", "N")
 
-        full_backbone_bond_list = [("N", "H"), ("N", "CA"), ("CA", "HA1"), ("CA", "C"), ("C", "O")]
-
-        backbone_bonds = {"residual": tuple(full_backbone_bond_list)}
+        backbone_bonds = {"residual": (("N", "H"), ("N", "CA"), ("CA", "HA1"), ("CA", "C"), ("C", "O"))}
 
         self.update_backbone_bonds_dictionary(backbone_bonds=backbone_bonds)
 
         # Termini Bonds
-        # TODO: Protein Termini Bonds
-        termini_bonds = {}
+        termini_bonds = {"acetyl group": (("C", "O"), ("C", "CH3"), ("CH3", "HH31"), ("CH3", "HH32"), ("CH3", "HH32")),
+                         "methylamine": (("N", "H"), ("N", "CH3"), ("CH3", "HH31"), ("CH3", "HH32"), ("CH3", "HH32"))}
 
         self.update_termini_bonds_dictionary(termini_bonds=termini_bonds)
 
         # Base Bonds
-        # TODO: Protein Amino Acids
         amino_acids = {"glycine": (("CA", "HA2"),),
                        "alanine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "HB3")),
                        "valine": (("CA", "CB"), ("CB", "HB1"), ("CB", "CG1"), ("CG1", "HG11"), ("CG1", "HG12"),
@@ -658,42 +654,31 @@ class Protein(Biomolecule):
                        "histidine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "CD"),
                                      ("CD", "HD1"), ("CG", "ND"), ("ND", "HND1"), ("CD", "NE"), ("NE", "HNE1"),
                                      ("ND", "CE"), ("CE", "HE1")),
-                       "phenylalanine": (),
-                       "tyrosine": (),
-                       "tryptophan": ()
-                       }
+                       "phenylalanine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "CD1"),
+                                         ("CD1", "HD11"), ("CG", "CD2"), ("CD2", "HD21"), ("CD1", "CE1"),
+                                         ("CE1", "HE11"), ("CD2", "CE2"), ("CE2", "HE21"), ("CE1", "CZ"), ("CE2", "CZ"),
+                                         ("CZ", "HZ1")),
+                       "tyrosine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "CD1"),
+                                    ("CD1", "HD11"), ("CG", "CD2"), ("CD2", "HD21"), ("CD1", "CE1"), ("CE1", "HE11"),
+                                    ("CD2", "CE2"), ("CE2", "HE21"), ("CE1", "CZ"), ("CE2", "CZ"), ("CZ", "OH"),
+                                    ("OH", "HH1")),
+                       "tryptophan": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "CD1"),
+                                      ("CD1", "CE1"), ("CE1", "HE11"), ("CE1", "CZ1"), ("CZ1", "HZ11"), ("CG", "CD2"),
+                                      ("CD2", "HD21"), ("CD2", "NE2"), ("NE2", "HE2"), ("NE2", "CZ2"), ("CZ2", "CH2"),
+                                      ("CH2", "HH21"), ("CH2", "CTH2"), ("CTH2", "HTH21"), ("CD1", "CZ2"),
+                                      ("CZ1", "CTH2"))}
 
         self.update_side_chain_bonds_dictionary(new_side_chain=amino_acids)
 
         # HYDROGEN BONDS
         # Donors
         # TODO: Protein Donors
-        donors_dict = {"adenine": {"H61": 1,
-                                   "H62": 1},
-                       "cytosine": {"H41": 1,
-                                    "H42": 1},
-                       "guanine": {"H1": 1,
-                                   "H21": 1,
-                                   "H22": 1}
-                       }
+        donors_dict = {}
 
         self.update_hydrogen_bond_dictionary(hydrogen_bond_atoms=donors_dict, update_donors=True)
 
         # Acceptors
         # TODO: Protein Acceptors
-        acceptors_dict = {"adenine": {"N1": 1,
-                                      "N3": 1,
-                                      "N6": 1,
-                                      "N7": 1
-                                      },
-                          "cytosine": {"O2": 2,
-                                       "N3": 1,
-                                       "N4": 1
-                                       },
-                          "guanine": {"O6": 2,
-                                      "N3": 1,
-                                      "N7": 1
-                                      }
-                          }
+        acceptors_dict = {}
 
         self.update_hydrogen_bond_dictionary(hydrogen_bond_atoms=acceptors_dict, update_donors=False)
