@@ -1,22 +1,15 @@
 language: python
-
-os:
-  - linux
-
 python:
-  - "3.4"
-  - "3.5"
   - "3.6"
-  #- "3.7" not working yet
-  - "3.7-dev" #development branch
-
-# command to install dependencies
+cache: pip
 install:
-  - pip install -r requirements.txt
-
-# command to run tests
+  - pip install -r requirements_dev.txt
+  - python setup.py install
 script:
-  - pytest --cov=./
-
+  - pytest tests --cov=./
 after_success:
+  - git config --global user.name "semantic-release (via TravisCI)"
+  - git config --global user.email "semantic-release@travis"
+  - pip install python-semantic-release
+  - semantic-release publish
   - codecov --token=86e102c8-b101-4148-b38a-7d67fa9870ca
