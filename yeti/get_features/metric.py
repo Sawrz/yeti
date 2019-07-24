@@ -59,6 +59,12 @@ class Metric(object):
 
         return indices
 
+    def __calculate_no_pbc__(self, xyz, indices, opt):
+        pass
+
+    def __calculate_minimal_image_convention__(self, xyz, indices, opt):
+        pass
+
     def __calculate__(self, atoms, opt, amount):
         xyz = self.__prepare_xyz_data__(*atoms)
         indices = self.__prepare_atom_indices__(amount=amount)
