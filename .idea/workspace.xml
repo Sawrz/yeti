@@ -3,9 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="678bada4-0989-4d11-b108-4c48079ad655" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yeti/get_features/dihedrals.py" beforeDir="false" afterPath="$PROJECT_DIR$/yeti/get_features/angles.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yeti/get_features/metric.py" beforeDir="false" afterPath="$PROJECT_DIR$/yeti/get_features/metric.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yeti/systems/atom.py" beforeDir="false" afterPath="$PROJECT_DIR$/yeti/systems/atom.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/setup.py" beforeDir="false" afterPath="$PROJECT_DIR$/setup.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -125,7 +123,7 @@
       <workItem from="1564041455906" duration="4000" />
       <workItem from="1564041598481" duration="3000" />
       <workItem from="1564042645134" duration="212000" />
-      <workItem from="1564043003910" duration="10597000" />
+      <workItem from="1564043003910" duration="12468000" />
     </task>
     <servers />
   </component>
@@ -157,7 +155,7 @@
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/yeti$system.coverage" NAME="system Coverage Results" MODIFIED="1564052793111" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$USER_HOME$/Desktop/CUC_maker" />
+    <SUITE FILE_PATH="coverage/yeti$system.coverage" NAME="system Coverage Results" MODIFIED="1564057035534" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$USER_HOME$/Desktop/CUC_maker" />
   </component>
   <component name="debuggerHistoryManager">
     <expressions id="evaluateCodeFragment">
