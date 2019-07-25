@@ -24,7 +24,7 @@ class Atom(object):
         self.acceptor_slots = None
 
         if self.is_acceptor or self.is_donor_atom:
-            self.hydrogen_bond_partners = [[]] * self.xyz_trajectory.shape[0]
+            self.hydrogen_bond_partners = dict(subsystem=[[]] * self.xyz_trajectory.shape[0])
         else:
             self.hydrogen_bond_partners = None
 

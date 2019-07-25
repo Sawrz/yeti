@@ -1,9 +1,64 @@
 import numpy as np
-from mdtraj.geometry._geometry import _dihedral_mic, _dihedral
+from mdtraj.geometry._geometry import _dihedral_mic, _dihedral, _angle_mic, _angle
 from mdtraj.utils.validation import ensure_type
 
 from yeti.get_features.distances import Displacement
 from yeti.get_features.metric import Metric
+
+
+class Angle(Metric):
+    def __calculate_angle__(self, xyz, indices, periodic, out):
+        """SOURCE: mdTraj
+           MODIFICATION: displacement function
+        """
+
+        ix01 = indices[:, [1, 0]]
+        ix21 = indices[:, [1, 2]]
+
+        displacement = Displacement(periodic=periodic, unit_cell_angles=self.unit_cell_angles,
+                                    unit_cell_vectors=self.unit_cell_vectors)
+
+        u_prime = displacement.get_displacement_compatibility_layer(xyz, ix01, periodic=periodic, opt=False)
+        v_prime = displacement.get_displacement_compatibility_layer(xyz, ix21, periodic=periodic, opt=False)
+        u_norm = np.sqrt((u_prime ** 2).sum(-1))
+        v_norm = np.sqrt((v_prime ** 2).sum(-1))
+
+        # adding a new axis makes sure that broasting rules kick in on the third
+        # dimension
+        u = u_prime / (u_norm[..., np.newaxis])
+        v = v_prime / (v_norm[..., np.newaxis])
+
+        return np.arccos((u * v).sum(-1), out=out)
+
+    def __calculate_no_pbc__(self, xyz, indices, opt):
+        angles = np.zeros((xyz.shape[0], indices.shape[0]), dtype=np.float32)
+
+        if opt:
+            _angle(xyz, indices, angles)
+        else:
+            self.__calculate_angle__(xyz=xyz, indices=indices, periodic=False, out=angles)
+
+        return angles
+
+    def __calculate_minimal_image_convention__(self, xyz, indices, opt):
+        angles = np.zeros((xyz.shape[0], indices.shape[0]), dtype=np.float32)
+
+        box = ensure_type(self.unit_cell_vectors, dtype=np.float32, ndim=3, name='unitcell_vectors',
+                          shape=(len(xyz), 3, 3), warn_on_cast=True)
+
+        if opt:
+            orthogonal = np.allclose(self.unit_cell_angles, 90)
+            _angle_mic(xyz, indices, box.transpose(0, 2, 1).copy(), angles, orthogonal)
+        else:
+            self.__calculate_angle__(xyz=xyz, indices=indices, periodic=True, out=angles)
+
+        return angles
+
+    def get_angle(self, atom_name_residue_pair_01, atom_name_residue_pair_02, atom_name_residue_pair_03, opt=True):
+        name_residue_pairs = (atom_name_residue_pair_01, atom_name_residue_pair_02, atom_name_residue_pair_03)
+        atoms = self.__get_atoms__(*name_residue_pairs)
+
+        return self.__calculate__(atoms=atoms, opt=opt, amount=3)
 
 
 class Dihedral(Metric):
@@ -33,8 +88,7 @@ class Dihedral(Metric):
         ix21 = indices[:, [1, 2]]
         ix32 = indices[:, [2, 3]]
 
-        displacement = Displacement(periodic=periodic, box_vectors=self.box_vectors,
-                                    unit_cell_angles=self.unit_cell_angles,
+        displacement = Displacement(periodic=periodic, unit_cell_angles=self.unit_cell_angles,
                                     unit_cell_vectors=self.unit_cell_vectors)
         b1 = displacement.get_displacement_compatibility_layer(xyz, ix10, periodic=periodic, opt=False)
         b2 = displacement.get_displacement_compatibility_layer(xyz, ix21, periodic=periodic, opt=False)
@@ -74,7 +128,7 @@ class Dihedral(Metric):
         return dihedrals
 
     def get_dihedral(self, atom_name_residue_pair_01, atom_name_residue_pair_02, atom_name_residue_pair_03,
-                     atom_name_residue_pair_04, opt=False):
+                     atom_name_residue_pair_04, opt=True):
         name_residue_pairs = (atom_name_residue_pair_01, atom_name_residue_pair_02, atom_name_residue_pair_03,
                               atom_name_residue_pair_04)
         atoms = self.__get_atoms__(*name_residue_pairs)

@@ -7,10 +7,9 @@ class MetricException(Exception):
 
 
 class Metric(object):
-    def __init__(self, periodic, box_vectors, unit_cell_angles, unit_cell_vectors):
+    def __init__(self, periodic, unit_cell_angles, unit_cell_vectors):
         self.unit_cell_vectors = unit_cell_vectors
         self.unit_cell_angles = unit_cell_angles
-        self.box_vectors = box_vectors
         self.periodic = periodic
 
     @staticmethod
@@ -47,6 +46,9 @@ class Metric(object):
         if amount == 2:
             name = 'atom_pairs'
             shape = (None, 2)
+        elif amount == 3:
+            name = 'angle_indices'
+            shape = (None, 3)
         elif amount == 4:
             name = 'indices'
             shape = (None, 4)
