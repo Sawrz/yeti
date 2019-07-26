@@ -45,5 +45,12 @@ class Atom(object):
         else:
             raise AtomException('The atom is neither acceptor nor a donor atom. Update its state first!')
 
+    def purge_hydrogen_bond_partner_history(self, system_name):
+        if self.is_acceptor or self.is_donor_atom:
+            del self.hydrogen_bond_partners[system_name]
+            self.hydrogen_bond_partners[system_name] = [[]] * self.xyz_trajectory.shape[0]
+        else:
+            raise AtomException('The given atom is neither donor nor acceptor. Purging does not make sense!')
+
     def __str__(self):
         return self.name
