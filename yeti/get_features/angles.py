@@ -18,8 +18,8 @@ class Angle(Metric):
         displacement = Displacement(periodic=periodic, unit_cell_angles=self.unit_cell_angles,
                                     unit_cell_vectors=self.unit_cell_vectors)
 
-        u_prime = displacement.get_displacement_compatibility_layer(xyz, ix01, periodic=periodic, opt=False)
-        v_prime = displacement.get_displacement_compatibility_layer(xyz, ix21, periodic=periodic, opt=False)
+        u_prime = displacement.get_compatibility_layer(xyz, ix01, periodic=periodic, opt=False)
+        v_prime = displacement.get_compatibility_layer(xyz, ix21, periodic=periodic, opt=False)
         u_norm = np.sqrt((u_prime ** 2).sum(-1))
         v_norm = np.sqrt((v_prime ** 2).sum(-1))
 
@@ -54,15 +54,9 @@ class Angle(Metric):
 
         return angles
 
-    def get_angle(self, atom_name_residue_pair_01, atom_name_residue_pair_02, atom_name_residue_pair_03, opt=True):
-        name_residue_pairs = (atom_name_residue_pair_01, atom_name_residue_pair_02, atom_name_residue_pair_03)
-        atoms = self.__get_atoms__(*name_residue_pairs)
-
-        return self.__calculate__(atoms=atoms, opt=opt, amount=3)
-
 
 class Dihedral(Metric):
-    def __calculate_dihedral__(self, xyz, indices, periodic, out):
+    def __calculate_angle__(self, xyz, indices, periodic, out):
         """SOURCE: mdTraj
            MODIFICATION: displacement function
            Compute the dihedral angles of traj for the atom indices in indices.
@@ -90,9 +84,9 @@ class Dihedral(Metric):
 
         displacement = Displacement(periodic=periodic, unit_cell_angles=self.unit_cell_angles,
                                     unit_cell_vectors=self.unit_cell_vectors)
-        b1 = displacement.get_displacement_compatibility_layer(xyz, ix10, periodic=periodic, opt=False)
-        b2 = displacement.get_displacement_compatibility_layer(xyz, ix21, periodic=periodic, opt=False)
-        b3 = displacement.get_displacement_compatibility_layer(xyz, ix32, periodic=periodic, opt=False)
+        b1 = displacement.get_compatibility_layer(xyz, ix10, periodic=periodic, opt=False)
+        b2 = displacement.get_compatibility_layer(xyz, ix21, periodic=periodic, opt=False)
+        b3 = displacement.get_compatibility_layer(xyz, ix32, periodic=periodic, opt=False)
 
         c1 = np.cross(b2, b3)
         c2 = np.cross(b1, b2)
@@ -109,7 +103,7 @@ class Dihedral(Metric):
         if opt:
             _dihedral(xyz, indices, dihedrals)
         else:
-            self.__calculate_dihedral__(xyz=xyz, indices=indices, out=dihedrals, periodic=False)
+            self.__calculate_angle__(xyz=xyz, indices=indices, out=dihedrals, periodic=False)
 
         return dihedrals
 
@@ -123,14 +117,6 @@ class Dihedral(Metric):
             orthogonal = np.allclose(self.unit_cell_angles, 90)
             _dihedral_mic(xyz, indices, box.transpose(0, 2, 1).copy(), dihedrals, orthogonal)
         else:
-            self.__calculate_dihedral__(xyz=xyz, indices=indices, periodic=True, out=dihedrals)
+            self.__calculate_angle__(xyz=xyz, indices=indices, periodic=True, out=dihedrals)
 
         return dihedrals
-
-    def get_dihedral(self, atom_name_residue_pair_01, atom_name_residue_pair_02, atom_name_residue_pair_03,
-                     atom_name_residue_pair_04, opt=True):
-        name_residue_pairs = (atom_name_residue_pair_01, atom_name_residue_pair_02, atom_name_residue_pair_03,
-                              atom_name_residue_pair_04)
-        atoms = self.__get_atoms__(*name_residue_pairs)
-
-        return self.__calculate__(atoms=atoms, opt=opt, amount=4)
