@@ -17,29 +17,34 @@ class Atom(object):
         self.covalent_bond_partners = ()
 
         # hydrogen bonds
-        self.is_donor_atom = None
+        self.is_donor_atom = False
         self.donor_slots = None
 
-        self.is_acceptor = None
+        self.is_acceptor = False
         self.acceptor_slots = None
 
-        if self.is_acceptor or self.is_donor_atom:
-            self.hydrogen_bond_partners = dict(subsystem=[[]] * self.xyz_trajectory.shape[0])
-        else:
-            self.hydrogen_bond_partners = None
+        self.hydrogen_bond_partners = None
 
     def add_covalent_bond(self, atom):
         self.covalent_bond_partners = (*self.covalent_bond_partners, atom)
 
+    def __update_hydrogen_bond_partners__(self, is_hydrogen_bond_active):
+        if is_hydrogen_bond_active:
+            self.hydrogen_bond_partners = dict(subsystem=[[]] * self.xyz_trajectory.shape[0])
+        else:
+            self.hydrogen_bond_partners = None
+
     def update_donor_state(self, is_donor_atom, donor_slots):
         self.is_donor_atom = is_donor_atom
         self.donor_slots = donor_slots
+        self.__update_hydrogen_bond_partners__(is_hydrogen_bond_active=is_donor_atom)
 
     def update_acceptor_state(self, is_acceptor, acceptor_slots):
         self.is_acceptor = is_acceptor
         self.acceptor_slots = acceptor_slots
+        self.__update_hydrogen_bond_partners__(is_hydrogen_bond_active=is_acceptor)
 
-    def update_hydrogen_bond_partner(self, frame, atom):
+    def add_hydrogen_bond_partner(self, frame, atom):
         if self.hydrogen_bond_partners is not None:
             self.hydrogen_bond_partners[frame].append(atom)
         else:
