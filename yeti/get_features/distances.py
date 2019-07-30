@@ -35,12 +35,6 @@ class Distance(Metric):
 
         return distances
 
-    def get_distance(self, atom_name_residue_pair_01, atom_name_residue_pair_02, opt=False):
-        name_residue_pairs = (atom_name_residue_pair_01, atom_name_residue_pair_02)
-        atoms = self.__get_atoms__(*name_residue_pairs)
-
-        return self.__calculate__(atoms=atoms, opt=opt, amount=2)
-
 
 class Displacement(Metric):
     def __calculate_no_pbc__(self, xyz, indices, opt):
@@ -66,16 +60,10 @@ class Displacement(Metric):
 
         return displacements
 
-    def get_displacement_compatibility_layer(self, xyz, indices, periodic=True, opt=True):
+    def get_compatibility_layer(self, xyz, indices, periodic=True, opt=True):
         kwargs = dict(xyz=xyz, indices=indices, opt=opt)
 
         if periodic:
             return self.__calculate_minimal_image_convention__(**kwargs)
         else:
             return self.__calculate_no_pbc__(**kwargs)
-
-    def get_displacement(self, atom_name_residue_pair_01, atom_name_residue_pair_02, opt=False):
-        name_residue_pairs = (atom_name_residue_pair_01, atom_name_residue_pair_02)
-        atoms = self.__get_atoms__(*name_residue_pairs)
-
-        return self.__calculate__(atoms=atoms, opt=opt, amount=2)
