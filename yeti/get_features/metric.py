@@ -67,9 +67,9 @@ class Metric(object):
     def __calculate_minimal_image_convention__(self, xyz, indices, opt):
         pass
 
-    def __calculate__(self, atoms, opt, amount):
+    def __calculate__(self, atoms, opt):
         xyz = self.__prepare_xyz_data__(*atoms)
-        indices = self.__prepare_atom_indices__(amount=amount)
+        indices = self.__prepare_atom_indices__(amount=len(atoms))
 
         kwargs = dict(xyz=xyz, indices=indices, opt=opt)
 
@@ -79,3 +79,8 @@ class Metric(object):
             feature = self.__calculate_no_pbc__(**kwargs)
 
         return feature.flatten()
+
+    def get(self, atom_name_residue_pairs, opt=True):
+        atoms = self.__get_atoms__(*atom_name_residue_pairs)
+
+        return self.__calculate__(atoms=atoms, opt=opt)
