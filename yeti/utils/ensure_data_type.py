@@ -1,5 +1,6 @@
 import numpy as np
 
+from yeti.systems.atom import Atom
 from yeti.systems.residue import Residue
 
 
@@ -33,6 +34,9 @@ class EnsureDataTypes(object):
 
     def ensure_string(self, parameter, parameter_name):
         self.__check_type__(parameter=parameter, parameter_name=parameter_name, data_type=str)
+
+    def ensure_atom(self, parameter, parameter_name):
+        self.__check_type__(parameter=parameter, parameter_name=parameter_name, data_type=Atom)
 
     def ensure_residue(self, parameter, parameter_name):
         self.__check_type__(parameter=parameter, parameter_name=parameter_name, data_type=Residue)

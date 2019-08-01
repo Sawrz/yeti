@@ -1,4 +1,4 @@
-from yeti.utils.data_type_check import EnsureDataTypes
+from yeti.utils.ensure_data_type import EnsureDataTypes
 
 
 class AtomException(Exception):
