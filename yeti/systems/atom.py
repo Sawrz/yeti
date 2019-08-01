@@ -1,9 +1,21 @@
+from yeti.utils.data_type_check import EnsureDataTypes
+
+
 class AtomException(Exception):
     pass
 
 
 class Atom(object):
     def __init__(self, structure_file_index, subsystem_index, name, residue, xyz_trajectory):
+
+        self.ensure_data_type = EnsureDataTypes(exception_class=AtomException)
+        self.ensure_data_type.ensure_string(parameter=name, parameter_name='name')
+        self.ensure_data_type.ensure_integer(parameter=structure_file_index, parameter_name='structure_file_index')
+        self.ensure_data_type.ensure_integer(parameter=subsystem_index, parameter_name='subsystem_index')
+        self.ensure_data_type.ensure_residue(parameter=residue, parameter_name='residue')
+        self.ensure_data_type.ensure_numpy_array(parameter=xyz_trajectory, parameter_name='xyz_trajectory',
+                                                 shape=(3, None))
+
         self.name = name
         self.subsystem_index = subsystem_index
         self.structure_file_index = structure_file_index
