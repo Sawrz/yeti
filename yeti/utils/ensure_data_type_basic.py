@@ -1,15 +1,12 @@
 import numpy as np
 
-from yeti.systems.atom import Atom
-from yeti.systems.residue import Residue
-
 
 class EnsureDataTypes(object):
     def __init__(self, exception_class):
         self.exception_class = exception_class
 
     def __check_type__(self, parameter, parameter_name, data_type):
-        if type(parameter) != data_type:
+        if type(parameter) is not data_type:
             msg = 'Wrong data type for parameter "{name}". Desired type is {data_type}'.format(
                 name=parameter_name, data_type=data_type.__name__)
             raise self.exception_class(msg)
@@ -35,11 +32,8 @@ class EnsureDataTypes(object):
     def ensure_string(self, parameter, parameter_name):
         self.__check_type__(parameter=parameter, parameter_name=parameter_name, data_type=str)
 
-    def ensure_atom(self, parameter, parameter_name):
-        self.__check_type__(parameter=parameter, parameter_name=parameter_name, data_type=Atom)
-
-    def ensure_residue(self, parameter, parameter_name):
-        self.__check_type__(parameter=parameter, parameter_name=parameter_name, data_type=Residue)
+    def ensure_boolean(self, parameter, parameter_name):
+        self.__check_type__(parameter=parameter, parameter_name=parameter_name, data_type=bool)
 
     def ensure_numpy_array(self, parameter, parameter_name, shape):
         self.__check_type__(parameter=parameter, parameter_name=parameter_name, data_type=np.ndarray)
