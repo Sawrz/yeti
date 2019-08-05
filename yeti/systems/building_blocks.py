@@ -1,4 +1,4 @@
-from yeti.utils.ensure_data_type_residue import Ensure_DataTypesWithResidue
+from yeti.utils.ensure_data_type_basic import EnsureDataTypes
 
 
 class AtomWarning(Warning):
@@ -9,14 +9,26 @@ class AtomException(Exception):
     pass
 
 
-class Atom(object):
-    def __init__(self, structure_file_index, subsystem_index, name, residue, xyz_trajectory):
+class ResidueException(Exception):
+    pass
 
-        self.ensure_data_type = Ensure_DataTypesWithResidue(exception_class=AtomException)
+
+# TODO: rearrange structure
+class EnsureDataTypes(EnsureDataTypes):
+    def ensure_atom(self, parameter, parameter_name):
+        self.__check_type__(parameter=parameter, parameter_name=parameter_name, data_type=Atom)
+
+    def ensure_residue(self, parameter, parameter_name):
+        self.__check_type__(parameter=parameter, parameter_name=parameter_name, data_type=Residue)
+
+
+class Atom(object):
+    def __init__(self, structure_file_index, subsystem_index, name, xyz_trajectory):
+
+        self.ensure_data_type = EnsureDataTypes(exception_class=AtomException)
         self.ensure_data_type.ensure_string(parameter=name, parameter_name='name')
         self.ensure_data_type.ensure_integer(parameter=structure_file_index, parameter_name='structure_file_index')
         self.ensure_data_type.ensure_integer(parameter=subsystem_index, parameter_name='subsystem_index')
-        self.ensure_data_type.ensure_residue(parameter=residue, parameter_name='residue')
         self.ensure_data_type.ensure_numpy_array(parameter=xyz_trajectory, parameter_name='xyz_trajectory',
                                                  shape=(3, None))
 
@@ -25,7 +37,7 @@ class Atom(object):
         self.structure_file_index = structure_file_index
 
         self.element = None
-        self.residue = residue
+        self.residue = None
 
         self.xyz_trajectory = xyz_trajectory
 
@@ -145,3 +157,33 @@ class Atom(object):
 
     def __str__(self):
         return self.name
+
+
+class Residue(object):
+    def __init__(self, subsystem_index, structure_file_index, name):
+        self.ensure_data_type = EnsureDataTypes(exception_class=ResidueException)
+        self.ensure_data_type.ensure_integer(parameter=subsystem_index, parameter_name='subsystem_index')
+        self.ensure_data_type.ensure_integer(parameter=structure_file_index, parameter_name='structure_file_index')
+        self.ensure_data_type.ensure_string(parameter=name, parameter_name='name')
+
+        self.atoms = []
+        self.sequence = []
+
+        self.name = name
+        self.structure_file_index = structure_file_index
+        self.subsystem_index = subsystem_index
+
+        self.number_of_atoms = 0
+
+    def __str__(self):
+        return '{name}{index:d}'.format(name=self.name, index=self.subsystem_index)
+
+    def add_atom(self, atom):
+        self.atoms.append(atom)
+        self.sequence.append(str(atom))
+
+        self.number_of_atoms += 1
+
+    def finalize(self):
+        self.atoms = tuple(self.atoms)
+        self.sequence = tuple(self.sequence)
