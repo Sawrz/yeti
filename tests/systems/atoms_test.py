@@ -96,7 +96,6 @@ class AtomTest(unittest.TestCase):
         atom.set_residue(residue=res)
 
         self.assertEqual(atom.residue, res)
-        self.assertEqual(res.atoms, [atom])
 
     def test_set_residue_wrong_data_type(self):
         from yeti.systems.building_blocks import Atom, AtomException
