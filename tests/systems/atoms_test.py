@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 import numpy.testing as npt
 
-from yeti.systems.residue import Residue
+from yeti.systems.building_blocks import Residue
 
 residue = Residue(subsystem_index=0, structure_file_index=1, name='helper')
 
@@ -15,17 +15,16 @@ def create_data_type_exception_messages(parameter_name, data_type_name):
 
 class AtomTest(unittest.TestCase):
     def test_init(self):
-        from yeti.systems.atom import Atom
+        from yeti.systems.building_blocks import Atom
 
         xyz_trajectory = np.arange(6).reshape((3, 2))
 
-        atom = Atom(name='test', subsystem_index=16, structure_file_index=42, residue=residue,
-                    xyz_trajectory=xyz_trajectory)
+        atom = Atom(name='test', subsystem_index=16, structure_file_index=42, xyz_trajectory=xyz_trajectory)
 
         self.assertEqual(atom.name, 'test')
         self.assertEqual(atom.subsystem_index, 16)
         self.assertEqual(atom.structure_file_index, 42)
-        self.assertEqual(atom.residue, residue)
+        self.assertIsNone(atom.residue)
         npt.assert_equal(atom.xyz_trajectory, xyz_trajectory)
 
         self.assertIsNone(atom.element)
@@ -37,76 +36,98 @@ class AtomTest(unittest.TestCase):
         self.assertIsNone(atom.hydrogen_bond_partners)
 
     def test_init_name_wrong_data_type(self):
-        from yeti.systems.atom import Atom, AtomException
+        from yeti.systems.building_blocks import Atom, AtomException
 
         with self.assertRaises(AtomException) as context:
-            Atom(name=12, subsystem_index=16, structure_file_index=42, residue=residue,
-                 xyz_trajectory=np.arange(6).reshape((3, 2)))
+            Atom(name=12, subsystem_index=16, structure_file_index=42, xyz_trajectory=np.arange(6).reshape((3, 2)))
 
         desired_msg = create_data_type_exception_messages(parameter_name='name', data_type_name='str')
         self.assertEqual(desired_msg, str(context.exception))
 
     def test_init_subsystem_index_wrong_data_type(self):
-        from yeti.systems.atom import Atom, AtomException
+        from yeti.systems.building_blocks import Atom, AtomException
 
         with self.assertRaises(AtomException) as context:
-            Atom(name='test', subsystem_index=16.1, structure_file_index=42, residue=residue,
+            Atom(name='test', subsystem_index=16.1, structure_file_index=42,
                  xyz_trajectory=np.arange(6).reshape((3, 2)))
 
         desired_msg = create_data_type_exception_messages(parameter_name='subsystem_index', data_type_name='int')
         self.assertEqual(desired_msg, str(context.exception))
 
     def test_init_structure_file_wrong_data_type(self):
-        from yeti.systems.atom import Atom, AtomException
+        from yeti.systems.building_blocks import Atom, AtomException
 
         with self.assertRaises(AtomException) as context:
-            Atom(name='test', subsystem_index=16, structure_file_index=42.0, residue=residue,
+            Atom(name='test', subsystem_index=16, structure_file_index=42.0,
                  xyz_trajectory=np.arange(6).reshape((3, 2)))
 
         desired_msg = create_data_type_exception_messages(parameter_name='structure_file_index',
                                                           data_type_name='int')
         self.assertEqual(desired_msg, str(context.exception))
 
-    def test_init_residue_wrong_data_type(self):
-        from yeti.systems.atom import Atom, AtomException
-
-        with self.assertRaises(AtomException) as context:
-            Atom(name='test', subsystem_index=16, structure_file_index=42, residue='residue',
-                 xyz_trajectory=np.arange(6).reshape((3, 2)))
-
-        desired_msg = create_data_type_exception_messages(parameter_name='residue', data_type_name='Residue')
-        self.assertEqual(desired_msg, str(context.exception))
-
     def test_init_xyz_wrong_shape(self):
-        from yeti.systems.atom import Atom, AtomException
+        from yeti.systems.building_blocks import Atom, AtomException
 
         xyz_trajectory = np.arange(8).reshape((4, 2))
 
         with self.assertRaises(AtomException) as context:
-            Atom(name='test', subsystem_index=16, structure_file_index=42, residue=residue,
-                 xyz_trajectory=xyz_trajectory)
+            Atom(name='test', subsystem_index=16, structure_file_index=42, xyz_trajectory=xyz_trajectory)
 
         self.assertEqual(str(context.exception),
                          'Wrong shape for parameter "xyz_trajectory". Desired shape: (3, None).')
 
     def test_init_xyz_wrong_data_type(self):
-        from yeti.systems.atom import Atom, AtomException
+        from yeti.systems.building_blocks import Atom, AtomException
 
         xyz_trajectory = list(np.arange(6).reshape((3, 2)))
 
         with self.assertRaises(AtomException) as context:
-            Atom(name='test', subsystem_index=16, structure_file_index=42, residue=residue,
-                 xyz_trajectory=xyz_trajectory)
+            Atom(name='test', subsystem_index=16, structure_file_index=42, xyz_trajectory=xyz_trajectory)
 
         desired_msg = create_data_type_exception_messages(parameter_name='xyz_trajectory', data_type_name='ndarray')
         self.assertEqual(desired_msg, str(context.exception))
 
-    def test_update_covalent_bond(self):
-        from yeti.systems.atom import Atom
+    def test_set_residue(self):
+        from yeti.systems.building_blocks import Atom, Residue
 
-        atom_01 = Atom(structure_file_index=1, subsystem_index=0, name='A', residue=residue,
-                       xyz_trajectory=np.arange(6).reshape((3, 2)))
-        atom_02 = Atom(structure_file_index=3, subsystem_index=0, name='A', residue=residue,
+        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((3, 2)))
+        res = Residue(subsystem_index=0, structure_file_index=1, name='RES')
+
+        atom.set_residue(residue=res)
+
+        self.assertEqual(atom.residue, res)
+        self.assertEqual(res.atoms, [atom])
+
+    def test_set_residue_wrong_data_type(self):
+        from yeti.systems.building_blocks import Atom, AtomException
+
+        atom = Atom(name='test', subsystem_index=16, structure_file_index=42,
+                    xyz_trajectory=np.arange(6).reshape((3, 2)))
+
+        with self.assertRaises(AtomException) as context:
+            atom.set_residue(residue=24)
+
+        desired_msg = create_data_type_exception_messages(parameter_name='residue', data_type_name='Residue')
+        self.assertEqual(desired_msg, str(context.exception))
+
+    def test_set_residue_already_assigned(self):
+        from yeti.systems.building_blocks import Atom, AtomWarning
+
+        atom = Atom(name='test', subsystem_index=16, structure_file_index=42,
+                    xyz_trajectory=np.arange(6).reshape((3, 2)))
+        atom.set_residue(residue=residue)
+
+        with self.assertRaises(AtomWarning) as context:
+            atom.set_residue(residue=residue)
+
+        desired_msg = 'This atom belongs already to a residue. Changing relationship...'
+        self.assertEqual(desired_msg, str(context.exception))
+
+    def test_update_covalent_bond(self):
+        from yeti.systems.building_blocks import Atom
+
+        atom_01 = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((3, 2)))
+        atom_02 = Atom(structure_file_index=3, subsystem_index=0, name='A',
                        xyz_trajectory=np.arange(6, 12).reshape((3, 2)))
 
         atom_01.__update_covalent_bond__(atom=atom_02)
@@ -114,13 +135,12 @@ class AtomTest(unittest.TestCase):
         self.assertTupleEqual(atom_01.covalent_bond_partners, (atom_02,))
 
     def test_update_covalent_bond_more_atoms(self):
-        from yeti.systems.atom import Atom
+        from yeti.systems.building_blocks import Atom
 
-        atom_01 = Atom(structure_file_index=1, subsystem_index=0, name='A', residue=residue,
-                       xyz_trajectory=np.arange(6).reshape((3, 2)))
-        atom_02 = Atom(structure_file_index=2, subsystem_index=1, name='B', residue=residue,
+        atom_01 = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((3, 2)))
+        atom_02 = Atom(structure_file_index=2, subsystem_index=1, name='B',
                        xyz_trajectory=np.arange(6, 12).reshape((3, 2)))
-        atom_03 = Atom(structure_file_index=3, subsystem_index=2, name='C', residue=residue,
+        atom_03 = Atom(structure_file_index=3, subsystem_index=2, name='C',
                        xyz_trajectory=np.arange(12, 18).reshape((3, 2)))
 
         atom_01.__update_covalent_bond__(atom=atom_02)
@@ -129,10 +149,9 @@ class AtomTest(unittest.TestCase):
         self.assertTupleEqual(atom_01.covalent_bond_partners, (atom_02, atom_03))
 
     def test_update_covalent_bond_wrong_data_type(self):
-        from yeti.systems.atom import Atom, AtomException
+        from yeti.systems.building_blocks import Atom, AtomException
 
-        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', residue=residue,
-                    xyz_trajectory=np.arange(6).reshape((3, 2)))
+        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((3, 2)))
 
         with self.assertRaises(AtomException) as context:
             atom.__update_covalent_bond__(atom=42)
@@ -141,11 +160,10 @@ class AtomTest(unittest.TestCase):
         self.assertEqual(desired_msg, str(context.exception))
 
     def test_update_covalent_bond_exists_already(self):
-        from yeti.systems.atom import Atom, AtomWarning
+        from yeti.systems.building_blocks import Atom, AtomWarning
 
-        atom_01 = Atom(structure_file_index=4, subsystem_index=0, name='A', residue=residue,
-                       xyz_trajectory=np.arange(6).reshape((3, 2)))
-        atom_02 = Atom(structure_file_index=1, subsystem_index=0, name='A', residue=residue,
+        atom_01 = Atom(structure_file_index=4, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((3, 2)))
+        atom_02 = Atom(structure_file_index=1, subsystem_index=0, name='A',
                        xyz_trajectory=np.arange(6, 12).reshape((3, 2)))
 
         atom_01.__update_covalent_bond__(atom=atom_02)
@@ -157,10 +175,9 @@ class AtomTest(unittest.TestCase):
         self.assertEqual(desired_msg, str(context.exception))
 
     def test_update_covalent_bond_with_itself(self):
-        from yeti.systems.atom import Atom, AtomException
+        from yeti.systems.building_blocks import Atom, AtomException
 
-        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', residue=residue,
-                    xyz_trajectory=np.arange(6).reshape((3, 2)))
+        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((3, 2)))
 
         with self.assertRaises(AtomException) as context:
             atom.__update_covalent_bond__(atom=atom)
@@ -169,11 +186,10 @@ class AtomTest(unittest.TestCase):
         self.assertEqual(desired_msg, str(context.exception))
 
     def test_add_covalent_bonds(self):
-        from yeti.systems.atom import Atom
+        from yeti.systems.building_blocks import Atom
 
-        atom_01 = Atom(structure_file_index=1, subsystem_index=0, name='A', residue=residue,
-                       xyz_trajectory=np.arange(6).reshape((3, 2)))
-        atom_02 = Atom(structure_file_index=2, subsystem_index=0, name='A', residue=residue,
+        atom_01 = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((3, 2)))
+        atom_02 = Atom(structure_file_index=2, subsystem_index=0, name='A',
                        xyz_trajectory=np.arange(6, 12).reshape((3, 2)))
 
         atom_01.add_covalent_bond(atom=atom_02)
@@ -182,10 +198,9 @@ class AtomTest(unittest.TestCase):
         self.assertTupleEqual(atom_02.covalent_bond_partners, (atom_01,))
 
     def test_add_covalent_bonds_wrong_data_type(self):
-        from yeti.systems.atom import Atom, AtomException
+        from yeti.systems.building_blocks import Atom, AtomException
 
-        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', residue=residue,
-                    xyz_trajectory=np.arange(6).reshape((3, 2)))
+        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((3, 2)))
 
         with self.assertRaises(AtomException) as context:
             atom.add_covalent_bond(atom=42)
@@ -194,29 +209,26 @@ class AtomTest(unittest.TestCase):
         self.assertEqual(desired_msg, str(context.exception))
 
     def test_update_hydrogen_bond_partners_false(self):
-        from yeti.systems.atom import Atom
+        from yeti.systems.building_blocks import Atom
 
-        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', residue=residue,
-                    xyz_trajectory=np.arange(6).reshape((3, 2)))
+        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((3, 2)))
 
         atom.__reset_hydrogen_bond_partners__(is_hydrogen_bond_active=False)
         self.assertIsNone(atom.hydrogen_bond_partners)
 
     def test_update_hydrogen_bond_partners_true(self):
-        from yeti.systems.atom import Atom
+        from yeti.systems.building_blocks import Atom
 
-        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', residue=residue,
-                    xyz_trajectory=np.arange(6).reshape((3, 2)))
+        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((3, 2)))
 
         atom.__reset_hydrogen_bond_partners__(is_hydrogen_bond_active=True)
         self.assertDictEqual(atom.hydrogen_bond_partners, dict(subsystem=[[], []]))
         self.assertListEqual(atom.hydrogen_bond_partners['subsystem'], [[], []])
 
     def test_update_hydrogen_bond_partners_wrong_data_type(self):
-        from yeti.systems.atom import Atom, AtomException
+        from yeti.systems.building_blocks import Atom, AtomException
 
-        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', residue=residue,
-                    xyz_trajectory=np.arange(6).reshape((3, 2)))
+        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((3, 2)))
 
         with self.assertRaises(AtomException) as context:
             atom.__reset_hydrogen_bond_partners__(is_hydrogen_bond_active=42)
@@ -226,10 +238,9 @@ class AtomTest(unittest.TestCase):
         self.assertEqual(desired_msg, str(context.exception))
 
     def test_update_donor_state_true(self):
-        from yeti.systems.atom import Atom
+        from yeti.systems.building_blocks import Atom
 
-        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', residue=residue,
-                    xyz_trajectory=np.arange(6).reshape((3, 2)))
+        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((3, 2)))
 
         atom.update_donor_state(is_donor_atom=True, donor_slots=2)
 
@@ -238,10 +249,9 @@ class AtomTest(unittest.TestCase):
         self.assertListEqual(atom.hydrogen_bond_partners['subsystem'], [[], []])
 
     def test_update_donor_state_false(self):
-        from yeti.systems.atom import Atom
+        from yeti.systems.building_blocks import Atom
 
-        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', residue=residue,
-                    xyz_trajectory=np.arange(6).reshape((3, 2)))
+        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((3, 2)))
 
         atom.update_donor_state(is_donor_atom=False, donor_slots=0)
 
@@ -250,10 +260,9 @@ class AtomTest(unittest.TestCase):
         self.assertIsNone(atom.hydrogen_bond_partners)
 
     def test_update_donor_state_false_but_slots(self):
-        from yeti.systems.atom import Atom, AtomException
+        from yeti.systems.building_blocks import Atom, AtomException
 
-        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', residue=residue,
-                    xyz_trajectory=np.arange(6).reshape((3, 2)))
+        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((3, 2)))
 
         with self.assertRaises(AtomException) as context:
             atom.update_donor_state(is_donor_atom=False, donor_slots=2)
@@ -262,10 +271,9 @@ class AtomTest(unittest.TestCase):
         self.assertEqual(desired_msg, str(context.exception))
 
     def test_update_donor_state_true_but_none_slots(self):
-        from yeti.systems.atom import Atom, AtomException
+        from yeti.systems.building_blocks import Atom, AtomException
 
-        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', residue=residue,
-                    xyz_trajectory=np.arange(6).reshape((3, 2)))
+        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((3, 2)))
 
         with self.assertRaises(AtomException) as context:
             atom.update_donor_state(is_donor_atom=True, donor_slots=0)
@@ -274,10 +282,9 @@ class AtomTest(unittest.TestCase):
         self.assertEqual(desired_msg, str(context.exception))
 
     def test_update_donor_state_true_but_no_slots(self):
-        from yeti.systems.atom import Atom, AtomException
+        from yeti.systems.building_blocks import Atom, AtomException
 
-        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', residue=residue,
-                    xyz_trajectory=np.arange(6).reshape((3, 2)))
+        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((3, 2)))
 
         with self.assertRaises(AtomException) as context:
             atom.update_donor_state(is_donor_atom=True, donor_slots=0)
@@ -286,10 +293,9 @@ class AtomTest(unittest.TestCase):
         self.assertEqual(desired_msg, str(context.exception))
 
     def test_update_donor_state_true_but_negative_slots(self):
-        from yeti.systems.atom import Atom, AtomException
+        from yeti.systems.building_blocks import Atom, AtomException
 
-        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', residue=residue,
-                    xyz_trajectory=np.arange(6).reshape((3, 2)))
+        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((3, 2)))
 
         with self.assertRaises(AtomException) as context:
             atom.update_donor_state(is_donor_atom=True, donor_slots=-1)
@@ -298,10 +304,9 @@ class AtomTest(unittest.TestCase):
         self.assertEqual(desired_msg, str(context.exception))
 
     def test_update_donor_state_is_donor_atom_wrong_data_type(self):
-        from yeti.systems.atom import Atom, AtomException
+        from yeti.systems.building_blocks import Atom, AtomException
 
-        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', residue=residue,
-                    xyz_trajectory=np.arange(6).reshape((3, 2)))
+        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((3, 2)))
 
         with self.assertRaises(AtomException) as context:
             atom.update_donor_state(is_donor_atom=42, donor_slots=2)
@@ -310,10 +315,9 @@ class AtomTest(unittest.TestCase):
         self.assertEqual(desired_msg, str(context.exception))
 
     def test_update_donor_state_donor_slots_wrong_data_type(self):
-        from yeti.systems.atom import Atom, AtomException
+        from yeti.systems.building_blocks import Atom, AtomException
 
-        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', residue=residue,
-                    xyz_trajectory=np.arange(6).reshape((3, 2)))
+        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((3, 2)))
 
         with self.assertRaises(AtomException) as context:
             atom.update_donor_state(is_donor_atom=True, donor_slots=2.5)
@@ -322,10 +326,9 @@ class AtomTest(unittest.TestCase):
         self.assertEqual(desired_msg, str(context.exception))
 
     def test_update_acceptor_state_true(self):
-        from yeti.systems.atom import Atom
+        from yeti.systems.building_blocks import Atom
 
-        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', residue=residue,
-                    xyz_trajectory=np.arange(6).reshape((3, 2)))
+        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((3, 2)))
 
         atom.update_acceptor_state(is_acceptor=True, acceptor_slots=2)
 
@@ -334,10 +337,9 @@ class AtomTest(unittest.TestCase):
         self.assertListEqual(atom.hydrogen_bond_partners['subsystem'], [[], []])
 
     def test_update_acceptor_state_false(self):
-        from yeti.systems.atom import Atom
+        from yeti.systems.building_blocks import Atom
 
-        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', residue=residue,
-                    xyz_trajectory=np.arange(6).reshape((3, 2)))
+        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((3, 2)))
 
         atom.update_acceptor_state(is_acceptor=False, acceptor_slots=0)
 
@@ -346,10 +348,9 @@ class AtomTest(unittest.TestCase):
         self.assertIsNone(atom.hydrogen_bond_partners)
 
     def test_update_acceptor_state_false_but_slots(self):
-        from yeti.systems.atom import Atom, AtomException
+        from yeti.systems.building_blocks import Atom, AtomException
 
-        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', residue=residue,
-                    xyz_trajectory=np.arange(6).reshape((3, 2)))
+        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((3, 2)))
 
         with self.assertRaises(AtomException) as context:
             atom.update_acceptor_state(is_acceptor=False, acceptor_slots=2)
@@ -358,10 +359,9 @@ class AtomTest(unittest.TestCase):
         self.assertEqual(desired_msg, str(context.exception))
 
     def test_update_acceptor_state_true_but_none_slots(self):
-        from yeti.systems.atom import Atom, AtomException
+        from yeti.systems.building_blocks import Atom, AtomException
 
-        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', residue=residue,
-                    xyz_trajectory=np.arange(6).reshape((3, 2)))
+        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((3, 2)))
 
         with self.assertRaises(AtomException) as context:
             atom.update_acceptor_state(is_acceptor=True, acceptor_slots=0)
@@ -370,10 +370,9 @@ class AtomTest(unittest.TestCase):
         self.assertEqual(desired_msg, str(context.exception))
 
     def test_update_acceptor_state_true_but_no_slots(self):
-        from yeti.systems.atom import Atom, AtomException
+        from yeti.systems.building_blocks import Atom, AtomException
 
-        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', residue=residue,
-                    xyz_trajectory=np.arange(6).reshape((3, 2)))
+        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((3, 2)))
 
         with self.assertRaises(AtomException) as context:
             atom.update_acceptor_state(is_acceptor=True, acceptor_slots=0)
@@ -382,10 +381,9 @@ class AtomTest(unittest.TestCase):
         self.assertEqual(desired_msg, str(context.exception))
 
     def test_update_acceptor_state_true_but_negative_slots(self):
-        from yeti.systems.atom import Atom, AtomException
+        from yeti.systems.building_blocks import Atom, AtomException
 
-        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', residue=residue,
-                    xyz_trajectory=np.arange(6).reshape((3, 2)))
+        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((3, 2)))
 
         with self.assertRaises(AtomException) as context:
             atom.update_acceptor_state(is_acceptor=True, acceptor_slots=-1)
@@ -394,10 +392,9 @@ class AtomTest(unittest.TestCase):
         self.assertEqual(desired_msg, str(context.exception))
 
     def test_update_acceptor_state_is_donor_atom_wrong_data_type(self):
-        from yeti.systems.atom import Atom, AtomException
+        from yeti.systems.building_blocks import Atom, AtomException
 
-        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', residue=residue,
-                    xyz_trajectory=np.arange(6).reshape((3, 2)))
+        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((3, 2)))
 
         with self.assertRaises(AtomException) as context:
             atom.update_acceptor_state(is_acceptor=42, acceptor_slots=2)
@@ -406,10 +403,9 @@ class AtomTest(unittest.TestCase):
         self.assertEqual(desired_msg, str(context.exception))
 
     def test_update_acceptor_state_donor_slots_wrong_data_type(self):
-        from yeti.systems.atom import Atom, AtomException
+        from yeti.systems.building_blocks import Atom, AtomException
 
-        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', residue=residue,
-                    xyz_trajectory=np.arange(6).reshape((3, 2)))
+        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((3, 2)))
 
         with self.assertRaises(AtomException) as context:
             atom.update_acceptor_state(is_acceptor=True, acceptor_slots=2.5)
@@ -418,13 +414,12 @@ class AtomTest(unittest.TestCase):
         self.assertEqual(desired_msg, str(context.exception))
 
     def test_update_hydrogen_bond_partner_donor(self):
-        from yeti.systems.atom import Atom
+        from yeti.systems.building_blocks import Atom
 
-        atom_01 = Atom(structure_file_index=1, subsystem_index=0, name='A', residue=residue,
-                       xyz_trajectory=np.arange(6).reshape((3, 2)))
+        atom_01 = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((3, 2)))
         atom_01.update_donor_state(is_donor_atom=True, donor_slots=1)
 
-        atom_02 = Atom(structure_file_index=2, subsystem_index=1, name='B', residue=residue,
+        atom_02 = Atom(structure_file_index=2, subsystem_index=1, name='B',
                        xyz_trajectory=np.arange(6, 12).reshape((3, 2)))
         atom_02.update_acceptor_state(is_acceptor=True, acceptor_slots=2)
 
@@ -433,13 +428,12 @@ class AtomTest(unittest.TestCase):
         self.assertDictEqual(atom_01.hydrogen_bond_partners, dict(subsystem=[[], [atom_02]]))
 
     def test_update_hydrogen_bond_partner_acceptor(self):
-        from yeti.systems.atom import Atom
+        from yeti.systems.building_blocks import Atom
 
-        atom_01 = Atom(structure_file_index=1, subsystem_index=0, name='A', residue=residue,
-                       xyz_trajectory=np.arange(6).reshape((3, 2)))
+        atom_01 = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((3, 2)))
         atom_01.update_donor_state(is_donor_atom=True, donor_slots=1)
 
-        atom_02 = Atom(structure_file_index=2, subsystem_index=1, name='B', residue=residue,
+        atom_02 = Atom(structure_file_index=2, subsystem_index=1, name='B',
                        xyz_trajectory=np.arange(6, 12).reshape((3, 2)))
         atom_02.update_acceptor_state(is_acceptor=True, acceptor_slots=2)
 
@@ -448,17 +442,16 @@ class AtomTest(unittest.TestCase):
         self.assertDictEqual(atom_02.hydrogen_bond_partners, dict(subsystem=[[], [atom_01]]))
 
     def test_update_hydrogen_bond_partner_more_atoms(self):
-        from yeti.systems.atom import Atom
+        from yeti.systems.building_blocks import Atom
 
-        atom_01 = Atom(structure_file_index=1, subsystem_index=0, name='A', residue=residue,
-                       xyz_trajectory=np.arange(6).reshape((3, 2)))
+        atom_01 = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((3, 2)))
         atom_01.update_donor_state(is_donor_atom=True, donor_slots=1)
 
-        atom_02 = Atom(structure_file_index=1, subsystem_index=0, name='B', residue=residue,
+        atom_02 = Atom(structure_file_index=1, subsystem_index=0, name='B',
                        xyz_trajectory=np.arange(6, 12).reshape((3, 2)))
         atom_02.update_donor_state(is_donor_atom=True, donor_slots=1)
 
-        atom_03 = Atom(structure_file_index=2, subsystem_index=1, name='C', residue=residue,
+        atom_03 = Atom(structure_file_index=2, subsystem_index=1, name='C',
                        xyz_trajectory=np.arange(12, 18).reshape((3, 2)))
         atom_03.update_acceptor_state(is_acceptor=True, acceptor_slots=2)
 
@@ -468,10 +461,9 @@ class AtomTest(unittest.TestCase):
         self.assertDictEqual(atom_03.hydrogen_bond_partners, dict(subsystem=[[], [atom_01, atom_02]]))
 
     def test_update_hydrogen_bond_partner_atom_wrong_data_type(self):
-        from yeti.systems.atom import Atom, AtomException
+        from yeti.systems.building_blocks import Atom, AtomException
 
-        atom_01 = Atom(structure_file_index=1, subsystem_index=0, name='A', residue=residue,
-                       xyz_trajectory=np.arange(6).reshape((3, 2)))
+        atom_01 = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((3, 2)))
         atom_01.update_donor_state(is_donor_atom=True, donor_slots=1)
 
         with self.assertRaises(AtomException) as context:
@@ -481,13 +473,12 @@ class AtomTest(unittest.TestCase):
         self.assertEqual(desired_msg, str(context.exception))
 
     def test_update_hydrogen_bond_partner_frame_wrong_data_type(self):
-        from yeti.systems.atom import Atom, AtomException
+        from yeti.systems.building_blocks import Atom, AtomException
 
-        atom_01 = Atom(structure_file_index=1, subsystem_index=0, name='A', residue=residue,
-                       xyz_trajectory=np.arange(6).reshape((3, 2)))
+        atom_01 = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((3, 2)))
         atom_01.update_donor_state(is_donor_atom=True, donor_slots=1)
 
-        atom_02 = Atom(structure_file_index=2, subsystem_index=1, name='B', residue=residue,
+        atom_02 = Atom(structure_file_index=2, subsystem_index=1, name='B',
                        xyz_trajectory=np.arange(6, 12).reshape((3, 2)))
         atom_02.update_acceptor_state(is_acceptor=True, acceptor_slots=2)
 
@@ -498,13 +489,12 @@ class AtomTest(unittest.TestCase):
         self.assertEqual(desired_msg, str(context.exception))
 
     def test_update_hydrogen_bond_partner_frame_negative(self):
-        from yeti.systems.atom import Atom, AtomException
+        from yeti.systems.building_blocks import Atom, AtomException
 
-        atom_01 = Atom(structure_file_index=1, subsystem_index=0, name='A', residue=residue,
-                       xyz_trajectory=np.arange(6).reshape((3, 2)))
+        atom_01 = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((3, 2)))
         atom_01.update_donor_state(is_donor_atom=True, donor_slots=1)
 
-        atom_02 = Atom(structure_file_index=2, subsystem_index=1, name='B', residue=residue,
+        atom_02 = Atom(structure_file_index=2, subsystem_index=1, name='B',
                        xyz_trajectory=np.arange(6, 12).reshape((3, 2)))
         atom_02.update_acceptor_state(is_acceptor=True, acceptor_slots=2)
 
@@ -515,13 +505,12 @@ class AtomTest(unittest.TestCase):
         self.assertEqual(desired_msg, str(context.exception))
 
     def test_update_hydrogen_bond_partner_system_wrong_data_type(self):
-        from yeti.systems.atom import Atom, AtomException
+        from yeti.systems.building_blocks import Atom, AtomException
 
-        atom_01 = Atom(structure_file_index=1, subsystem_index=0, name='A', residue=residue,
-                       xyz_trajectory=np.arange(6).reshape((3, 2)))
+        atom_01 = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((3, 2)))
         atom_01.update_donor_state(is_donor_atom=True, donor_slots=1)
 
-        atom_02 = Atom(structure_file_index=2, subsystem_index=1, name='B', residue=residue,
+        atom_02 = Atom(structure_file_index=2, subsystem_index=1, name='B',
                        xyz_trajectory=np.arange(6, 12).reshape((3, 2)))
         atom_02.update_acceptor_state(is_acceptor=True, acceptor_slots=2)
 
@@ -532,13 +521,12 @@ class AtomTest(unittest.TestCase):
         self.assertEqual(desired_msg, str(context.exception))
 
     def test_update_hydrogen_bond_partner_system_not_exist(self):
-        from yeti.systems.atom import Atom, AtomException
+        from yeti.systems.building_blocks import Atom, AtomException
 
-        atom_01 = Atom(structure_file_index=1, subsystem_index=0, name='A', residue=residue,
-                       xyz_trajectory=np.arange(6).reshape((3, 2)))
+        atom_01 = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((3, 2)))
         atom_01.update_donor_state(is_donor_atom=True, donor_slots=1)
 
-        atom_02 = Atom(structure_file_index=2, subsystem_index=1, name='B', residue=residue,
+        atom_02 = Atom(structure_file_index=2, subsystem_index=1, name='B',
                        xyz_trajectory=np.arange(6, 12).reshape((3, 2)))
         atom_02.update_acceptor_state(is_acceptor=True, acceptor_slots=2)
 
@@ -549,13 +537,12 @@ class AtomTest(unittest.TestCase):
         self.assertEqual(desired_msg, str(context.exception))
 
     def test_update_hydrogen_bond_partner_bond_already_exists(self):
-        from yeti.systems.atom import Atom, AtomWarning
+        from yeti.systems.building_blocks import Atom, AtomWarning
 
-        atom_01 = Atom(structure_file_index=1, subsystem_index=0, name='A', residue=residue,
-                       xyz_trajectory=np.arange(6).reshape((3, 2)))
+        atom_01 = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((3, 2)))
         atom_01.update_donor_state(is_donor_atom=True, donor_slots=1)
 
-        atom_02 = Atom(structure_file_index=2, subsystem_index=1, name='B', residue=residue,
+        atom_02 = Atom(structure_file_index=2, subsystem_index=1, name='B',
                        xyz_trajectory=np.arange(6, 12).reshape((3, 2)))
         atom_02.update_acceptor_state(is_acceptor=True, acceptor_slots=2)
 
@@ -568,13 +555,12 @@ class AtomTest(unittest.TestCase):
         self.assertEqual(desired_msg, str(context.exception))
 
     def test_add_hydrogen_bond_partner(self):
-        from yeti.systems.atom import Atom
+        from yeti.systems.building_blocks import Atom
 
-        atom_01 = Atom(structure_file_index=1, subsystem_index=0, name='A', residue=residue,
-                       xyz_trajectory=np.arange(6).reshape((3, 2)))
+        atom_01 = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((3, 2)))
         atom_01.update_donor_state(is_donor_atom=True, donor_slots=1)
 
-        atom_02 = Atom(structure_file_index=2, subsystem_index=1, name='B', residue=residue,
+        atom_02 = Atom(structure_file_index=2, subsystem_index=1, name='B',
                        xyz_trajectory=np.arange(6, 12).reshape((3, 2)))
         atom_02.update_acceptor_state(is_acceptor=True, acceptor_slots=2)
 
@@ -584,12 +570,11 @@ class AtomTest(unittest.TestCase):
         self.assertDictEqual(atom_02.hydrogen_bond_partners, dict(subsystem=[[atom_01], []]))
 
     def test_add_hydrogen_bond_partner_is_None(self):
-        from yeti.systems.atom import Atom, AtomException
+        from yeti.systems.building_blocks import Atom, AtomException
 
-        atom_01 = Atom(structure_file_index=1, subsystem_index=0, name='A', residue=residue,
-                       xyz_trajectory=np.arange(6).reshape((3, 2)))
+        atom_01 = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((3, 2)))
 
-        atom_02 = Atom(structure_file_index=2, subsystem_index=1, name='B', residue=residue,
+        atom_02 = Atom(structure_file_index=2, subsystem_index=1, name='B',
                        xyz_trajectory=np.arange(6, 12).reshape((3, 2)))
         atom_02.update_acceptor_state(is_acceptor=True, acceptor_slots=2)
 
@@ -600,13 +585,12 @@ class AtomTest(unittest.TestCase):
         self.assertEqual(desired_msg, str(context.exception))
 
     def test_add_hydrogen_bond_partner_atom_is_None(self):
-        from yeti.systems.atom import Atom, AtomException
+        from yeti.systems.building_blocks import Atom, AtomException
 
-        atom_01 = Atom(structure_file_index=1, subsystem_index=0, name='A', residue=residue,
-                       xyz_trajectory=np.arange(6).reshape((3, 2)))
+        atom_01 = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((3, 2)))
         atom_01.update_donor_state(is_donor_atom=True, donor_slots=1)
 
-        atom_02 = Atom(structure_file_index=2, subsystem_index=1, name='B', residue=residue,
+        atom_02 = Atom(structure_file_index=2, subsystem_index=1, name='B',
                        xyz_trajectory=np.arange(6, 12).reshape((3, 2)))
 
         with self.assertRaises(AtomException) as context:
@@ -616,10 +600,9 @@ class AtomTest(unittest.TestCase):
         self.assertEqual(desired_msg, str(context.exception))
 
     def test_purge_hydrogen_bond_partner_history_donor(self):
-        from yeti.systems.atom import Atom
+        from yeti.systems.building_blocks import Atom
 
-        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', residue=residue,
-                    xyz_trajectory=np.arange(6).reshape((3, 2)))
+        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((3, 2)))
         atom.update_donor_state(is_donor_atom=True, donor_slots=1)
         atom.hydrogen_bond_partners['subsystem'][1].append(5)
         atom.purge_hydrogen_bond_partner_history(system_name='subsystem')
@@ -627,10 +610,9 @@ class AtomTest(unittest.TestCase):
         self.assertDictEqual(atom.hydrogen_bond_partners, dict(subsystem=[[], []]))
 
     def test_purge_hydrogen_bond_partner_history_acceptor(self):
-        from yeti.systems.atom import Atom
+        from yeti.systems.building_blocks import Atom
 
-        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', residue=residue,
-                    xyz_trajectory=np.arange(6).reshape((3, 2)))
+        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((3, 2)))
         atom.update_acceptor_state(is_acceptor=True, acceptor_slots=1)
         atom.hydrogen_bond_partners['subsystem'][1].append(5)
         atom.purge_hydrogen_bond_partner_history(system_name='subsystem')
@@ -638,10 +620,9 @@ class AtomTest(unittest.TestCase):
         self.assertDictEqual(atom.hydrogen_bond_partners, dict(subsystem=[[], []]))
 
     def test_purge_hydrogen_bond_partner_history_subsystem_wrong_data_type(self):
-        from yeti.systems.atom import Atom, AtomException
+        from yeti.systems.building_blocks import Atom, AtomException
 
-        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', residue=residue,
-                    xyz_trajectory=np.arange(6).reshape((3, 2)))
+        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((3, 2)))
         atom.update_acceptor_state(is_acceptor=True, acceptor_slots=1)
 
         with self.assertRaises(AtomException) as context:
@@ -651,10 +632,9 @@ class AtomTest(unittest.TestCase):
         self.assertEqual(desired_msg, str(context.exception))
 
     def test_purge_hydrogen_bond_partner_history_system_name_not_exist(self):
-        from yeti.systems.atom import Atom, AtomException
+        from yeti.systems.building_blocks import Atom, AtomException
 
-        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', residue=residue,
-                    xyz_trajectory=np.arange(6).reshape((3, 2)))
+        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((3, 2)))
         atom.update_acceptor_state(is_acceptor=True, acceptor_slots=1)
 
         with self.assertRaises(AtomException) as context:
@@ -664,10 +644,9 @@ class AtomTest(unittest.TestCase):
         self.assertEqual(desired_msg, str(context.exception))
 
     def test_purge_hydrogen_bond_partner_history_hydrogen_bond_partners_is_none(self):
-        from yeti.systems.atom import Atom, AtomException
+        from yeti.systems.building_blocks import Atom, AtomException
 
-        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', residue=residue,
-                    xyz_trajectory=np.arange(6).reshape((3, 2)))
+        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((3, 2)))
 
         with self.assertRaises(AtomException) as context:
             atom.purge_hydrogen_bond_partner_history(system_name='subsystem')
@@ -676,10 +655,9 @@ class AtomTest(unittest.TestCase):
         self.assertEqual(desired_msg, str(context.exception))
 
     def test_str(self):
-        from yeti.systems.atom import Atom
+        from yeti.systems.building_blocks import Atom
 
-        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', residue=residue,
-                    xyz_trajectory=np.arange(6).reshape((3, 2)))
+        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((3, 2)))
 
         self.assertEqual(str(atom), atom.name)
 
