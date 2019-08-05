@@ -60,7 +60,6 @@ class Atom(object):
             raise AtomWarning('This atom belongs already to a residue. Changing relationship...')
 
         self.residue = residue
-        residue.add_atom(atom=self)
 
     def __update_covalent_bond__(self, atom):
         # TODO: merge __update_hydrogen_bond_partner__ and __update_covalent_bond__ into one method
@@ -187,7 +186,10 @@ class Residue(object):
     def __str__(self):
         return '{name}{index:d}'.format(name=self.name, index=self.subsystem_index)
 
+    # TODO: Think about way to connect residue to atom and atom to residue with one command (maybe in layer above?)
     def add_atom(self, atom):
+        self.ensure_data_type.ensure_atom(parameter=atom, parameter_name='atom')
+
         self.atoms.append(atom)
         self.sequence.append(str(atom))
 
