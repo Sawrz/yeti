@@ -53,6 +53,15 @@ class Atom(object):
 
         self.hydrogen_bond_partners = None
 
+    def set_residue(self, residue):
+        self.ensure_data_type.ensure_residue(parameter=residue, parameter_name='residue')
+
+        if self.residue is not None:
+            raise AtomWarning('This atom belongs already to a residue. Changing relationship...')
+
+        self.residue = residue
+        residue.add_atom(atom=self)
+
     def __update_covalent_bond__(self, atom):
         # TODO: merge __update_hydrogen_bond_partner__ and __update_covalent_bond__ into one method
 
