@@ -42,6 +42,8 @@ class Atom(object):
         self.hydrogen_bond_partners = None
 
     def __update_covalent_bond__(self, atom):
+        # TODO: merge __update_hydrogen_bond_partner__ and __update_covalent_bond__ into one method
+
         if type(atom) is not Atom:
             raise AtomException('Wrong data type for parameter "atom". Desired type is atom')
 
@@ -57,12 +59,13 @@ class Atom(object):
         self.__update_covalent_bond__(atom=atom)
         atom.__update_covalent_bond__(atom=self)
 
-    def __update_hydrogen_bond_partners__(self, is_hydrogen_bond_active):
+    def __reset_hydrogen_bond_partners__(self, is_hydrogen_bond_active):
         self.ensure_data_type.ensure_boolean(parameter=is_hydrogen_bond_active,
                                              parameter_name='is_hydrogen_bond_active')
 
         if is_hydrogen_bond_active:
-            self.hydrogen_bond_partners = dict(subsystem=[[]] * self.xyz_trajectory.shape[1])
+            # TODO: find more efficient way to create list with n frames
+            self.hydrogen_bond_partners = dict(subsystem=[[] for i in range(self.xyz_trajectory.shape[1])])
         else:
             self.hydrogen_bond_partners = None
 
@@ -78,7 +81,7 @@ class Atom(object):
 
         self.is_donor_atom = is_donor_atom
         self.donor_slots = donor_slots
-        self.__update_hydrogen_bond_partners__(is_hydrogen_bond_active=is_donor_atom)
+        self.__reset_hydrogen_bond_partners__(is_hydrogen_bond_active=is_donor_atom)
 
     def update_acceptor_state(self, is_acceptor, acceptor_slots):
         self.ensure_data_type.ensure_boolean(parameter=is_acceptor, parameter_name='is_acceptor')
@@ -92,18 +95,44 @@ class Atom(object):
 
         self.is_acceptor = is_acceptor
         self.acceptor_slots = acceptor_slots
-        self.__update_hydrogen_bond_partners__(is_hydrogen_bond_active=is_acceptor)
+        self.__reset_hydrogen_bond_partners__(is_hydrogen_bond_active=is_acceptor)
+
+    def __update_hydrogen_bond_partner__(self, atom, frame, system):
+        # TODO: merge __update_hydrogen_bond_partner__ and __update_covalent_bond__ into one method
+
+        if type(atom) is not Atom:
+            raise AtomException('Wrong data type for parameter "atom". Desired type is atom')
+
+        self.ensure_data_type.ensure_integer(frame, 'frame')
+        self.ensure_data_type.ensure_string(system, 'system')
+
+        if frame < 0:
+            raise AtomException('Frame has to be a positive integer.')
+
+        if system not in self.hydrogen_bond_partners.keys():
+            raise AtomException('Subsystem does not exist. Create it first!')
+
+        if atom.structure_file_index == self.structure_file_index:
+            raise AtomException('Atom can not have a covalent bond with itself.')
+
+        if atom in self.hydrogen_bond_partners:
+            raise AtomWarning('Hydrogen bond already exists. Skipping...')
+
+        self.hydrogen_bond_partners[system][frame].append(atom)
 
     def add_hydrogen_bond_partner(self, frame, atom):
         if self.hydrogen_bond_partners is not None:
-            self.hydrogen_bond_partners[frame].append(atom)
+            self.__update_hydrogen_bond_partner__(atom=atom, frame=frame)
+            atom.__update_hydrogen_bond_partner__(atom=self, frame=frame)
         else:
             raise AtomException('The atom is neither acceptor nor a donor atom. Update its state first!')
 
     def purge_hydrogen_bond_partner_history(self, system_name):
         if self.is_acceptor or self.is_donor_atom:
             del self.hydrogen_bond_partners[system_name]
-            self.hydrogen_bond_partners[system_name] = [[]] * self.xyz_trajectory.shape[0]
+
+            # TODO: find more efficient way to create list with n frames (np.empty?)
+            self.hydrogen_bond_partners[system_name] = [[] for i in range(self.xyz_trajectory.shape[1])]
         else:
             raise AtomException('The given atom is neither donor nor acceptor. Purging does not make sense!')
 
