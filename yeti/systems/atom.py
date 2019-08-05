@@ -97,38 +97,45 @@ class Atom(object):
         self.acceptor_slots = acceptor_slots
         self.__reset_hydrogen_bond_partners__(is_hydrogen_bond_active=is_acceptor)
 
-    def __update_hydrogen_bond_partner__(self, atom, frame, system):
+    def __update_hydrogen_bond_partner__(self, atom, frame, system_name):
         # TODO: merge __update_hydrogen_bond_partner__ and __update_covalent_bond__ into one method
 
         if type(atom) is not Atom:
             raise AtomException('Wrong data type for parameter "atom". Desired type is atom')
 
         self.ensure_data_type.ensure_integer(frame, 'frame')
-        self.ensure_data_type.ensure_string(system, 'system')
+        self.ensure_data_type.ensure_string(system_name, 'system_name')
 
         if frame < 0:
             raise AtomException('Frame has to be a positive integer.')
 
-        if system not in self.hydrogen_bond_partners.keys():
+        if system_name not in self.hydrogen_bond_partners.keys():
             raise AtomException('Subsystem does not exist. Create it first!')
 
         if atom.structure_file_index == self.structure_file_index:
             raise AtomException('Atom can not have a covalent bond with itself.')
 
-        if atom in self.hydrogen_bond_partners:
+        if atom in self.hydrogen_bond_partners[system_name][frame]:
             raise AtomWarning('Hydrogen bond already exists. Skipping...')
 
-        self.hydrogen_bond_partners[system][frame].append(atom)
+        self.hydrogen_bond_partners[system_name][frame].append(atom)
 
-    def add_hydrogen_bond_partner(self, frame, atom):
-        if self.hydrogen_bond_partners is not None:
-            self.__update_hydrogen_bond_partner__(atom=atom, frame=frame)
-            atom.__update_hydrogen_bond_partner__(atom=self, frame=frame)
+    def add_hydrogen_bond_partner(self, frame, atom, system_name):
+        if self.hydrogen_bond_partners is None:
+            raise AtomException('This atom is neither acceptor nor a donor atom. Update its state first!')
+        elif atom.hydrogen_bond_partners is None:
+            raise AtomException('Parameter atom is neither acceptor nor a donor atom. Update its state first!')
         else:
-            raise AtomException('The atom is neither acceptor nor a donor atom. Update its state first!')
+            self.__update_hydrogen_bond_partner__(atom=atom, frame=frame, system_name=system_name)
+            atom.__update_hydrogen_bond_partner__(atom=self, frame=frame, system_name=system_name)
 
     def purge_hydrogen_bond_partner_history(self, system_name):
+        self.ensure_data_type.ensure_string(system_name, 'system_name')
+
         if self.is_acceptor or self.is_donor_atom:
+            if system_name not in self.hydrogen_bond_partners.keys():
+                raise AtomException('Subsystem does not exist. Create it first!')
+
             del self.hydrogen_bond_partners[system_name]
 
             # TODO: find more efficient way to create list with n frames (np.empty?)
