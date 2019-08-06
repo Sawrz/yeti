@@ -3,8 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="678bada4-0989-4d11-b108-4c48079ad655" name="Default Changelist" comment="test(Systems): atom&#10;add tests for new add residue feature">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/systems/atoms_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/systems/atoms_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yeti/systems/building_blocks.py" beforeDir="false" afterPath="$PROJECT_DIR$/yeti/systems/building_blocks.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yeti/get_features/metric.py" beforeDir="false" afterPath="$PROJECT_DIR$/yeti/get_features/metric.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -30,23 +29,23 @@
   <component name="PropertiesComponent">
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/yeti/systems" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/yeti_dev_resources/simulation_data" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/yeti_dev_resources/simulation_data" />
+      <recent name="$PROJECT_DIR$/yeti/systems" />
+      <recent name="$PROJECT_DIR$" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/test_utils" />
       <recent name="$PROJECT_DIR$/tests/get_features" />
       <recent name="$PROJECT_DIR$/tests/dictionaries/molecules" />
       <recent name="$PROJECT_DIR$/yeti/systems" />
       <recent name="$PROJECT_DIR$/yeti/system" />
-      <recent name="$PROJECT_DIR$/yeti" />
-    </key>
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/yeti/systems" />
-      <recent name="$PROJECT_DIR$/yeti_dev_resources/simulation_data" />
-      <recent name="$PROJECT_DIR$" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -61,7 +60,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python tests.pytest in residue_test.py">
+  <component name="RunManager" selected="Python tests.pytest in metric_test.py">
     <configuration default="true" type="PythonConfigurationType" factoryName="Python">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -84,74 +83,68 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="atom_test" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="yeti" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$USER_HOME$/Desktop/CUC_maker" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/tests/systems/atoms_test.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="pytest for residue_test.ResidueTest.test_init_name_wrong_data_type" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
+    <configuration name="pytest for metric_test.TestMetric.test_calculate_opt_wrong_data_type" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
       <module name="yeti" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests/systems" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests/get_features" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="_new_keywords" value="&quot;&quot;" />
       <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;residue_test.ResidueTest.test_init_name_wrong_data_type&quot;" />
+      <option name="_new_target" value="&quot;metric_test.TestMetric.test_calculate_opt_wrong_data_type&quot;" />
       <option name="_new_targetType" value="&quot;PYTHON&quot;" />
       <method v="2" />
     </configuration>
-    <configuration name="pytest for tests.systems.atoms_test.AtomTest.test_init" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
+    <configuration name="pytest for metric_test.TestMetric.test_prepare_xyz_data" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
       <module name="yeti" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests/systems" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests/get_features" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="_new_keywords" value="&quot;&quot;" />
       <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;tests.systems.atoms_test.AtomTest.test_init&quot;" />
+      <option name="_new_target" value="&quot;metric_test.TestMetric.test_prepare_xyz_data&quot;" />
       <option name="_new_targetType" value="&quot;PYTHON&quot;" />
       <method v="2" />
     </configuration>
-    <configuration name="pytest for tests.systems.atoms_test.AtomTest.test_init_name_wrong_data_type" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
+    <configuration name="pytest for metric_test.test_calculate_opt_false" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
       <module name="yeti" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests/systems" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests/get_features" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="_new_keywords" value="&quot;&quot;" />
       <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;tests.systems.atoms_test.AtomTest.test_init_name_wrong_data_type&quot;" />
+      <option name="_new_target" value="&quot;metric_test.test_calculate_opt_false&quot;" />
       <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration name="pytest in metric_test.py" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
+      <module name="yeti" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests/get_features" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_keywords" value="&quot;&quot;" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;$PROJECT_DIR$/tests/get_features/metric_test.py&quot;" />
+      <option name="_new_targetType" value="&quot;PATH&quot;" />
       <method v="2" />
     </configuration>
     <configuration name="pytest in residue_test.py" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
@@ -171,19 +164,19 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Python.atom_test" />
-      <item itemvalue="Python tests.pytest for tests.systems.atoms_test.AtomTest.test_init" />
-      <item itemvalue="Python tests.pytest for tests.systems.atoms_test.AtomTest.test_init_name_wrong_data_type" />
       <item itemvalue="Python tests.pytest in residue_test.py" />
-      <item itemvalue="Python tests.pytest for residue_test.ResidueTest.test_init_name_wrong_data_type" />
+      <item itemvalue="Python tests.pytest for metric_test.TestMetric.test_prepare_xyz_data" />
+      <item itemvalue="Python tests.pytest in metric_test.py" />
+      <item itemvalue="Python tests.pytest for metric_test.test_calculate_opt_false" />
+      <item itemvalue="Python tests.pytest for metric_test.TestMetric.test_calculate_opt_wrong_data_type" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python tests.pytest in metric_test.py" />
+        <item itemvalue="Python tests.pytest for metric_test.TestMetric.test_calculate_opt_wrong_data_type" />
+        <item itemvalue="Python tests.pytest for metric_test.test_calculate_opt_false" />
+        <item itemvalue="Python tests.pytest for metric_test.TestMetric.test_prepare_xyz_data" />
         <item itemvalue="Python tests.pytest in residue_test.py" />
-        <item itemvalue="Python.atom_test" />
-        <item itemvalue="Python tests.pytest for residue_test.ResidueTest.test_init_name_wrong_data_type" />
-        <item itemvalue="Python tests.pytest for tests.systems.atoms_test.AtomTest.test_init" />
-        <item itemvalue="Python tests.pytest for tests.systems.atoms_test.AtomTest.test_init_name_wrong_data_type" />
       </list>
     </recent_temporary>
   </component>
@@ -193,7 +186,6 @@
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="678bada4-0989-4d11-b108-4c48079ad655" name="Default Changelist" comment="" />
-      <changelist id="" name="refactor(Systems): atom merge residue and atom class" comment="" />
       <created>1563437188527</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
@@ -212,7 +204,8 @@
       <workItem from="1564386905485" duration="5463000" />
       <workItem from="1564475010763" duration="8471000" />
       <workItem from="1564644056512" duration="14887000" />
-      <workItem from="1564982398744" duration="12726000" />
+      <workItem from="1564982398744" duration="12925000" />
+      <workItem from="1565077079575" duration="10339000" />
     </task>
     <task id="LOCAL-00001" summary="feat(Dimensions): hydrogen bonds&#10;add methods to calculate hydrogen bonds and get that information in different forms">
       <created>1564141725240</created>
@@ -354,7 +347,49 @@
       <option name="project" value="LOCAL" />
       <updated>1564994961727</updated>
     </task>
-    <option name="localTasksCounter" value="21" />
+    <task id="LOCAL-00021" summary="fix(Systems): residue&#10;ensure right data type for atom parameter">
+      <created>1564997986997</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1564997986997</updated>
+    </task>
+    <task id="LOCAL-00022" summary="test(Systems): residue&#10;add tests">
+      <created>1564998082265</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1564998082265</updated>
+    </task>
+    <task id="LOCAL-00023" summary="fix(Systems): atom&#10;xyz_trajectory shape is compatible with mdtraj assumptions">
+      <created>1565090598297</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1565090598297</updated>
+    </task>
+    <task id="LOCAL-00024" summary="refactor(Utils): building blocks&#10;move ensure data type functionality to building_blocks.py">
+      <created>1565090695249</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1565090695249</updated>
+    </task>
+    <task id="LOCAL-00025" summary="test(Systems): utils&#10;add functions for standard exceptions messages of production methods in unit tests">
+      <created>1565090793668</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1565090793668</updated>
+    </task>
+    <task id="LOCAL-00026" summary="fix(Systems): metric&#10;check parameter data types in methods, remove unnecessary args asterisk">
+      <created>1565091003214</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1565091003214</updated>
+    </task>
+    <option name="localTasksCounter" value="27" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -374,7 +409,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="feat(Dimensions): hydrogen bonds&#10;add methods to calculate hydrogen bonds and get that information in different forms" />
     <MESSAGE value="test(Dictionaries): moving&#10;moved unit tests to tests folder for easing handling of unit tests" />
     <MESSAGE value="refactor(Systems): atom&#10;remove senseless acceptor donor check in __init__ and replace it with another method which is called if updating donor or acceptor state: if the state is False no hydrogen bond partners can be acquired therefore None, otherwise a clean dictionary" />
     <MESSAGE value="fix(Systems): residue&#10;parameter was misspelled (no breaking change since planned low level API), sequence is now empty list after initialization, method __add_atom__ adds the name of added atom to sequence and adds one to number of atoms, method finalize changes now only types -&gt; atoms list and sequence list become tuple" />
@@ -394,16 +428,46 @@
     <MESSAGE value="tests(Systems): atom &#10;update tests to fit new structure and add test for new feature" />
     <MESSAGE value="fix(Systems): init&#10;add init for importing building_blocks.py" />
     <MESSAGE value="fix(Utils): ensure data type&#10;add __init__ to import EnsureDataType class" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix(Utils): ensure data type&#10;add __init__ to import EnsureDataType class" />
+    <MESSAGE value="fix(Systems): residue&#10;ensure right data type for atom parameter" />
+    <MESSAGE value="test(Systems): residue&#10;add tests" />
+    <MESSAGE value="fix(Systems): atom&#10;xyz_trajectory shape is compatible with mdtraj assumptions" />
+    <MESSAGE value="refactor(Utils): building blocks&#10;move ensure data type functionality to building_blocks.py" />
+    <MESSAGE value="test(Systems): utils&#10;add functions for standard exceptions messages of production methods in unit tests" />
+    <MESSAGE value="fix(Systems): metric&#10;check parameter data types in methods, remove unnecessary args asterisk" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix(Systems): metric&#10;check parameter data types in methods, remove unnecessary args asterisk" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/yeti/systems/system.py</url>
+          <line>19</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/yeti$system.coverage" NAME="system Coverage Results" MODIFIED="1564475465767" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$USER_HOME$/Desktop/CUC_maker" />
-    <SUITE FILE_PATH="coverage/yeti$atom_test.coverage" NAME="atom_test Coverage Results" MODIFIED="1564996262306" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$USER_HOME$/Desktop/CUC_maker" />
-    <SUITE FILE_PATH="coverage/yeti$pytest_for_atom_test_AtomTest_test_init_name_wrong_data_type.coverage" NAME="pytest for atom_test.AtomTest.test_init_name_wrong_data_type Coverage Results" MODIFIED="1564647850322" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/systems" />
+    <SUITE FILE_PATH="coverage/yeti$pytest_for_atoms_test_AtomTest_test_init.coverage" NAME="pytest for atoms_test.AtomTest.test_init Coverage Results" MODIFIED="1565084242227" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/systems" />
+    <SUITE FILE_PATH="coverage/yeti$pytest_in_atoms_test_py.coverage" NAME="pytest in atoms_test.py Coverage Results" MODIFIED="1565084396634" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/systems" />
+    <SUITE FILE_PATH="coverage/yeti$system.coverage" NAME="system Coverage Results" MODIFIED="1565077651504" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$USER_HOME$/Desktop/CUC_maker" />
+    <SUITE FILE_PATH="coverage/yeti$pytest_in_metric_test_py.coverage" NAME="pytest in metric_test.py Coverage Results" MODIFIED="1565090375960" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/get_features" />
     <SUITE FILE_PATH="coverage/yeti$pytest_for_residue_test_ResidueTest_test_init_name_wrong_data_type.coverage" NAME="pytest for residue_test.ResidueTest.test_init_name_wrong_data_type Coverage Results" MODIFIED="1564993068793" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/systems" />
-    <SUITE FILE_PATH="coverage/yeti$pytest_in_tests.coverage" NAME="pytest in tests Coverage Results" MODIFIED="1564475498510" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/yeti$pytest_for_atoms_test_AtomTest.coverage" NAME="pytest for atoms_test.AtomTest Coverage Results" MODIFIED="1565084372788" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/systems" />
     <SUITE FILE_PATH="coverage/yeti$pytest_for_atom_test_AtomTest_test_init.coverage" NAME="pytest for atom_test.AtomTest.test_init Coverage Results" MODIFIED="1564656042163" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/systems" />
-    <SUITE FILE_PATH="coverage/yeti$pytest_in_residue_test_py.coverage" NAME="pytest in residue_test.py Coverage Results" MODIFIED="1564997939127" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/systems" />
+    <SUITE FILE_PATH="coverage/yeti$pytest_for_atoms_test_AtomTest_test_add_hydrogen_bond_partner.coverage" NAME="pytest for atoms_test.AtomTest.test_add_hydrogen_bond_partner Coverage Results" MODIFIED="1565084391336" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/systems" />
+    <SUITE FILE_PATH="coverage/yeti$pytest_for_metric_test_TestMetric_test_init_periodic_wrong_data_type.coverage" NAME="pytest for metric_test.TestMetric.test_init_periodic_wrong_data_type Coverage Results" MODIFIED="1565079071579" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/get_features" />
+    <SUITE FILE_PATH="coverage/yeti$pytest_for_metric_test_TestMetric_test_init.coverage" NAME="pytest for metric_test.TestMetric.test_init Coverage Results" MODIFIED="1565078192975" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/get_features" />
+    <SUITE FILE_PATH="coverage/yeti$pytest_for_metric_test_TestMetric_test_prepare_xyz_data.coverage" NAME="pytest for metric_test.TestMetric.test_prepare_xyz_data Coverage Results" MODIFIED="1565084527452" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/get_features" />
+    <SUITE FILE_PATH="coverage/yeti$pytest_for_metric_test_test_calculate_opt_false.coverage" NAME="pytest for metric_test.test_calculate_opt_false Coverage Results" MODIFIED="1565089600414" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/get_features" />
+    <SUITE FILE_PATH="coverage/yeti$building_blocks.coverage" NAME="building_blocks Coverage Results" MODIFIED="1565084376055" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$USER_HOME$/Desktop/CUC_maker" />
+    <SUITE FILE_PATH="coverage/yeti$atom_test.coverage" NAME="atom_test Coverage Results" MODIFIED="1564998047150" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$USER_HOME$/Desktop/CUC_maker" />
+    <SUITE FILE_PATH="coverage/yeti$pytest_for_tests_systems_residue_test_ResidueTest_test_init.coverage" NAME="pytest for tests.systems.residue_test.ResidueTest.test_init Coverage Results" MODIFIED="1565078318324" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/yeti$pytest_for_atom_test_AtomTest_test_init_name_wrong_data_type.coverage" NAME="pytest for atom_test.AtomTest.test_init_name_wrong_data_type Coverage Results" MODIFIED="1564647850322" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/systems" />
+    <SUITE FILE_PATH="coverage/yeti$pytest_for_atoms_test_AtomTest_test_init_xyz_wrong_shape.coverage" NAME="pytest for atoms_test.AtomTest.test_init_xyz_wrong_shape Coverage Results" MODIFIED="1565084267426" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/systems" />
+    <SUITE FILE_PATH="coverage/yeti$pytest_in_tests.coverage" NAME="pytest in tests Coverage Results" MODIFIED="1564475498510" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/yeti$pytest_in_residue_test_py.coverage" NAME="pytest in residue_test.py Coverage Results" MODIFIED="1565084425837" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/systems" />
+    <SUITE FILE_PATH="coverage/yeti$pytest_for_metric_test_TestMetric_test_calculate_opt_wrong_data_type.coverage" NAME="pytest for metric_test.TestMetric.test_calculate_opt_wrong_data_type Coverage Results" MODIFIED="1565089920969" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/get_features" />
   </component>
 </project>
