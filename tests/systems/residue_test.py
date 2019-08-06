@@ -2,10 +2,7 @@ import unittest
 
 import numpy as np
 
-
-def create_data_type_exception_messages(parameter_name, data_type_name):
-    return 'Wrong data type for parameter "{name}". Desired type is {data_type}'.format(name=parameter_name,
-                                                                                        data_type=data_type_name)
+from test_utils.test_utils import create_data_type_exception_messages
 
 
 class ResidueTest(unittest.TestCase):

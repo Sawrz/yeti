@@ -3,14 +3,10 @@ import unittest
 import numpy as np
 import numpy.testing as npt
 
+from test_utils.test_utils import create_data_type_exception_messages
 from yeti.systems.building_blocks import Residue
 
 residue = Residue(subsystem_index=0, structure_file_index=1, name='helper')
-
-
-def create_data_type_exception_messages(parameter_name, data_type_name):
-    return 'Wrong data type for parameter "{name}". Desired type is {data_type}'.format(name=parameter_name,
-                                                                                        data_type=data_type_name)
 
 
 class AtomTest(unittest.TestCase):
