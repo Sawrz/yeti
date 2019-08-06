@@ -1,6 +1,8 @@
 import numpy as np
 from mdtraj.utils.validation import ensure_type
 
+from yeti.systems.building_blocks import EnsureDataTypes
+
 
 class MetricException(Exception):
     pass
@@ -8,6 +10,13 @@ class MetricException(Exception):
 
 class Metric(object):
     def __init__(self, periodic, unit_cell_angles, unit_cell_vectors):
+        self.ensure_data_type = EnsureDataTypes(exception_class=MetricException)
+        self.ensure_data_type.ensure_boolean(parameter=periodic, parameter_name='periodic')
+        self.ensure_data_type.ensure_numpy_array(parameter=unit_cell_angles, parameter_name='unit_cell_angles',
+                                                 shape=(None, 3))
+        self.ensure_data_type.ensure_numpy_array(parameter=unit_cell_vectors, parameter_name='unit_cell_vectors',
+                                                 shape=(None, 3, 3))
+
         self.unit_cell_vectors = unit_cell_vectors
         self.unit_cell_angles = unit_cell_angles
         self.periodic = periodic
@@ -18,7 +27,9 @@ class Metric(object):
 
         return residue.atoms[atom_index]
 
-    def __get_atoms__(self, *atom_name_residue_pairs):
+    def __get_atoms__(self, atom_name_residue_pairs):
+        self.ensure_data_type.ensure_tuple(parameter=atom_name_residue_pairs, parameter_name='atom_name_residue_pairs')
+
         atom_list = []
 
         for atom_name, residue in atom_name_residue_pairs:
@@ -26,11 +37,13 @@ class Metric(object):
 
         return tuple(atom_list)
 
-    @staticmethod
-    def __prepare_xyz_data__(*atoms):
+    def __prepare_xyz_data__(self, atoms):
+        self.ensure_data_type.ensure_tuple(parameter=atoms, parameter_name='atoms')
+
         xyz = []
 
         for atom in atoms:
+            self.ensure_data_type.ensure_atom(parameter=atom, parameter_name='atom in tuple atoms')
             tmp_xyz = np.expand_dims(atom.xyz_trajectory, axis=1)
             xyz.append(tmp_xyz)
 
@@ -41,8 +54,9 @@ class Metric(object):
 
         return xyz
 
-    @staticmethod
-    def __prepare_atom_indices__(amount):
+    def __prepare_atom_indices__(self, amount):
+        self.ensure_data_type.ensure_integer(parameter=amount, parameter_name='amount')
+
         if amount == 2:
             name = 'atom_pairs'
             shape = (None, 2)
@@ -68,7 +82,9 @@ class Metric(object):
         pass
 
     def __calculate__(self, atoms, opt):
-        xyz = self.__prepare_xyz_data__(*atoms)
+        self.ensure_data_type.ensure_boolean(parameter=opt, parameter_name='opt')
+
+        xyz = self.__prepare_xyz_data__(atoms)
         indices = self.__prepare_atom_indices__(amount=len(atoms))
 
         kwargs = dict(xyz=xyz, indices=indices, opt=opt)
@@ -81,6 +97,6 @@ class Metric(object):
         return feature.flatten()
 
     def get(self, atom_name_residue_pairs, opt=True):
-        atoms = self.__get_atoms__(*atom_name_residue_pairs)
+        atoms = self.__get_atoms__(atom_name_residue_pairs)
 
         return self.__calculate__(atoms=atoms, opt=opt)
