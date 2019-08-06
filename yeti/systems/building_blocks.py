@@ -1,4 +1,4 @@
-from yeti.utils.ensure_data_type_basic import EnsureDataTypes
+import numpy as np
 
 
 class AtomWarning(Warning):
@@ -30,7 +30,7 @@ class Atom(object):
         self.ensure_data_type.ensure_integer(parameter=structure_file_index, parameter_name='structure_file_index')
         self.ensure_data_type.ensure_integer(parameter=subsystem_index, parameter_name='subsystem_index')
         self.ensure_data_type.ensure_numpy_array(parameter=xyz_trajectory, parameter_name='xyz_trajectory',
-                                                 shape=(3, None))
+                                                 shape=(None, 3))
 
         self.name = name
         self.subsystem_index = subsystem_index
@@ -85,7 +85,7 @@ class Atom(object):
 
         if is_hydrogen_bond_active:
             # TODO: find more efficient way to create list with n frames
-            self.hydrogen_bond_partners = dict(subsystem=[[] for i in range(self.xyz_trajectory.shape[1])])
+            self.hydrogen_bond_partners = dict(subsystem=[[] for i in range(self.xyz_trajectory.shape[0])])
         else:
             self.hydrogen_bond_partners = None
 
@@ -159,7 +159,7 @@ class Atom(object):
             del self.hydrogen_bond_partners[system_name]
 
             # TODO: find more efficient way to create list with n frames (np.empty?)
-            self.hydrogen_bond_partners[system_name] = [[] for i in range(self.xyz_trajectory.shape[1])]
+            self.hydrogen_bond_partners[system_name] = [[] for i in range(self.xyz_trajectory.shape[0])]
         else:
             raise AtomException('The given atom is neither donor nor acceptor. Purging does not make sense!')
 

@@ -62,7 +62,7 @@ class ResidueTest(unittest.TestCase):
         from yeti.systems.building_blocks import Atom, Residue
 
         residue = Residue(subsystem_index=0, structure_file_index=1, name='test')
-        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((3, 2)))
+        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((2, 3)))
 
         residue.add_atom(atom=atom)
 
@@ -74,9 +74,9 @@ class ResidueTest(unittest.TestCase):
         from yeti.systems.building_blocks import Atom, Residue
 
         residue = Residue(subsystem_index=0, structure_file_index=1, name='test')
-        atom_01 = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((3, 2)))
+        atom_01 = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((2, 3)))
         atom_02 = Atom(structure_file_index=2, subsystem_index=1, name='B',
-                       xyz_trajectory=np.arange(6, 12).reshape((3, 2)))
+                       xyz_trajectory=np.arange(6, 12).reshape((2, 3)))
 
         residue.add_atom(atom=atom_01)
         residue.add_atom(atom=atom_02)
@@ -101,7 +101,7 @@ class ResidueTest(unittest.TestCase):
         from yeti.systems.building_blocks import Atom, Residue
 
         residue = Residue(subsystem_index=0, structure_file_index=1, name='test')
-        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((3, 2)))
+        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((2, 3)))
 
         residue.add_atom(atom=atom)
         residue.finalize()
@@ -113,9 +113,9 @@ class ResidueTest(unittest.TestCase):
         from yeti.systems.building_blocks import Atom, Residue
 
         residue = Residue(subsystem_index=0, structure_file_index=1, name='test')
-        atom_01 = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((3, 2)))
+        atom_01 = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((2, 3)))
         atom_02 = Atom(structure_file_index=2, subsystem_index=1, name='B',
-                       xyz_trajectory=np.arange(6, 12).reshape((3, 2)))
+                       xyz_trajectory=np.arange(6, 12).reshape((2, 3)))
 
         residue.add_atom(atom=atom_01)
         residue.add_atom(atom=atom_02)
