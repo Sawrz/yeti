@@ -21,11 +21,19 @@ class Metric(object):
         self.unit_cell_angles = unit_cell_angles
         self.periodic = periodic
 
-    @staticmethod
-    def __get_atom__(name, residue):
-        atom_index = np.where(residue.sequence == name)[0][0]
+    def __get_atom__(self, name, residue):
+        self.ensure_data_type.ensure_string(parameter=name, parameter_name='name')
+        self.ensure_data_type.ensure_residue(parameter=residue, parameter_name='residue')
 
-        return residue.atoms[atom_index]
+        # TODO: think about if casting makes sense
+        atom_index = np.where(np.array(residue.sequence) == name)[0]
+
+        if len(atom_index) == 0:
+            raise MetricException('Atom does not exist.')
+        elif len(atom_index) > 1:
+            raise MetricException('Atom names are not distinguishable. Check your naming or contact the developer.')
+        else:
+            return residue.atoms[atom_index[0]]
 
     def __get_atoms__(self, atom_name_residue_pairs):
         self.ensure_data_type.ensure_tuple(parameter=atom_name_residue_pairs, parameter_name='atom_name_residue_pairs')
