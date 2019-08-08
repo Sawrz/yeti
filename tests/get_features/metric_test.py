@@ -3,18 +3,20 @@ import unittest
 import numpy as np
 import numpy.testing as npt
 
-from test_utils.test_utils import create_data_type_exception_messages, create_array_shape_exception_messages
+from test_utils.test_utils import create_data_type_exception_messages, create_array_shape_exception_messages, \
+    create_array_dtype_exception_messages
 
 
 class TestMetric(unittest.TestCase):
     def test_init(self):
-        from yeti.get_features.metric import Metric
+        from yeti.get_features.metric import Metric, MetricException
 
         unit_cell_angles = np.array([[90, 90, 90]])
         unit_cell_vectors = np.array([[[1, 2, 3], [4, 5, 6], [7, 8, 9]]])
 
         metric = Metric(periodic=True, unit_cell_angles=unit_cell_angles, unit_cell_vectors=unit_cell_vectors)
 
+        self.assertEqual(metric.ensure_data_type.exception_class, MetricException)
         self.assertTrue(metric.periodic)
         npt.assert_array_equal(metric.unit_cell_angles, unit_cell_angles)
         npt.assert_array_equal(metric.unit_cell_vectors, unit_cell_vectors)
@@ -347,7 +349,7 @@ class TestMetric(unittest.TestCase):
         desired_msg = 'Invalid amount.'
         self.assertEqual(desired_msg, str(context.exception))
 
-    def test_prepare_atom_indices_unknwon_amount(self):
+    def test_prepare_atom_indices_wrong_data_type(self):
         from yeti.get_features.metric import Metric, MetricException
 
         metric = Metric(periodic=True, unit_cell_angles=np.array([[90, 90, 90]]),
@@ -357,6 +359,190 @@ class TestMetric(unittest.TestCase):
             metric.__prepare_atom_indices__('2')
 
         desired_msg = create_data_type_exception_messages(parameter_name='amount', data_type_name='int')
+        self.assertEqual(desired_msg, str(context.exception))
+
+    def test_mdtraj_paramaeter_compatibility_check_amount_two(self):
+        from yeti.get_features.metric import Metric
+
+        metric = Metric(periodic=False, unit_cell_angles=np.array([[90, 90, 90]]),
+                        unit_cell_vectors=np.array([[[1, 0, 0], [0, 1, 0], [0, 0, 1]]]))
+
+        xyz = np.array([[[0, 0, 0], [1, 0, 0]]], dtype=np.float32)
+        indices = np.array([[0, 1]], dtype=np.int32)
+        opt = False
+
+        metric.__mdtraj_paramaeter_compatibility_check__(xyz=xyz, indices=indices, opt=opt, atom_amount=2)
+
+    def test_mdtraj_paramaeter_compatibility_check_amount_three(self):
+        from yeti.get_features.metric import Metric
+
+        metric = Metric(periodic=False, unit_cell_angles=np.array([[90, 90, 90]]),
+                        unit_cell_vectors=np.array([[[1, 0, 0], [0, 1, 0], [0, 0, 1]]]))
+
+        xyz = np.array([[[0, 0, 0], [1, 0, 0], [0, 1, 0]]], dtype=np.float32)
+        indices = np.array([[0, 1, 2]], dtype=np.int32)
+        opt = False
+
+        metric.__mdtraj_paramaeter_compatibility_check__(xyz=xyz, indices=indices, opt=opt, atom_amount=3)
+
+    def test_mdtraj_paramaeter_compatibility_check_xyz_wrong_data_type(self):
+        from yeti.get_features.metric import Metric, MetricException
+
+        metric = Metric(periodic=False, unit_cell_angles=np.array([[90, 90, 90]]),
+                        unit_cell_vectors=np.array([[[1, 0, 0], [0, 1, 0], [0, 0, 1]]]))
+
+        xyz = [[[0, 0, 0], [1, 0, 0]]]
+        indices = np.array([[0, 1]], dtype=np.int32)
+        opt = False
+
+        with self.assertRaises(MetricException) as context:
+            metric.__mdtraj_paramaeter_compatibility_check__(xyz=xyz, indices=indices, opt=opt, atom_amount=2)
+
+        desired_msg = create_data_type_exception_messages(parameter_name='xyz', data_type_name='ndarray')
+        self.assertEqual(desired_msg, str(context.exception))
+
+    def test_mdtraj_paramaeter_compatibility_check_xyz_wrong_dtype(self):
+        from yeti.get_features.metric import Metric, MetricException
+
+        metric = Metric(periodic=False, unit_cell_angles=np.array([[90, 90, 90]]),
+                        unit_cell_vectors=np.array([[[1, 0, 0], [0, 1, 0], [0, 0, 1]]]))
+
+        xyz = np.array([[[0, 0, 0], [1, 0, 0]]], dtype=np.float64)
+        indices = np.array([[0, 1]], dtype=np.int32)
+        opt = False
+
+        with self.assertRaises(MetricException) as context:
+            metric.__mdtraj_paramaeter_compatibility_check__(xyz=xyz, indices=indices, opt=opt, atom_amount=2)
+
+        desired_msg = create_array_dtype_exception_messages(parameter_name='xyz', dtype_name='float32')
+        self.assertEqual(desired_msg, str(context.exception))
+
+    def test_mdtraj_paramaeter_compatibility_check_xyz_wrong_shape_atom_dim(self):
+        from yeti.get_features.metric import Metric, MetricException
+
+        metric = Metric(periodic=False, unit_cell_angles=np.array([[90, 90, 90]]),
+                        unit_cell_vectors=np.array([[[1, 0, 0], [0, 1, 0], [0, 0, 1]]]))
+
+        xyz = np.array([[[0, 0, 0], [1, 0, 0]]], dtype=np.float32)
+        indices = np.array([[0, 1], [2, 3]], dtype=np.int32)
+        opt = False
+
+        with self.assertRaises(MetricException) as context:
+            metric.__mdtraj_paramaeter_compatibility_check__(xyz=xyz, indices=indices, opt=opt, atom_amount=2)
+
+        desired_msg = create_array_shape_exception_messages(parameter_name='xyz', desired_shape=(None, 4, 3))
+        self.assertEqual(desired_msg, str(context.exception))
+
+    def test_mdtraj_paramaeter_compatibility_check_xyz_wrong_shape_xyz_dim(self):
+        from yeti.get_features.metric import Metric, MetricException
+
+        metric = Metric(periodic=False, unit_cell_angles=np.array([[90, 90, 90]]),
+                        unit_cell_vectors=np.array([[[1, 0, 0], [0, 1, 0], [0, 0, 1]]]))
+
+        xyz = np.array([[[0, 0, 0, 0], [1, 0, 0, 0]]], dtype=np.float32)
+        indices = np.array([[0, 1]], dtype=np.int32)
+        opt = False
+
+        with self.assertRaises(MetricException) as context:
+            metric.__mdtraj_paramaeter_compatibility_check__(xyz=xyz, indices=indices, opt=opt, atom_amount=2)
+
+        desired_msg = create_array_shape_exception_messages(parameter_name='xyz', desired_shape=(None, 2, 3))
+        self.assertEqual(desired_msg, str(context.exception))
+
+    def test_mdtraj_paramaeter_compatibility_check_indices_wrong_data_type(self):
+        from yeti.get_features.metric import Metric, MetricException
+
+        metric = Metric(periodic=False, unit_cell_angles=np.array([[90, 90, 90]]),
+                        unit_cell_vectors=np.array([[[1, 0, 0], [0, 1, 0], [0, 0, 1]]]))
+
+        xyz = np.array([[[0, 0, 0], [1, 0, 0]]], dtype=np.float32)
+        indices = [[0, 1]]
+        opt = False
+
+        with self.assertRaises(MetricException) as context:
+            metric.__mdtraj_paramaeter_compatibility_check__(xyz=xyz, indices=indices, opt=opt, atom_amount=2)
+
+        desired_msg = create_data_type_exception_messages(parameter_name='indices', data_type_name='ndarray')
+        self.assertEqual(desired_msg, str(context.exception))
+
+    def test_mdtraj_paramaeter_compatibility_check_indices_wrong_dtype(self):
+        from yeti.get_features.metric import Metric, MetricException
+
+        metric = Metric(periodic=False, unit_cell_angles=np.array([[90, 90, 90]]),
+                        unit_cell_vectors=np.array([[[1, 0, 0], [0, 1, 0], [0, 0, 1]]]))
+
+        xyz = np.array([[[0, 0, 0], [1, 0, 0]]], dtype=np.float32)
+        indices = np.array([[0, 1]], dtype=np.int64)
+        opt = False
+
+        with self.assertRaises(MetricException) as context:
+            metric.__mdtraj_paramaeter_compatibility_check__(xyz=xyz, indices=indices, opt=opt, atom_amount=2)
+
+        desired_msg = create_array_dtype_exception_messages(parameter_name='indices', dtype_name='int32')
+        self.assertEqual(desired_msg, str(context.exception))
+
+    def test_mdtraj_paramaeter_compatibility_check_indices_wrong_shape(self):
+        from yeti.get_features.metric import Metric, MetricException
+
+        metric = Metric(periodic=False, unit_cell_angles=np.array([[90, 90, 90]]),
+                        unit_cell_vectors=np.array([[[1, 0, 0], [0, 1, 0], [0, 0, 1]]]))
+
+        xyz = np.array([[[0, 0, 0], [1, 0, 0]]], dtype=np.float32)
+        indices = np.array([[0, 1, 1]], dtype=np.int32)
+        opt = False
+
+        with self.assertRaises(MetricException) as context:
+            metric.__mdtraj_paramaeter_compatibility_check__(xyz=xyz, indices=indices, opt=opt, atom_amount=2)
+
+        desired_msg = create_array_shape_exception_messages(parameter_name='indices', desired_shape=(None, 2))
+        self.assertEqual(desired_msg, str(context.exception))
+
+    def test_mdtraj_paramaeter_compatibility_check_opt_wrong_data_type(self):
+        from yeti.get_features.metric import Metric, MetricException
+
+        metric = Metric(periodic=False, unit_cell_angles=np.array([[90, 90, 90]]),
+                        unit_cell_vectors=np.array([[[1, 0, 0], [0, 1, 0], [0, 0, 1]]]))
+
+        xyz = np.array([[[0, 0, 0], [1, 0, 0]]], dtype=np.float32)
+        indices = np.array([[0, 1]], dtype=np.int32)
+        opt = 42
+
+        with self.assertRaises(MetricException) as context:
+            metric.__mdtraj_paramaeter_compatibility_check__(xyz=xyz, indices=indices, opt=opt, atom_amount=2)
+
+        desired_msg = create_data_type_exception_messages(parameter_name='opt', data_type_name='bool')
+        self.assertEqual(desired_msg, str(context.exception))
+
+    def test_mdtraj_paramaeter_compatibility_check_incompatible_amount_xyz(self):
+        from yeti.get_features.metric import Metric, MetricException
+
+        metric = Metric(periodic=False, unit_cell_angles=np.array([[90, 90, 90]]),
+                        unit_cell_vectors=np.array([[[1, 0, 0], [0, 1, 0], [0, 0, 1]]]))
+
+        xyz = np.array([[[0, 0, 0], [1, 0, 0]]], dtype=np.float32)
+        indices = np.array([[0, 1, 2]], dtype=np.int32)
+        opt = False
+
+        with self.assertRaises(MetricException) as context:
+            metric.__mdtraj_paramaeter_compatibility_check__(xyz=xyz, indices=indices, opt=opt, atom_amount=3)
+
+        desired_msg = create_array_shape_exception_messages(parameter_name='xyz', desired_shape=(None, 3, 3))
+        self.assertEqual(desired_msg, str(context.exception))
+
+    def test_mdtraj_paramaeter_compatibility_check_incompatible_amount_indices(self):
+        from yeti.get_features.metric import Metric, MetricException
+
+        metric = Metric(periodic=False, unit_cell_angles=np.array([[90, 90, 90]]),
+                        unit_cell_vectors=np.array([[[1, 0, 0], [0, 1, 0], [0, 0, 1]]]))
+
+        xyz = np.array([[[0, 0, 0], [1, 0, 0], [0, 1, 0]]], dtype=np.float32)
+        indices = np.array([[0, 1]], dtype=np.int32)
+        opt = False
+
+        with self.assertRaises(MetricException) as context:
+            metric.__mdtraj_paramaeter_compatibility_check__(xyz=xyz, indices=indices, opt=opt, atom_amount=3)
+
+        desired_msg = create_array_shape_exception_messages(parameter_name='indices', desired_shape=(None, 3))
         self.assertEqual(desired_msg, str(context.exception))
 
     def test_calculate_opt_false(self):
