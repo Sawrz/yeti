@@ -6,7 +6,19 @@ from yeti.get_features.distances import Displacement
 from yeti.get_features.metric import Metric
 
 
+class AngleException(Exception):
+    pass
+
+
 class Angle(Metric):
+    def __init__(self, *args, **kwargs):
+        super(Angle, self).__init__(*args, **kwargs)
+        self.ensure_data_type.exception_class = AngleException
+
+    def __mdtraj_paramaeter_compatibility_check__(self, xyz, indices, opt):
+        super(Angle, self).__mdtraj_paramaeter_compatibility_check__(xyz=xyz, indices=indices, opt=opt,
+                                                                     atom_amount=3)
+
     def __calculate_angle__(self, xyz, indices, periodic, out):
         """SOURCE: mdTraj
            MODIFICATION: displacement function
@@ -31,6 +43,8 @@ class Angle(Metric):
         return np.arccos((u * v).sum(-1), out=out)
 
     def __calculate_no_pbc__(self, xyz, indices, opt):
+        self.__mdtraj_paramaeter_compatibility_check__(xyz=xyz, indices=indices, opt=opt)
+
         angles = np.zeros((xyz.shape[0], indices.shape[0]), dtype=np.float32)
 
         if opt:
@@ -41,6 +55,8 @@ class Angle(Metric):
         return angles
 
     def __calculate_minimal_image_convention__(self, xyz, indices, opt):
+        self.__mdtraj_paramaeter_compatibility_check__(xyz=xyz, indices=indices, opt=opt)
+
         angles = np.zeros((xyz.shape[0], indices.shape[0]), dtype=np.float32)
 
         box = ensure_type(self.unit_cell_vectors, dtype=np.float32, ndim=3, name='unitcell_vectors',
