@@ -83,6 +83,15 @@ class Metric(object):
 
         return indices
 
+    def __mdtraj_paramaeter_compatibility_check__(self, xyz, indices, opt, atom_amount):
+        self.ensure_data_type.ensure_numpy_array(parameter=indices, parameter_name='indices', shape=(None, atom_amount),
+                                                 desired_dtype=np.int32)
+
+        self.ensure_data_type.ensure_numpy_array(parameter=xyz, parameter_name='xyz',
+                                                 shape=(None, indices.shape[0] * atom_amount, 3),
+                                                 desired_dtype=np.float32)
+        self.ensure_data_type.ensure_boolean(parameter=opt, parameter_name='opt')
+
     def __calculate_no_pbc__(self, xyz, indices, opt):
         pass
 
