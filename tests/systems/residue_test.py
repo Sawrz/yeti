@@ -7,10 +7,11 @@ from test_utils.test_utils import create_data_type_exception_messages
 
 class ResidueTest(unittest.TestCase):
     def test_init(self):
-        from yeti.systems.building_blocks import Residue
+        from yeti.systems.building_blocks import Residue, ResidueException
 
         residue = Residue(subsystem_index=0, structure_file_index=1, name='test')
 
+        self.assertEqual(residue.ensure_data_type.exception_class, ResidueException)
         self.assertListEqual(residue.atoms, [])
         self.assertListEqual(residue.sequence, [])
         self.assertEqual(residue.name, 'test')
