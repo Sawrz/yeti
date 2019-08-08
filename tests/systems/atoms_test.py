@@ -11,12 +11,13 @@ residue = Residue(subsystem_index=0, structure_file_index=1, name='helper')
 
 class AtomTest(unittest.TestCase):
     def test_init(self):
-        from yeti.systems.building_blocks import Atom
+        from yeti.systems.building_blocks import Atom, AtomException
 
         xyz_trajectory = np.arange(6).reshape((2, 3))
 
         atom = Atom(name='test', subsystem_index=16, structure_file_index=42, xyz_trajectory=xyz_trajectory)
 
+        self.assertEqual(atom.ensure_data_type.exception_class, AtomException)
         self.assertEqual(atom.name, 'test')
         self.assertEqual(atom.subsystem_index, 16)
         self.assertEqual(atom.structure_file_index, 42)
