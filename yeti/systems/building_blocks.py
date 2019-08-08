@@ -38,6 +38,14 @@ class EnsureDataTypes(object):
                 if actual_dim != desired_dim:
                     raise self.exception_class(msg)
 
+    def __check_numpy_data_type__(self, parameter, parameter_name, desired_dtype):
+        desired_dtype = np.dtype(desired_dtype)
+
+        if parameter.dtype is not desired_dtype:
+            msg = 'Wrong dtype for ndarray "{name}". Desired dtype is {data_type}'.format(name=parameter_name,
+                                                                                          data_type=desired_dtype)
+            raise self.exception_class(msg)
+
     def ensure_integer(self, parameter, parameter_name):
         self.__check_type__(parameter=parameter, parameter_name=parameter_name, data_type=int)
 
@@ -50,9 +58,13 @@ class EnsureDataTypes(object):
     def ensure_tuple(self, parameter, parameter_name):
         self.__check_type__(parameter=parameter, parameter_name=parameter_name, data_type=tuple)
 
-    def ensure_numpy_array(self, parameter, parameter_name, shape):
+    def ensure_numpy_array(self, parameter, parameter_name, shape, desired_dtype=None):
         self.__check_type__(parameter=parameter, parameter_name=parameter_name, data_type=np.ndarray)
         self.__check_numpy_dimensions__(parameter=parameter, parameter_name=parameter_name, desired_shape=shape)
+
+        if desired_dtype is not None:
+            self.__check_numpy_data_type__(parameter=parameter, parameter_name=parameter_name,
+                                           desired_dtype=desired_dtype)
 
     def ensure_atom(self, parameter, parameter_name):
         self.__check_type__(parameter=parameter, parameter_name=parameter_name, data_type=Atom)
