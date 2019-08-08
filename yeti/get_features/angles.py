@@ -23,15 +23,23 @@ class Angle(Metric):
         """SOURCE: mdTraj
            MODIFICATION: displacement function
         """
+        # TODO: Think about restricting amount of atoms only to 3
+        self.ensure_data_type.ensure_numpy_array(parameter=out, parameter_name='out',
+                                                 shape=(xyz.shape[0], indices.shape[0]), desired_dtype=np.float32)
 
-        ix01 = indices[:, [1, 0]]
-        ix21 = indices[:, [1, 2]]
+        ix01 = indices[0, [1, 0]]
+        xyz01 = xyz[:, ix01]
+
+        ix21 = indices[0, [1, 2]]
+        xyz21 = xyz[:, ix21]
+
+        indices = np.array([[0, 1]], dtype=np.int32)
 
         displacement = Displacement(periodic=periodic, unit_cell_angles=self.unit_cell_angles,
                                     unit_cell_vectors=self.unit_cell_vectors)
 
-        u_prime = displacement.get_compatibility_layer(xyz, ix01, periodic=periodic, opt=False)
-        v_prime = displacement.get_compatibility_layer(xyz, ix21, periodic=periodic, opt=False)
+        u_prime = displacement.get_compatibility_layer(xyz=xyz01, indices=indices, periodic=periodic, opt=False)
+        v_prime = displacement.get_compatibility_layer(xyz=xyz21, indices=indices, periodic=periodic, opt=False)
         u_norm = np.sqrt((u_prime ** 2).sum(-1))
         v_norm = np.sqrt((v_prime ** 2).sum(-1))
 
