@@ -29,7 +29,7 @@ class EnsureDataTypes(object):
                                                                                        des_shape=desired_shape)
 
         if len(actual_shape) != len(desired_shape):
-            self.exception_class(msg)
+            raise self.exception_class(msg)
 
         for actual_dim, desired_dim in zip(actual_shape, desired_shape):
             if desired_dim is None:
