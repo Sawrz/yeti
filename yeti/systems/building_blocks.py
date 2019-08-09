@@ -49,6 +49,9 @@ class EnsureDataTypes(object):
     def ensure_integer(self, parameter, parameter_name):
         self.__check_type__(parameter=parameter, parameter_name=parameter_name, data_type=int)
 
+    def ensure_float(self, parameter, parameter_name):
+        self.__check_type__(parameter=parameter, parameter_name=parameter_name, data_type=float)
+
     def ensure_string(self, parameter, parameter_name):
         self.__check_type__(parameter=parameter, parameter_name=parameter_name, data_type=str)
 
