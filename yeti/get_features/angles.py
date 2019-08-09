@@ -114,9 +114,19 @@ class Dihedral(Metric):
                 dih[i,j] gives the dihedral angle at traj[i] correponding to indices[j].
 
             """
-        ix10 = indices[:, [0, 1]]
-        ix21 = indices[:, [1, 2]]
-        ix32 = indices[:, [2, 3]]
+        self.ensure_data_type.ensure_numpy_array(parameter=out, parameter_name='out',
+                                                 shape=(xyz.shape[0], indices.shape[0]), desired_dtype=np.float32)
+
+        ix10 = indices[0, [0, 1]]
+        xyz10 = xyz[:, ix10]
+
+        ix21 = indices[0, [1, 2]]
+        xyz21 = xyz[:, ix21]
+
+        ix32 = indices[0, [2, 3]]
+        xyz32 = xyz[:, ix32]
+
+        indices = np.array([[0, 1]], dtype=np.int32)
 
         displacement = Displacement(periodic=periodic, unit_cell_angles=self.unit_cell_angles,
                                     unit_cell_vectors=self.unit_cell_vectors)
