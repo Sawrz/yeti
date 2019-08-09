@@ -10,6 +10,10 @@ class AngleException(Exception):
     pass
 
 
+class DihedralException(Exception):
+    pass
+
+
 class Angle(Metric):
     def __init__(self, *args, **kwargs):
         super(Angle, self).__init__(*args, **kwargs)
@@ -80,6 +84,14 @@ class Angle(Metric):
 
 
 class Dihedral(Metric):
+    def __init__(self, *args, **kwargs):
+        super(Dihedral, self).__init__(*args, **kwargs)
+        self.ensure_data_type.exception_class = DihedralException
+
+    def __mdtraj_paramaeter_compatibility_check__(self, xyz, indices, opt):
+        super(Dihedral, self).__mdtraj_paramaeter_compatibility_check__(xyz=xyz, indices=indices, opt=opt,
+                                                                        atom_amount=4)
+
     def __calculate_angle__(self, xyz, indices, periodic, out):
         """SOURCE: mdTraj
            MODIFICATION: displacement function
@@ -108,9 +120,9 @@ class Dihedral(Metric):
 
         displacement = Displacement(periodic=periodic, unit_cell_angles=self.unit_cell_angles,
                                     unit_cell_vectors=self.unit_cell_vectors)
-        b1 = displacement.get_compatibility_layer(xyz, ix10, periodic=periodic, opt=False)
-        b2 = displacement.get_compatibility_layer(xyz, ix21, periodic=periodic, opt=False)
-        b3 = displacement.get_compatibility_layer(xyz, ix32, periodic=periodic, opt=False)
+        b1 = displacement.get_compatibility_layer(xyz=xyz10, indices=indices, periodic=periodic, opt=False)
+        b2 = displacement.get_compatibility_layer(xyz=xyz21, indices=indices, periodic=periodic, opt=False)
+        b3 = displacement.get_compatibility_layer(xyz=xyz32, indices=indices, periodic=periodic, opt=False)
 
         c1 = np.cross(b2, b3)
         c2 = np.cross(b1, b2)
@@ -122,6 +134,8 @@ class Dihedral(Metric):
         return np.arctan2(p1, p2, out)
 
     def __calculate_no_pbc__(self, xyz, indices, opt):
+        self.__mdtraj_paramaeter_compatibility_check__(xyz=xyz, indices=indices, opt=opt)
+
         dihedrals = np.zeros((xyz.shape[0], indices.shape[0]), dtype=np.float32)
 
         if opt:
@@ -132,6 +146,8 @@ class Dihedral(Metric):
         return dihedrals
 
     def __calculate_minimal_image_convention__(self, xyz, indices, opt):
+        self.__mdtraj_paramaeter_compatibility_check__(xyz=xyz, indices=indices, opt=opt)
+
         dihedrals = np.zeros((xyz.shape[0], indices.shape[0]), dtype=np.float32)
 
         box = ensure_type(self.unit_cell_vectors, dtype=np.float32, ndim=3, name='unitcell_vectors',
