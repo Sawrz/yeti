@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="678bada4-0989-4d11-b108-4c48079ad655" name="Default Changelist" comment="fix(Building Blocks): checks&#10;raises exception if shape length aren't equal">
+    <list default="true" id="678bada4-0989-4d11-b108-4c48079ad655" name="Default Changelist" comment="ci(Travis): branch&#10;run only master branch">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/get_features/hydrogen_bonds_first_comes_first_serves_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/get_features/hydrogen_bonds_first_comes_first_serves_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/get_features/hydrogen_bonds_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/get_features/hydrogen_bonds_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/systems/atoms_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/systems/atoms_test.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -21,7 +24,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="add_nucleic_acids" />
+        <entry key="$PROJECT_DIR$" value="master" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -87,67 +90,67 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="pytest for hydrogen_bonds_first_comes_first_serves_test.HydrogenBondsFirstComesFirstServesTest.test_get_hydrogen_bonds_in_frame_triplets_wrong_data_type" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
+    <configuration name="pytest for atoms_test.AtomTest.test_add_system_wrong_data_type" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
       <module name="yeti" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests/get_features" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests/systems" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="_new_keywords" value="&quot;&quot;" />
       <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;hydrogen_bonds_first_comes_first_serves_test.HydrogenBondsFirstComesFirstServesTest.test_get_hydrogen_bonds_in_frame_triplets_wrong_data_type&quot;" />
+      <option name="_new_target" value="&quot;atoms_test.AtomTest.test_add_system_wrong_data_type&quot;" />
       <option name="_new_targetType" value="&quot;PYTHON&quot;" />
       <method v="2" />
     </configuration>
-    <configuration name="pytest for hydrogen_bonds_first_comes_first_serves_test.HydrogenBondsFirstComesFirstServesTest.test_get_hydrogen_bonds_in_frame_wrong_data_type" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
+    <configuration name="pytest for atoms_test.AtomTest.test_reset_hydrogen_bond_partners_true_entries" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
       <module name="yeti" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests/get_features" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests/systems" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="_new_keywords" value="&quot;&quot;" />
       <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;hydrogen_bonds_first_comes_first_serves_test.HydrogenBondsFirstComesFirstServesTest.test_get_hydrogen_bonds_in_frame_wrong_data_type&quot;" />
+      <option name="_new_target" value="&quot;atoms_test.AtomTest.test_reset_hydrogen_bond_partners_true_entries&quot;" />
       <option name="_new_targetType" value="&quot;PYTHON&quot;" />
       <method v="2" />
     </configuration>
-    <configuration name="pytest in hydrogen_bonds_first_comes_first_serves_test.py" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
+    <configuration name="pytest for atoms_test.AtomTest.test_reset_hydrogen_bond_partners_true_no_entries" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
       <module name="yeti" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests/get_features" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests/systems" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="_new_keywords" value="&quot;&quot;" />
       <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;$PROJECT_DIR$/tests/get_features/hydrogen_bonds_first_comes_first_serves_test.py&quot;" />
-      <option name="_new_targetType" value="&quot;PATH&quot;" />
+      <option name="_new_target" value="&quot;atoms_test.AtomTest.test_reset_hydrogen_bond_partners_true_no_entries&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
       <method v="2" />
     </configuration>
-    <configuration name="pytest in hydrogen_bonds_test.py" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
+    <configuration name="pytest in atoms_test.py" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
       <module name="yeti" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests/get_features" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests/systems" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="_new_keywords" value="&quot;&quot;" />
       <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;$PROJECT_DIR$/tests/get_features/hydrogen_bonds_test.py&quot;" />
+      <option name="_new_target" value="&quot;$PROJECT_DIR$/tests/systems/atoms_test.py&quot;" />
       <option name="_new_targetType" value="&quot;PATH&quot;" />
       <method v="2" />
     </configuration>
@@ -168,19 +171,19 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Python tests.pytest for hydrogen_bonds_first_comes_first_serves_test.HydrogenBondsFirstComesFirstServesTest.test_get_hydrogen_bonds_in_frame_wrong_data_type" />
-      <item itemvalue="Python tests.pytest for hydrogen_bonds_first_comes_first_serves_test.HydrogenBondsFirstComesFirstServesTest.test_get_hydrogen_bonds_in_frame_triplets_wrong_data_type" />
-      <item itemvalue="Python tests.pytest in hydrogen_bonds_first_comes_first_serves_test.py" />
-      <item itemvalue="Python tests.pytest in hydrogen_bonds_test.py" />
+      <item itemvalue="Python tests.pytest in atoms_test.py" />
+      <item itemvalue="Python tests.pytest for atoms_test.AtomTest.test_add_system_wrong_data_type" />
+      <item itemvalue="Python tests.pytest for atoms_test.AtomTest.test_reset_hydrogen_bond_partners_true_no_entries" />
+      <item itemvalue="Python tests.pytest for atoms_test.AtomTest.test_reset_hydrogen_bond_partners_true_entries" />
       <item itemvalue="Python tests.pytest in tests" />
     </list>
     <recent_temporary>
       <list>
         <item itemvalue="Python tests.pytest in tests" />
-        <item itemvalue="Python tests.pytest in hydrogen_bonds_test.py" />
-        <item itemvalue="Python tests.pytest in hydrogen_bonds_first_comes_first_serves_test.py" />
-        <item itemvalue="Python tests.pytest for hydrogen_bonds_first_comes_first_serves_test.HydrogenBondsFirstComesFirstServesTest.test_get_hydrogen_bonds_in_frame_triplets_wrong_data_type" />
-        <item itemvalue="Python tests.pytest for hydrogen_bonds_first_comes_first_serves_test.HydrogenBondsFirstComesFirstServesTest.test_get_hydrogen_bonds_in_frame_wrong_data_type" />
+        <item itemvalue="Python tests.pytest in atoms_test.py" />
+        <item itemvalue="Python tests.pytest for atoms_test.AtomTest.test_reset_hydrogen_bond_partners_true_entries" />
+        <item itemvalue="Python tests.pytest for atoms_test.AtomTest.test_reset_hydrogen_bond_partners_true_no_entries" />
+        <item itemvalue="Python tests.pytest for atoms_test.AtomTest.test_add_system_wrong_data_type" />
       </list>
     </recent_temporary>
   </component>
@@ -215,28 +218,7 @@
       <workItem from="1565266854824" duration="210000" />
       <workItem from="1565330815958" duration="15159000" />
       <workItem from="1565601407805" duration="9836000" />
-      <workItem from="1565677535505" duration="11793000" />
-    </task>
-    <task id="LOCAL-00002" summary="test(Dictionaries): moving&#10;moved unit tests to tests folder for easing handling of unit tests">
-      <created>1564475716099</created>
-      <option name="number" value="00002" />
-      <option name="presentableId" value="LOCAL-00002" />
-      <option name="project" value="LOCAL" />
-      <updated>1564475716099</updated>
-    </task>
-    <task id="LOCAL-00003" summary="refactor(Systems): atom&#10;remove senseless acceptor donor check in __init__ and replace it with another method which is called if updating donor or acceptor state: if the state is False no hydrogen bond partners can be acquired therefore None, otherwise a clean dictionary">
-      <created>1564488230021</created>
-      <option name="number" value="00003" />
-      <option name="presentableId" value="LOCAL-00003" />
-      <option name="project" value="LOCAL" />
-      <updated>1564488230021</updated>
-    </task>
-    <task id="LOCAL-00004" summary="fix(Systems): residue&#10;parameter was misspelled (no breaking change since planned low level API), sequence is now empty list after initialization, method __add_atom__ adds the name of added atom to sequence and adds one to number of atoms, method finalize changes now only types -&gt; atoms list and sequence list become tuple">
-      <created>1564488497909</created>
-      <option name="number" value="00004" />
-      <option name="presentableId" value="LOCAL-00004" />
-      <option name="project" value="LOCAL" />
-      <updated>1564488497909</updated>
+      <workItem from="1565677535505" duration="13938000" />
     </task>
     <task id="LOCAL-00005" summary="refactor(Dimensions): metric&#10;__calculate__ don't need parameter amount anymore since it's determined by length of atoms; add get method to avoid different get methods for Distances, Displacements, Angles and Dihedral Angles">
       <created>1564488682561</created>
@@ -560,7 +542,28 @@
       <option name="project" value="LOCAL" />
       <updated>1565692136176</updated>
     </task>
-    <option name="localTasksCounter" value="51" />
+    <task id="LOCAL-00051" summary="ci(Travis): branch&#10;run only master branch">
+      <created>1565698238169</created>
+      <option name="number" value="00051" />
+      <option name="presentableId" value="LOCAL-00051" />
+      <option name="project" value="LOCAL" />
+      <updated>1565698238169</updated>
+    </task>
+    <task id="LOCAL-00052" summary="break(Building Blocks): atom&#10;get rid of standard subsystem entry in hydrogen_bond_partners and add instead method which creates system_name specific entry in dictionary">
+      <created>1565700150861</created>
+      <option name="number" value="00052" />
+      <option name="presentableId" value="LOCAL-00052" />
+      <option name="project" value="LOCAL" />
+      <updated>1565700150861</updated>
+    </task>
+    <task id="LOCAL-00053" summary="test(utils): test utils&#10;update automated system creators to be compatible with new add_system method">
+      <created>1565700218240</created>
+      <option name="number" value="00053" />
+      <option name="presentableId" value="LOCAL-00053" />
+      <option name="project" value="LOCAL" />
+      <updated>1565700218240</updated>
+    </task>
+    <option name="localTasksCounter" value="54" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -580,9 +583,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="fix(Systems): metric&#10;check parameter data types in methods, remove unnecessary args asterisk" />
-    <MESSAGE value="fix(Systems): metric&#10;refactor method to add variable data type checks" />
-    <MESSAGE value="test(Features): metric&#10;add tests" />
     <MESSAGE value="test(Utils): test_utils&#10;add another atomatic exception message function for easier unit testing" />
     <MESSAGE value="feature(Building Blocks): data type ensuring&#10;add method which checks numpy dtype for better mdtraj compatibility" />
     <MESSAGE value="feat(Dimensions): metric&#10;add a compatibility ccheck for xyz, indices and opt parameters, to provide better mdtraj compatibility" />
@@ -605,7 +605,10 @@
     <MESSAGE value="test(Dimensions): triplet&#10;add tests" />
     <MESSAGE value="test(Dimensions): hydrogen_bonds&#10;add tests" />
     <MESSAGE value="test(Dimensions): hydrogen bonds - first comes, first serves&#10;add tests" />
-    <option name="LAST_COMMIT_MESSAGE" value="test(Dimensions): hydrogen bonds - first comes, first serves&#10;add tests" />
+    <MESSAGE value="ci(Travis): branch&#10;run only master branch" />
+    <MESSAGE value="break(Building Blocks): atom&#10;get rid of standard subsystem entry in hydrogen_bond_partners and add instead method which creates system_name specific entry in dictionary" />
+    <MESSAGE value="test(utils): test utils&#10;update automated system creators to be compatible with new add_system method" />
+    <option name="LAST_COMMIT_MESSAGE" value="test(utils): test utils&#10;update automated system creators to be compatible with new add_system method" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
   <component name="XDebuggerManager">
@@ -659,7 +662,7 @@
     <SUITE FILE_PATH="coverage/yeti$pytest_for_distances_test_TestDistance_test_calculate_minimal_image_convention_optimized_z.coverage" NAME="pytest for distances_test.TestDistance.test_calculate_minimal_image_convention_optimized_z Coverage Results" MODIFIED="1565249903835" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/get_features" />
     <SUITE FILE_PATH="coverage/yeti$pytest_for_distance_metric_test_TestDistanceMetric_test_mdtraj_paramaeter_compatibility_check.coverage" NAME="pytest for distance_metric_test.TestDistanceMetric.test_mdtraj_paramaeter_compatibility_check Coverage Results" MODIFIED="1565189965429" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/get_features" />
     <SUITE FILE_PATH="coverage/yeti$pytest_for_dihedrals_test_TestDihedral_test_calculate_no_pbc_optimized.coverage" NAME="pytest for dihedrals_test.TestDihedral.test_calculate_no_pbc_optimized Coverage Results" MODIFIED="1565333856526" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/get_features" />
-    <SUITE FILE_PATH="coverage/yeti$pytest_in_tests.coverage" NAME="pytest in tests Coverage Results" MODIFIED="1565691675151" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/yeti$pytest_in_tests.coverage" NAME="pytest in tests Coverage Results" MODIFIED="1565700028596" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/yeti$pytest_for_displacement_test_TestDisplacement_test_calculate_no_pbc_not_optimized_x.coverage" NAME="pytest for displacement_test.TestDisplacement.test_calculate_no_pbc_not_optimized_x Coverage Results" MODIFIED="1565250569397" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/get_features" />
     <SUITE FILE_PATH="coverage/yeti$pytest_for_triplet_test_TestTriplet_test_init.coverage" NAME="pytest for triplet_test.TestTriplet.test_init Coverage Results" MODIFIED="1565336176379" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/get_features" />
     <SUITE FILE_PATH="coverage/yeti$pytest_for_angles_test_TestAngle_test_calculate_minimal_image_convention_not_optimized_multi_frame.coverage" NAME="pytest for angles_test.TestAngle.test_calculate_minimal_image_convention_not_optimized_multi_frame Coverage Results" MODIFIED="1565265071582" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/get_features" />
@@ -683,6 +686,7 @@
     <SUITE FILE_PATH="coverage/yeti$pytest_for_distances_test_TestDistance_test_alculate_minimal_image_convention_not_optimized_y_boundary.coverage" NAME="pytest for distances_test.TestDistance.test_alculate_minimal_image_convention_not_optimized_y_boundary Coverage Results" MODIFIED="1565249522748" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/get_features" />
     <SUITE FILE_PATH="coverage/yeti$pytest_for_dihedrals_test_TestDihedral_test_init.coverage" NAME="pytest for dihedrals_test.TestDihedral.test_init Coverage Results" MODIFIED="1565331143886" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/get_features" />
     <SUITE FILE_PATH="coverage/yeti$pytest_for_displacement_test_TestDisplacement_test_calculate_minimal_image_convention_optimized_x_no_boundary.coverage" NAME="pytest for displacement_test.TestDisplacement.test_calculate_minimal_image_convention_optimized_x_no_boundary Coverage Results" MODIFIED="1565251450751" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/get_features" />
+    <SUITE FILE_PATH="coverage/yeti$pytest_for_atoms_test_AtomTest_test_reset_hydrogen_bond_partners_true_no_entries.coverage" NAME="pytest for atoms_test.AtomTest.test_reset_hydrogen_bond_partners_true_no_entries Coverage Results" MODIFIED="1565699735871" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/systems" />
     <SUITE FILE_PATH="coverage/yeti$pytest_for_hydrogen_bonds_test_HydrogenBondsTest_test_build_triplets_angle_cutoff_wrong_data_type.coverage" NAME="pytest for hydrogen_bonds_test.HydrogenBondsTest.test_build_triplets_angle_cutoff_wrong_data_type Coverage Results" MODIFIED="1565608457971" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/get_features" />
     <SUITE FILE_PATH="coverage/yeti$pytest_for_distances_test_TestDistance_test_calculate_minimal_image_convention_optimized_y.coverage" NAME="pytest for distances_test.TestDistance.test_calculate_minimal_image_convention_optimized_y Coverage Results" MODIFIED="1565249901067" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/get_features" />
     <SUITE FILE_PATH="coverage/yeti$pytest_for_dihedrals_test_TestDihedral_test_calculate_angle_wrong_shape_out.coverage" NAME="pytest for dihedrals_test.TestDihedral.test_calculate_angle_wrong_shape_out Coverage Results" MODIFIED="1565333663928" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/get_features" />
@@ -723,6 +727,7 @@
     <SUITE FILE_PATH="coverage/yeti$pytest_for_hydrogen_bonds_test_HydrogenBondsTest_test_build_triplets_distance_cutoff_wrong_data_type.coverage" NAME="pytest for hydrogen_bonds_test.HydrogenBondsTest.test_build_triplets_distance_cutoff_wrong_data_type Coverage Results" MODIFIED="1565608455012" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/get_features" />
     <SUITE FILE_PATH="coverage/yeti$pytest_for_metric_test_TestMetric_test_mdtraj_paramaeter_compatibility_check_incompatible_amount.coverage" NAME="pytest for metric_test.TestMetric.test_mdtraj_paramaeter_compatibility_check_incompatible_amount Coverage Results" MODIFIED="1565182280499" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/get_features" />
     <SUITE FILE_PATH="coverage/yeti$pytest_for_angles_test_TestAngle_test_mdtraj_paramaeter_compatibility_check.coverage" NAME="pytest for angles_test.TestAngle.test_mdtraj_paramaeter_compatibility_check Coverage Results" MODIFIED="1565263969268" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/get_features" />
+    <SUITE FILE_PATH="coverage/yeti$pytest_for_atoms_test_AtomTest_test_add_system_no_donor_or_acceptor.coverage" NAME="pytest for atoms_test.AtomTest.test_add_system_no_donor_or_acceptor Coverage Results" MODIFIED="1565699019605" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/systems" />
     <SUITE FILE_PATH="coverage/yeti$pytest_for_angles_test_TestAngle_test_calculate_angle_wrong_data_type_out.coverage" NAME="pytest for angles_test.TestAngle.test_calculate_angle_wrong_data_type_out Coverage Results" MODIFIED="1565264387851" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/get_features" />
     <SUITE FILE_PATH="coverage/yeti$pytest_for_dihedrals_test_TestDihedral_test_calculate_angle_periodic_multi_dim.coverage" NAME="pytest for dihedrals_test.TestDihedral.test_calculate_angle_periodic_multi_dim Coverage Results" MODIFIED="1565334342680" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/get_features" />
     <SUITE FILE_PATH="coverage/yeti$pytest_for_triplet_test_TestTriplet_test_init_unit_cell_vectors_wrong_shape.coverage" NAME="pytest for triplet_test.TestTriplet.test_init_unit_cell_vectors_wrong_shape Coverage Results" MODIFIED="1565342860903" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/get_features" />
@@ -752,6 +757,7 @@
     <SUITE FILE_PATH="coverage/yeti$pytest_for_metric_test_TestMetric_test_mdtraj_paramaeter_compatibility_check_amount_three.coverage" NAME="pytest for metric_test.TestMetric.test_mdtraj_paramaeter_compatibility_check_amount_three Coverage Results" MODIFIED="1565182229284" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/get_features" />
     <SUITE FILE_PATH="coverage/yeti$pytest_for_distances_test_TestDistance_test_alculate_minimal_image_convention_not_optimized_x_not_boundary.coverage" NAME="pytest for distances_test.TestDistance.test_alculate_minimal_image_convention_not_optimized_x_not_boundary Coverage Results" MODIFIED="1565249207134" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/get_features" />
     <SUITE FILE_PATH="coverage/yeti$pytest_for_dihedrals_test_TestDihedral_test_mdtraj_paramaeter_compatibility_check.coverage" NAME="pytest for dihedrals_test.TestDihedral.test_mdtraj_paramaeter_compatibility_check Coverage Results" MODIFIED="1565331171003" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/get_features" />
+    <SUITE FILE_PATH="coverage/yeti$pytest_for_atoms_test_AtomTest_test_reset_hydrogen_bond_partners_true_entries.coverage" NAME="pytest for atoms_test.AtomTest.test_reset_hydrogen_bond_partners_true_entries Coverage Results" MODIFIED="1565699796233" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/systems" />
     <SUITE FILE_PATH="coverage/yeti$pytest_for_angles_test_TestAngle_test_mdtraj_paramaeter_compatibility_check_xyz_not_match.coverage" NAME="pytest for angles_test.TestAngle.test_mdtraj_paramaeter_compatibility_check_xyz_not_match Coverage Results" MODIFIED="1565264215616" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/get_features" />
     <SUITE FILE_PATH="coverage/yeti$pytest_in_hydrogen_bonds_test_py.coverage" NAME="pytest in hydrogen_bonds_test.py Coverage Results" MODIFIED="1565691664362" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/get_features" />
     <SUITE FILE_PATH="coverage/yeti$pytest_for_distances_test_TestDistance_test_calculate_minimal_image_convention_wrong_input.coverage" NAME="pytest for distances_test.TestDistance.test_calculate_minimal_image_convention_wrong_input Coverage Results" MODIFIED="1565250200698" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/get_features" />
@@ -770,9 +776,9 @@
     <SUITE FILE_PATH="coverage/yeti$pytest_for_displacement_test_TestDisplacement_test_get_compatibility_layer_periodic_wrong_data_type.coverage" NAME="pytest for displacement_test.TestDisplacement.test_get_compatibility_layer_periodic_wrong_data_type Coverage Results" MODIFIED="1565254763401" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/get_features" />
     <SUITE FILE_PATH="coverage/yeti$pytest_for_dihedrals_test_TestDihedral_test_calculate_no_pbc_not_optimized.coverage" NAME="pytest for dihedrals_test.TestDihedral.test_calculate_no_pbc_not_optimized Coverage Results" MODIFIED="1565333730129" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/get_features" />
     <SUITE FILE_PATH="coverage/yeti$pytest_for_distances_test_TestDistance_test_calculate_no_pbc_xyz_wrong_shape_xyz_dim.coverage" NAME="pytest for distances_test.TestDistance.test_calculate_no_pbc_xyz_wrong_shape_xyz_dim Coverage Results" MODIFIED="1565172800843" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/get_features" />
-    <SUITE FILE_PATH="coverage/yeti$pytest_in_atoms_test_py.coverage" NAME="pytest in atoms_test.py Coverage Results" MODIFIED="1565084396634" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/systems" />
     <SUITE FILE_PATH="coverage/yeti$pytest_for_dihedrals_test_TestDihedral_test_calculate_angle_wrong_dtype_out.coverage" NAME="pytest for dihedrals_test.TestDihedral.test_calculate_angle_wrong_dtype_out Coverage Results" MODIFIED="1565333651443" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/get_features" />
     <SUITE FILE_PATH="coverage/yeti$pytest_for_hydrogen_bonds_first_comes_first_serves_test_HydrogenBondsFirstComesFirstServesTest_test_get_hydrogen_bonds_in_frame_wrong_data_type.coverage" NAME="pytest for hydrogen_bonds_first_comes_first_serves_test.HydrogenBondsFirstComesFirstServesTest.test_get_hydrogen_bonds_in_frame_wrong_data_type Coverage Results" MODIFIED="1565691473400" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/get_features" />
+    <SUITE FILE_PATH="coverage/yeti$pytest_in_atoms_test_py.coverage" NAME="pytest in atoms_test.py Coverage Results" MODIFIED="1565699801944" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/systems" />
     <SUITE FILE_PATH="coverage/yeti$pytest_for_distances_test_TestDistance_test_alculate_minimal_image_convention_not_optimized_z_not_boundary.coverage" NAME="pytest for distances_test.TestDistance.test_alculate_minimal_image_convention_not_optimized_z_not_boundary Coverage Results" MODIFIED="1565249251382" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/get_features" />
     <SUITE FILE_PATH="coverage/yeti$pytest_for_angles_test_TestAngle_test_calculate_angle_not_periodic.coverage" NAME="pytest for angles_test.TestAngle.test_calculate_angle_not_periodic Coverage Results" MODIFIED="1565261441641" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/get_features" />
     <SUITE FILE_PATH="coverage/yeti$pytest_for_hydrogen_bonds_test_HydrogenBondsTest_test_get_hydrogen_bonds_triplets_wrong_data_type.coverage" NAME="pytest for hydrogen_bonds_test.HydrogenBondsTest.test_get_hydrogen_bonds_triplets_wrong_data_type Coverage Results" MODIFIED="1565611164932" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/get_features" />
@@ -796,6 +802,7 @@
     <SUITE FILE_PATH="coverage/yeti$pytest_for_metric_test_TestMetric_test_prepare_xyz_data.coverage" NAME="pytest for metric_test.TestMetric.test_prepare_xyz_data Coverage Results" MODIFIED="1565168216031" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/get_features" />
     <SUITE FILE_PATH="coverage/yeti$pytest_for_hydrogen_bonds_test_HydrogenBondsTest_test_calculate_hydrogen_bonds_distance_cutoff_wrong_data_type.coverage" NAME="pytest for hydrogen_bonds_test.HydrogenBondsTest.test_calculate_hydrogen_bonds_distance_cutoff_wrong_data_type Coverage Results" MODIFIED="1565679484870" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/get_features" />
     <SUITE FILE_PATH="coverage/yeti$pytest_for_angles_test_TestAngle_test_calculate_no_pbc_wrong_input.coverage" NAME="pytest for angles_test.TestAngle.test_calculate_no_pbc_wrong_input Coverage Results" MODIFIED="1565264509106" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/get_features" />
+    <SUITE FILE_PATH="coverage/yeti$pytest_for_atoms_test_AtomTest_test_add_system_wrong_data_type.coverage" NAME="pytest for atoms_test.AtomTest.test_add_system_wrong_data_type Coverage Results" MODIFIED="1565699093354" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/systems" />
     <SUITE FILE_PATH="coverage/yeti$pytest_in_distances_test_py.coverage" NAME="pytest in distances_test.py Coverage Results" MODIFIED="1565250254458" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/get_features" />
     <SUITE FILE_PATH="coverage/yeti$pytest_for_displacement_test_TestDisplacement_test_get_compatibility_layer_periodic.coverage" NAME="pytest for displacement_test.TestDisplacement.test_get_compatibility_layer_periodic Coverage Results" MODIFIED="1565254589887" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/get_features" />
     <SUITE FILE_PATH="coverage/yeti$pytest_for_displacement_test_TestDisplacement_test_calculate_minimal_image_convention_not_optimized_y_boundary.coverage" NAME="pytest for displacement_test.TestDisplacement.test_calculate_minimal_image_convention_not_optimized_y_boundary Coverage Results" MODIFIED="1565251328625" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/get_features" />
@@ -803,5 +810,6 @@
     <SUITE FILE_PATH="coverage/yeti$pytest_for_displacement_test_TestDisplacement_test_calculate_no_pbc_optimized_z.coverage" NAME="pytest for displacement_test.TestDisplacement.test_calculate_no_pbc_optimized_z Coverage Results" MODIFIED="1565250931494" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/get_features" />
     <SUITE FILE_PATH="coverage/yeti$pytest_for_hydrogen_bonds_test_HydrogenBondsTest_test_get_number_hydrogen_bonds_for_frame.coverage" NAME="pytest for hydrogen_bonds_test.HydrogenBondsTest.test_get_number_hydrogen_bonds_for_frame Coverage Results" MODIFIED="1565689472011" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/get_features" />
     <SUITE FILE_PATH="coverage/yeti$pytest_for_metric_test_TestMetric_test_mdtraj_paramaeter_compatibility_check_indices_wrong_dtype.coverage" NAME="pytest for metric_test.TestMetric.test_mdtraj_paramaeter_compatibility_check_indices_wrong_dtype Coverage Results" MODIFIED="1565181136542" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/get_features" />
+    <SUITE FILE_PATH="coverage/yeti$pytest_for_atoms_test_AtomTest_test_add_system.coverage" NAME="pytest for atoms_test.AtomTest.test_add_system Coverage Results" MODIFIED="1565698872277" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/systems" />
   </component>
 </project>

@@ -204,6 +204,38 @@ class AtomTest(unittest.TestCase):
         desired_msg = create_data_type_exception_messages(parameter_name='atom', data_type_name='atom')
         self.assertEqual(desired_msg, str(context.exception))
 
+    def test_add_system(self):
+        from yeti.systems.building_blocks import Atom
+
+        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((2, 3)))
+        atom.update_donor_state(is_donor_atom=True, donor_slots=1)
+
+        atom.add_system('test')
+
+        self.assertDictEqual({'test': [[], []]}, atom.hydrogen_bond_partners)
+
+    def test_add_system_wrong_data_type(self):
+        from yeti.systems.building_blocks import Atom, AtomException
+
+        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((2, 3)))
+
+        with self.assertRaises(AtomException) as context:
+            atom.add_system(system_name=5)
+
+        desired_msg = create_data_type_exception_messages(parameter_name='system_name', data_type_name='str')
+        self.assertEqual(str(context.exception), desired_msg)
+
+    def test_add_system_no_donor_or_acceptor(self):
+        from yeti.systems.building_blocks import Atom, AtomException
+
+        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((2, 3)))
+
+        with self.assertRaises(AtomException) as context:
+            atom.add_system('test')
+
+        desired_msg = 'This atom is neither acceptor nor a donor atom. Update its state first!'
+        self.assertEqual(str(context.exception), desired_msg)
+
     def test_update_hydrogen_bond_partners_false(self):
         from yeti.systems.building_blocks import Atom
 
@@ -212,14 +244,24 @@ class AtomTest(unittest.TestCase):
         atom.__reset_hydrogen_bond_partners__(is_hydrogen_bond_active=False)
         self.assertIsNone(atom.hydrogen_bond_partners)
 
-    def test_update_hydrogen_bond_partners_true(self):
+    def test_reset_hydrogen_bond_partners_true_no_entries(self):
         from yeti.systems.building_blocks import Atom
 
         atom = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((2, 3)))
 
         atom.__reset_hydrogen_bond_partners__(is_hydrogen_bond_active=True)
-        self.assertDictEqual(atom.hydrogen_bond_partners, dict(subsystem=[[], []]))
-        self.assertListEqual(atom.hydrogen_bond_partners['subsystem'], [[], []])
+        self.assertDictEqual(atom.hydrogen_bond_partners, {})
+
+    def test_reset_hydrogen_bond_partners_true_entries(self):
+        from yeti.systems.building_blocks import Atom
+
+        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((2, 3)))
+        atom.update_donor_state(is_donor_atom=True, donor_slots=1)
+        atom.add_system(system_name='test')
+
+        atom.__reset_hydrogen_bond_partners__(is_hydrogen_bond_active=True)
+        self.assertDictEqual(atom.hydrogen_bond_partners, dict(test=[[], []]))
+        self.assertListEqual(atom.hydrogen_bond_partners['test'], [[], []])
 
     def test_update_hydrogen_bond_partners_wrong_data_type(self):
         from yeti.systems.building_blocks import Atom, AtomException
@@ -242,7 +284,7 @@ class AtomTest(unittest.TestCase):
 
         self.assertTrue(atom.is_donor_atom)
         self.assertEqual(atom.donor_slots, 2)
-        self.assertListEqual(atom.hydrogen_bond_partners['subsystem'], [[], []])
+        self.assertDictEqual(atom.hydrogen_bond_partners, {})
 
     def test_update_donor_state_false(self):
         from yeti.systems.building_blocks import Atom
@@ -330,7 +372,7 @@ class AtomTest(unittest.TestCase):
 
         self.assertTrue(atom.is_acceptor)
         self.assertEqual(atom.acceptor_slots, 2)
-        self.assertListEqual(atom.hydrogen_bond_partners['subsystem'], [[], []])
+        self.assertDictEqual(atom.hydrogen_bond_partners, {})
 
     def test_update_acceptor_state_false(self):
         from yeti.systems.building_blocks import Atom
@@ -414,10 +456,12 @@ class AtomTest(unittest.TestCase):
 
         atom_01 = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((2, 3)))
         atom_01.update_donor_state(is_donor_atom=True, donor_slots=1)
+        atom_01.add_system(system_name='subsystem')
 
         atom_02 = Atom(structure_file_index=2, subsystem_index=1, name='B',
                        xyz_trajectory=np.arange(6, 12).reshape((2, 3)))
         atom_02.update_acceptor_state(is_acceptor=True, acceptor_slots=2)
+        atom_02.add_system(system_name='subsystem')
 
         atom_01.__update_hydrogen_bond_partner__(atom=atom_02, frame=1, system_name='subsystem')
 
@@ -428,10 +472,12 @@ class AtomTest(unittest.TestCase):
 
         atom_01 = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((2, 3)))
         atom_01.update_donor_state(is_donor_atom=True, donor_slots=1)
+        atom_01.add_system(system_name='subsystem')
 
         atom_02 = Atom(structure_file_index=2, subsystem_index=1, name='B',
                        xyz_trajectory=np.arange(6, 12).reshape((2, 3)))
         atom_02.update_acceptor_state(is_acceptor=True, acceptor_slots=2)
+        atom_02.add_system(system_name='subsystem')
 
         atom_02.__update_hydrogen_bond_partner__(atom=atom_01, frame=1, system_name='subsystem')
 
@@ -442,14 +488,17 @@ class AtomTest(unittest.TestCase):
 
         atom_01 = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((2, 3)))
         atom_01.update_donor_state(is_donor_atom=True, donor_slots=1)
+        atom_01.add_system(system_name='subsystem')
 
         atom_02 = Atom(structure_file_index=1, subsystem_index=0, name='B',
                        xyz_trajectory=np.arange(6, 12).reshape((2, 3)))
         atom_02.update_donor_state(is_donor_atom=True, donor_slots=1)
+        atom_02.add_system(system_name='subsystem')
 
         atom_03 = Atom(structure_file_index=2, subsystem_index=1, name='C',
                        xyz_trajectory=np.arange(12, 18).reshape((2, 3)))
         atom_03.update_acceptor_state(is_acceptor=True, acceptor_slots=2)
+        atom_03.add_system(system_name='subsystem')
 
         atom_03.__update_hydrogen_bond_partner__(atom=atom_01, frame=1, system_name='subsystem')
         atom_03.__update_hydrogen_bond_partner__(atom=atom_02, frame=1, system_name='subsystem')
@@ -537,10 +586,12 @@ class AtomTest(unittest.TestCase):
 
         atom_01 = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((2, 3)))
         atom_01.update_donor_state(is_donor_atom=True, donor_slots=1)
+        atom_01.add_system(system_name='subsystem')
 
         atom_02 = Atom(structure_file_index=2, subsystem_index=1, name='B',
                        xyz_trajectory=np.arange(6, 12).reshape((2, 3)))
         atom_02.update_acceptor_state(is_acceptor=True, acceptor_slots=2)
+        atom_02.add_system(system_name='subsystem')
 
         atom_01.__update_hydrogen_bond_partner__(atom=atom_02, frame=1, system_name='subsystem')
 
@@ -555,10 +606,12 @@ class AtomTest(unittest.TestCase):
 
         atom_01 = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((2, 3)))
         atom_01.update_donor_state(is_donor_atom=True, donor_slots=1)
+        atom_01.add_system(system_name='subsystem')
 
         atom_02 = Atom(structure_file_index=2, subsystem_index=1, name='B',
                        xyz_trajectory=np.arange(6, 12).reshape((2, 3)))
         atom_02.update_acceptor_state(is_acceptor=True, acceptor_slots=2)
+        atom_02.add_system(system_name='subsystem')
 
         atom_01.add_hydrogen_bond_partner(frame=0, atom=atom_02, system_name='subsystem')
 
@@ -600,6 +653,7 @@ class AtomTest(unittest.TestCase):
 
         atom = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((2, 3)))
         atom.update_donor_state(is_donor_atom=True, donor_slots=1)
+        atom.add_system(system_name='subsystem')
         atom.hydrogen_bond_partners['subsystem'][1].append(5)
         atom.purge_hydrogen_bond_partner_history(system_name='subsystem')
 
@@ -610,6 +664,7 @@ class AtomTest(unittest.TestCase):
 
         atom = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((2, 3)))
         atom.update_acceptor_state(is_acceptor=True, acceptor_slots=1)
+        atom.add_system(system_name='subsystem')
         atom.hydrogen_bond_partners['subsystem'][1].append(5)
         atom.purge_hydrogen_bond_partner_history(system_name='subsystem')
 

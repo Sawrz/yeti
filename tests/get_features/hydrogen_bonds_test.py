@@ -273,17 +273,17 @@ class HydrogenBondsTest(unittest.TestCase):
         unit_cell_angles, unit_cell_vectors = build_unit_cell_angles_and_vectors(number_of_frames=number_of_frames)
 
         hydrogen_bonds = TestHydrogenBonds(atoms=atoms, periodic=True, unit_cell_angles=unit_cell_angles,
-                                           unit_cell_vectors=unit_cell_vectors, system_name='subsystem',
+                                           unit_cell_vectors=unit_cell_vectors, system_name='test_system',
                                            number_of_frames=number_of_frames)
 
         hydrogen_bonds.__get_hydrogen_bonds__(triplets=triplets)
 
         self.assertIsNone(atoms[0].hydrogen_bond_partners)
-        self.assertListEqual([[], [atoms[2]], []], atoms[1].hydrogen_bond_partners['subsystem'])
-        self.assertListEqual([[], [atoms[1]], []], atoms[2].hydrogen_bond_partners['subsystem'])
+        self.assertListEqual([[], [atoms[2]], []], atoms[1].hydrogen_bond_partners['test_system'])
+        self.assertListEqual([[], [atoms[1]], []], atoms[2].hydrogen_bond_partners['test_system'])
         self.assertIsNone(atoms[3].hydrogen_bond_partners)
-        self.assertListEqual([[atoms[5]], [], []], atoms[4].hydrogen_bond_partners['subsystem'])
-        self.assertListEqual([[atoms[4]], [], []], atoms[5].hydrogen_bond_partners['subsystem'])
+        self.assertListEqual([[atoms[5]], [], []], atoms[4].hydrogen_bond_partners['test_system'])
+        self.assertListEqual([[atoms[4]], [], []], atoms[5].hydrogen_bond_partners['test_system'])
 
     def test_get_hydrogen_bonds_triplets_wrong_data_type(self):
         from yeti.get_features.hydrogen_bonds import HydrogenBonds, HydrogenBondsException
@@ -295,7 +295,7 @@ class HydrogenBondsTest(unittest.TestCase):
         unit_cell_angles, unit_cell_vectors = build_unit_cell_angles_and_vectors(number_of_frames=number_of_frames)
 
         hydrogen_bonds = HydrogenBonds(atoms=atoms, periodic=True, unit_cell_angles=unit_cell_angles,
-                                       unit_cell_vectors=unit_cell_vectors, system_name='subsystem',
+                                       unit_cell_vectors=unit_cell_vectors, system_name='test_system',
                                        number_of_frames=number_of_frames)
 
         with self.assertRaises(HydrogenBondsException) as context:
@@ -325,17 +325,17 @@ class HydrogenBondsTest(unittest.TestCase):
         unit_cell_angles, unit_cell_vectors = build_unit_cell_angles_and_vectors(number_of_frames=number_of_frames)
 
         hydrogen_bonds = TestHydrogenBonds(atoms=atoms, periodic=True, unit_cell_angles=unit_cell_angles,
-                                           unit_cell_vectors=unit_cell_vectors, system_name='subsystem',
+                                           unit_cell_vectors=unit_cell_vectors, system_name='test_system',
                                            number_of_frames=number_of_frames)
 
         hydrogen_bonds.calculate_hydrogen_bonds(distance_cutoff=0.25, angle_cutoff=2.0)
 
         self.assertIsNone(atoms[0].hydrogen_bond_partners)
-        self.assertListEqual([[atoms[5]], [atoms[2]], []], atoms[1].hydrogen_bond_partners['subsystem'])
-        self.assertListEqual([[], [atoms[1]], []], atoms[2].hydrogen_bond_partners['subsystem'])
+        self.assertListEqual([[atoms[5]], [atoms[2]], []], atoms[1].hydrogen_bond_partners['test_system'])
+        self.assertListEqual([[], [atoms[1]], []], atoms[2].hydrogen_bond_partners['test_system'])
         self.assertIsNone(atoms[3].hydrogen_bond_partners)
-        self.assertListEqual([[], [], []], atoms[4].hydrogen_bond_partners['subsystem'])
-        self.assertListEqual([[atoms[1]], [], []], atoms[5].hydrogen_bond_partners['subsystem'])
+        self.assertListEqual([[], [], []], atoms[4].hydrogen_bond_partners['test_system'])
+        self.assertListEqual([[atoms[1]], [], []], atoms[5].hydrogen_bond_partners['test_system'])
 
     def test_calculate_hydrogen_bonds_distance_cutoff_wrong_data_type(self):
         from yeti.get_features.hydrogen_bonds import HydrogenBonds, HydrogenBondsException
@@ -346,7 +346,7 @@ class HydrogenBondsTest(unittest.TestCase):
         unit_cell_angles, unit_cell_vectors = build_unit_cell_angles_and_vectors(number_of_frames=number_of_frames)
 
         hydrogen_bonds = HydrogenBonds(atoms=atoms, periodic=True, unit_cell_angles=unit_cell_angles,
-                                       unit_cell_vectors=unit_cell_vectors, system_name='subsystem',
+                                       unit_cell_vectors=unit_cell_vectors, system_name='test_system',
                                        number_of_frames=number_of_frames)
 
         with self.assertRaises(HydrogenBondsException) as context:
@@ -364,7 +364,7 @@ class HydrogenBondsTest(unittest.TestCase):
         unit_cell_angles, unit_cell_vectors = build_unit_cell_angles_and_vectors(number_of_frames=number_of_frames)
 
         hydrogen_bonds = HydrogenBonds(atoms=atoms, periodic=True, unit_cell_angles=unit_cell_angles,
-                                       unit_cell_vectors=unit_cell_vectors, system_name='subsystem',
+                                       unit_cell_vectors=unit_cell_vectors, system_name='test_system',
                                        number_of_frames=number_of_frames)
 
         with self.assertRaises(HydrogenBondsException) as context:
@@ -391,7 +391,7 @@ class HydrogenBondsTest(unittest.TestCase):
         unit_cell_angles, unit_cell_vectors = build_unit_cell_angles_and_vectors(number_of_frames=number_of_frames)
 
         hydrogen_bonds = TestHydrogenBonds(atoms=atoms, periodic=True, unit_cell_angles=unit_cell_angles,
-                                           unit_cell_vectors=unit_cell_vectors, system_name='subsystem',
+                                           unit_cell_vectors=unit_cell_vectors, system_name='test_system',
                                            number_of_frames=number_of_frames)
 
         hydrogen_bonds.calculate_hydrogen_bonds(distance_cutoff=0.25, angle_cutoff=2.0)
@@ -417,7 +417,7 @@ class HydrogenBondsTest(unittest.TestCase):
         unit_cell_angles, unit_cell_vectors = build_unit_cell_angles_and_vectors(number_of_frames=number_of_frames)
 
         hydrogen_bonds = HydrogenBonds(atoms=atoms, periodic=True, unit_cell_angles=unit_cell_angles,
-                                       unit_cell_vectors=unit_cell_vectors, system_name='subsystem',
+                                       unit_cell_vectors=unit_cell_vectors, system_name='test_system',
                                        number_of_frames=number_of_frames)
 
         with self.assertRaises(HydrogenBondsException) as context:
@@ -437,7 +437,7 @@ class HydrogenBondsTest(unittest.TestCase):
         unit_cell_angles, unit_cell_vectors = build_unit_cell_angles_and_vectors(number_of_frames=number_of_frames)
 
         hydrogen_bonds = HydrogenBonds(atoms=atoms, periodic=True, unit_cell_angles=unit_cell_angles,
-                                       unit_cell_vectors=unit_cell_vectors, system_name='subsystem',
+                                       unit_cell_vectors=unit_cell_vectors, system_name='test_system',
                                        number_of_frames=number_of_frames)
 
         with self.assertRaises(HydrogenBondsException) as context:
@@ -462,7 +462,7 @@ class HydrogenBondsTest(unittest.TestCase):
         unit_cell_angles, unit_cell_vectors = build_unit_cell_angles_and_vectors(number_of_frames=number_of_frames)
 
         hydrogen_bonds = TestHydrogenBonds(atoms=atoms, periodic=True, unit_cell_angles=unit_cell_angles,
-                                           unit_cell_vectors=unit_cell_vectors, system_name='subsystem',
+                                           unit_cell_vectors=unit_cell_vectors, system_name='test_system',
                                            number_of_frames=number_of_frames)
 
         hydrogen_bonds.calculate_hydrogen_bonds(distance_cutoff=0.25, angle_cutoff=2.0)
@@ -499,7 +499,7 @@ class HydrogenBondsTest(unittest.TestCase):
         unit_cell_angles, unit_cell_vectors = build_unit_cell_angles_and_vectors(number_of_frames=number_of_frames)
 
         hydrogen_bonds = TestHydrogenBonds(atoms=atoms, periodic=True, unit_cell_angles=unit_cell_angles,
-                                           unit_cell_vectors=unit_cell_vectors, system_name='subsystem',
+                                           unit_cell_vectors=unit_cell_vectors, system_name='test_system',
                                            number_of_frames=number_of_frames)
 
         hydrogen_bonds.calculate_hydrogen_bonds(distance_cutoff=0.25, angle_cutoff=2.0)
@@ -515,7 +515,7 @@ class HydrogenBondsTest(unittest.TestCase):
         unit_cell_angles, unit_cell_vectors = build_unit_cell_angles_and_vectors(number_of_frames=number_of_frames)
 
         hydrogen_bonds = HydrogenBonds(atoms=atoms, periodic=True, unit_cell_angles=unit_cell_angles,
-                                       unit_cell_vectors=unit_cell_vectors, system_name='subsystem',
+                                       unit_cell_vectors=unit_cell_vectors, system_name='test_system',
                                        number_of_frames=number_of_frames)
 
         with self.assertRaises(HydrogenBondsException) as context:
@@ -540,7 +540,7 @@ class HydrogenBondsTest(unittest.TestCase):
         unit_cell_angles, unit_cell_vectors = build_unit_cell_angles_and_vectors(number_of_frames=number_of_frames)
 
         hydrogen_bonds = TestHydrogenBonds(atoms=atoms, periodic=True, unit_cell_angles=unit_cell_angles,
-                                           unit_cell_vectors=unit_cell_vectors, system_name='subsystem',
+                                           unit_cell_vectors=unit_cell_vectors, system_name='test_system',
                                            number_of_frames=number_of_frames)
 
         hydrogen_bonds.calculate_hydrogen_bonds(distance_cutoff=0.25, angle_cutoff=2.0)

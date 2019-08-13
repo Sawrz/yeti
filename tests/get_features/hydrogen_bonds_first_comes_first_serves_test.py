@@ -19,7 +19,7 @@ class HydrogenBondsFirstComesFirstServesTest(unittest.TestCase):
         hydrogen_bonds = HydrogenBondsFirstComesFirstServes(atoms=atoms, periodic=True,
                                                             unit_cell_angles=unit_cell_angles,
                                                             unit_cell_vectors=unit_cell_vectors,
-                                                            system_name='subsystem',
+                                                            system_name='test_system',
                                                             number_of_frames=number_of_frames)
 
         triplets = hydrogen_bonds.__build_triplets__(distance_cutoff=0.25, angle_cutoff=2.0)
@@ -28,11 +28,11 @@ class HydrogenBondsFirstComesFirstServesTest(unittest.TestCase):
         self.assertIsNone(hydrogen_bonds.atoms[0].hydrogen_bond_partners)
         self.assertIsNone(hydrogen_bonds.atoms[3].hydrogen_bond_partners)
         self.assertIsNone(hydrogen_bonds.atoms[5].hydrogen_bond_partners)
-        self.assertListEqual([[atoms[2]], [], []], hydrogen_bonds.atoms[1].hydrogen_bond_partners['subsystem'])
+        self.assertListEqual([[atoms[2]], [], []], hydrogen_bonds.atoms[1].hydrogen_bond_partners['test_system'])
         self.assertListEqual([[atoms[1], atoms[4]], [], []],
-                             hydrogen_bonds.atoms[2].hydrogen_bond_partners['subsystem'])
-        self.assertListEqual([[atoms[2]], [], []], hydrogen_bonds.atoms[4].hydrogen_bond_partners['subsystem'])
-        self.assertListEqual([[], [], []], hydrogen_bonds.atoms[6].hydrogen_bond_partners['subsystem'])
+                             hydrogen_bonds.atoms[2].hydrogen_bond_partners['test_system'])
+        self.assertListEqual([[atoms[2]], [], []], hydrogen_bonds.atoms[4].hydrogen_bond_partners['test_system'])
+        self.assertListEqual([[], [], []], hydrogen_bonds.atoms[6].hydrogen_bond_partners['test_system'])
 
     def test_get_hydrogen_bonds_in_frame_too_many_acceptors(self):
         from yeti.get_features.hydrogen_bonds import HydrogenBondsFirstComesFirstServes
@@ -51,17 +51,17 @@ class HydrogenBondsFirstComesFirstServesTest(unittest.TestCase):
         hydrogen_bonds = HydrogenBondsFirstComesFirstServes(atoms=atoms, periodic=True,
                                                             unit_cell_angles=unit_cell_angles,
                                                             unit_cell_vectors=unit_cell_vectors,
-                                                            system_name='subsystem',
+                                                            system_name='test_system',
                                                             number_of_frames=number_of_frames)
 
         triplets = hydrogen_bonds.__build_triplets__(distance_cutoff=0.25, angle_cutoff=2.0)
         hydrogen_bonds.__get_hydrogen_bonds_in_frame__(triplets=triplets, frame=0)
 
         self.assertIsNone(hydrogen_bonds.atoms[0].hydrogen_bond_partners)
-        self.assertListEqual([[atoms[2]], [], []], hydrogen_bonds.atoms[1].hydrogen_bond_partners['subsystem'])
-        self.assertListEqual([[atoms[1]], [], []], hydrogen_bonds.atoms[2].hydrogen_bond_partners['subsystem'])
-        self.assertListEqual([[], [], []], hydrogen_bonds.atoms[3].hydrogen_bond_partners['subsystem'])
-        self.assertListEqual([[], [], []], hydrogen_bonds.atoms[4].hydrogen_bond_partners['subsystem'])
+        self.assertListEqual([[atoms[2]], [], []], hydrogen_bonds.atoms[1].hydrogen_bond_partners['test_system'])
+        self.assertListEqual([[atoms[1]], [], []], hydrogen_bonds.atoms[2].hydrogen_bond_partners['test_system'])
+        self.assertListEqual([[], [], []], hydrogen_bonds.atoms[3].hydrogen_bond_partners['test_system'])
+        self.assertListEqual([[], [], []], hydrogen_bonds.atoms[4].hydrogen_bond_partners['test_system'])
 
     def test_get_hydrogen_bonds_in_frame_triplets_wrong_data_type(self):
         from yeti.get_features.hydrogen_bonds import HydrogenBondsFirstComesFirstServes, HydrogenBondsException
@@ -80,7 +80,7 @@ class HydrogenBondsFirstComesFirstServesTest(unittest.TestCase):
         hydrogen_bonds = HydrogenBondsFirstComesFirstServes(atoms=atoms, periodic=True,
                                                             unit_cell_angles=unit_cell_angles,
                                                             unit_cell_vectors=unit_cell_vectors,
-                                                            system_name='subsystem',
+                                                            system_name='test_system',
                                                             number_of_frames=number_of_frames)
 
         triplets = list(hydrogen_bonds.__build_triplets__(distance_cutoff=0.25, angle_cutoff=2.0))
@@ -108,7 +108,7 @@ class HydrogenBondsFirstComesFirstServesTest(unittest.TestCase):
         hydrogen_bonds = HydrogenBondsFirstComesFirstServes(atoms=atoms, periodic=True,
                                                             unit_cell_angles=unit_cell_angles,
                                                             unit_cell_vectors=unit_cell_vectors,
-                                                            system_name='subsystem',
+                                                            system_name='test_system',
                                                             number_of_frames=number_of_frames)
 
         triplets = hydrogen_bonds.__build_triplets__(distance_cutoff=0.25, angle_cutoff=2.0)
