@@ -61,6 +61,12 @@ class EnsureDataTypes(object):
     def ensure_tuple(self, parameter, parameter_name):
         self.__check_type__(parameter=parameter, parameter_name=parameter_name, data_type=tuple)
 
+    def ensure_list(self, parameter, parameter_name):
+        self.__check_type__(parameter=parameter, parameter_name=parameter_name, data_type=list)
+
+    def ensure_dict(self, parameter, parameter_name):
+        self.__check_type__(parameter=parameter, parameter_name=parameter_name, data_type=dict)
+
     def ensure_numpy_array(self, parameter, parameter_name, shape, desired_dtype=None):
         self.__check_type__(parameter=parameter, parameter_name=parameter_name, data_type=np.ndarray)
         self.__check_numpy_dimensions__(parameter=parameter, parameter_name=parameter_name, desired_shape=shape)
