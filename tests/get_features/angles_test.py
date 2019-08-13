@@ -268,8 +268,6 @@ class TestAngle(unittest.TestCase):
 
         npt.assert_almost_equal(res, exp, decimal=5)
 
-
-
     def test_calculate_minimal_image_convention_optimized_boundary(self):
         from yeti.get_features.angles import Angle
 
@@ -283,8 +281,6 @@ class TestAngle(unittest.TestCase):
         exp = np.array([[0.37431625336629]], dtype=np.float32)
 
         npt.assert_almost_equal(res, exp, decimal=5)
-
-
 
     def test_calculate_minimal_image_convention_optimized_multi_frame(self):
         from yeti.get_features.angles import Angle
