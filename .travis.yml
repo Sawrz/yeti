@@ -1,6 +1,10 @@
 language: python
 python:
   - "3.6"
+#safelist
+branches:
+  only:
+    -master
 cache: pip
 install:
   - pip install -r requirements_dev.txt
