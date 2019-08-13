@@ -139,13 +139,27 @@ class Atom(object):
         self.__update_covalent_bond__(atom=atom)
         atom.__update_covalent_bond__(atom=self)
 
+    def add_system(self, system_name):
+        # TODO: Think about overwriting existing data
+
+        self.ensure_data_type.ensure_string(parameter=system_name, parameter_name='system_name')
+
+        if type(self.hydrogen_bond_partners) is dict:
+            self.hydrogen_bond_partners[system_name] = [[] for i in range(self.xyz_trajectory.shape[0])]
+        else:
+            raise AtomException('This atom is neither acceptor nor a donor atom. Update its state first!')
+
     def __reset_hydrogen_bond_partners__(self, is_hydrogen_bond_active):
         self.ensure_data_type.ensure_boolean(parameter=is_hydrogen_bond_active,
                                              parameter_name='is_hydrogen_bond_active')
 
         if is_hydrogen_bond_active:
             # TODO: find more efficient way to create list with n frames
-            self.hydrogen_bond_partners = dict(subsystem=[[] for i in range(self.xyz_trajectory.shape[0])])
+            if type(self.hydrogen_bond_partners) is dict:
+                for key in self.hydrogen_bond_partners.keys():
+                    self.add_system(system_name=key)
+            else:
+                self.hydrogen_bond_partners = {}
         else:
             self.hydrogen_bond_partners = None
 
@@ -217,9 +231,8 @@ class Atom(object):
                 raise AtomException('Subsystem does not exist. Create it first!')
 
             del self.hydrogen_bond_partners[system_name]
+            self.add_system(system_name=system_name)
 
-            # TODO: find more efficient way to create list with n frames (np.empty?)
-            self.hydrogen_bond_partners[system_name] = [[] for i in range(self.xyz_trajectory.shape[0])]
         else:
             raise AtomException('The given atom is neither donor nor acceptor. Purging does not make sense!')
 
