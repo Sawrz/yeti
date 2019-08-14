@@ -21,30 +21,6 @@ class Metric(object):
         self.unit_cell_angles = unit_cell_angles
         self.periodic = periodic
 
-    def __get_atom__(self, name, residue):
-        self.ensure_data_type.ensure_string(parameter=name, parameter_name='name')
-        self.ensure_data_type.ensure_residue(parameter=residue, parameter_name='residue')
-
-        # TODO: think about if casting makes sense
-        atom_index = np.where(np.array(residue.sequence) == name)[0]
-
-        if len(atom_index) == 0:
-            raise MetricException('Atom does not exist.')
-        elif len(atom_index) > 1:
-            raise MetricException('Atom names are not distinguishable. Check your naming or contact the developer.')
-        else:
-            return residue.atoms[atom_index[0]]
-
-    def __get_atoms__(self, atom_name_residue_pairs):
-        self.ensure_data_type.ensure_tuple(parameter=atom_name_residue_pairs, parameter_name='atom_name_residue_pairs')
-
-        atom_list = []
-
-        for atom_name, residue in atom_name_residue_pairs:
-            atom_list.append(self.__get_atom__(name=atom_name, residue=residue))
-
-        return tuple(atom_list)
-
     def __prepare_xyz_data__(self, atoms):
         self.ensure_data_type.ensure_tuple(parameter=atoms, parameter_name='atoms')
 
@@ -98,7 +74,7 @@ class Metric(object):
     def __calculate_minimal_image_convention__(self, xyz, indices, opt):
         pass
 
-    def __calculate__(self, atoms, opt):
+    def calculate(self, atoms, opt):
         self.ensure_data_type.ensure_boolean(parameter=opt, parameter_name='opt')
 
         xyz = self.__prepare_xyz_data__(atoms)
@@ -112,8 +88,3 @@ class Metric(object):
             feature = self.__calculate_no_pbc__(**kwargs)
 
         return feature.flatten()
-
-    def get(self, atom_name_residue_pairs, opt=True):
-        atoms = self.__get_atoms__(atom_name_residue_pairs)
-
-        return self.__calculate__(atoms=atoms, opt=opt)

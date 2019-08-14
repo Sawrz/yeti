@@ -51,11 +51,11 @@ class Triplet(object):
         # calculate distances
         dist = Distance(periodic=self.periodic, unit_cell_angles=self.unit_cell_angles,
                         unit_cell_vectors=self.unit_cell_vectors)
-        distances = dist.__calculate__((self.donor, self.acceptor), opt=True)
+        distances = dist.calculate((self.donor, self.acceptor), opt=True)
 
         angle = Angle(periodic=self.periodic, unit_cell_angles=self.unit_cell_angles,
                       unit_cell_vectors=self.unit_cell_vectors)
-        angles = angle.__calculate__(self.triplet, opt=False)
+        angles = angle.calculate(self.triplet, opt=False)
 
         # Security check if some angle is nan
         is_there_nan = np.isnan(angles)
@@ -79,11 +79,11 @@ class TripletMultiThread(Triplet):
         # calculate distances
         dist = Distance(periodic=self.periodic, unit_cell_angles=self.unit_cell_angles,
                         unit_cell_vectors=self.unit_cell_vectors)
-        distances = dist.__calculate__((self.donor, self.acceptor), opt=True)
+        distances = dist.calculate((self.donor, self.acceptor), opt=True)
 
         angle = Angle(periodic=self.periodic, unit_cell_angles=self.unit_cell_angles,
                       unit_cell_vectors=self.unit_cell_vectors)
-        angles = angle.__calculate__(self.triplet, opt=False)
+        angles = angle.calculate(self.triplet, opt=False)
 
         # Security check if some angle is nan
         is_there_nan = np.isnan(angles)
