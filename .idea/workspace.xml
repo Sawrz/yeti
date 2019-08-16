@@ -2,10 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="678bada4-0989-4d11-b108-4c48079ad655" name="Default Changelist" comment="break(Dimensions): metric&#10;get rid of get methods">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test_utils/test_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_utils/test_utils.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/get_features/hydrogen_bonds_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/get_features/hydrogen_bonds_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yeti/get_features/hydrogen_bonds.py" beforeDir="false" afterPath="$PROJECT_DIR$/yeti/get_features/hydrogen_bonds.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/yeti/systems/building_blocks.py" beforeDir="false" afterPath="$PROJECT_DIR$/yeti/systems/building_blocks.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/yeti/systems/molecules/molecules.py" beforeDir="false" afterPath="$PROJECT_DIR$/yeti/systems/molecules/molecules.py" afterDir="false" />
     </list>
@@ -223,21 +220,7 @@
       <workItem from="1565677535505" duration="14861000" />
       <workItem from="1565763035682" duration="15269000" />
       <workItem from="1565849143026" duration="14980000" />
-      <workItem from="1565935634013" duration="9396000" />
-    </task>
-    <task id="LOCAL-00009" summary="feat(Utils): ensure_data_type&#10;add method to check if data type is atom, renaming from data_type_check, updated import in atom.py">
-      <created>1564651625290</created>
-      <option name="number" value="00009" />
-      <option name="presentableId" value="LOCAL-00009" />
-      <option name="project" value="LOCAL" />
-      <updated>1564651625290</updated>
-    </task>
-    <task id="LOCAL-00010" summary="feat(Systems): atom&#10;add parameter type check for several methods">
-      <created>1564662463551</created>
-      <option name="number" value="00010" />
-      <option name="presentableId" value="LOCAL-00010" />
-      <option name="project" value="LOCAL" />
-      <updated>1564662463551</updated>
+      <workItem from="1565935634013" duration="9647000" />
     </task>
     <task id="LOCAL-00011" summary="test(Systems): atom&#10;add several tests for Atom class">
       <created>1564662596397</created>
@@ -568,7 +551,21 @@
       <option name="project" value="LOCAL" />
       <updated>1565787526361</updated>
     </task>
-    <option name="localTasksCounter" value="58" />
+    <task id="LOCAL-00058" summary="test(utils): utils&#10;small tweak for other unit tests (refactoring will come)">
+      <created>1565949446981</created>
+      <option name="number" value="00058" />
+      <option name="presentableId" value="LOCAL-00058" />
+      <option name="project" value="LOCAL" />
+      <updated>1565949446982</updated>
+    </task>
+    <task id="LOCAL-00059" summary="feature(Dimensions): hydrogen bonds&#10;creates system entry in atoms hydrogen_bond_partners as soon as objects is created">
+      <created>1565949539595</created>
+      <option name="number" value="00059" />
+      <option name="presentableId" value="LOCAL-00059" />
+      <option name="project" value="LOCAL" />
+      <updated>1565949539595</updated>
+    </task>
+    <option name="localTasksCounter" value="60" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -610,8 +607,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="test(Systems): atom&#10;add assert to check exception class in __init__" />
-    <MESSAGE value="test(Systems): residue&#10;add assert to check exception class in __init__" />
     <MESSAGE value="feat(Dimensions): metric&#10;Distance and Displacement class inherit now from DistanceMetric class which ensures right Exception classes and the mdtraj parameter compatibility check" />
     <MESSAGE value="feat(Dimension): angle&#10;add AngleMetric class to ensure right Exception (AngleException is new) and mdtraj parameter compatibility check" />
     <MESSAGE value="fix(Dimensions): angle&#10;adapt calculate_angle method to using only three atom xyz vectors for multiple frames -&gt; compatibility with displacements" />
@@ -635,7 +630,9 @@
     <MESSAGE value="break(Dimensions): metric&#10;get rid of get methods" />
     <MESSAGE value="feature(System): molecules&#10;add methods to calculate distances, angles, dihedral angles and hydrogen bonds" />
     <MESSAGE value="feature(System): nucleic acid&#10;add methods to calculate P to P distances and dihedral angles by name" />
-    <option name="LAST_COMMIT_MESSAGE" value="feature(System): nucleic acid&#10;add methods to calculate P to P distances and dihedral angles by name" />
+    <MESSAGE value="test(utils): utils&#10;small tweak for other unit tests (refactoring will come)" />
+    <MESSAGE value="feature(Dimensions): hydrogen bonds&#10;creates system entry in atoms hydrogen_bond_partners as soon as objects is created" />
+    <option name="LAST_COMMIT_MESSAGE" value="feature(Dimensions): hydrogen bonds&#10;creates system entry in atoms hydrogen_bond_partners as soon as objects is created" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
   <component name="XDebuggerManager">
