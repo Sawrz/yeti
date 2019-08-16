@@ -117,8 +117,19 @@ class HydrogenBonds(object):
         self._system_name = system_name
         self.number_of_frames = number_of_frames
 
-        self.donor_atoms = tuple([atom for atom in atoms if atom.is_donor_atom])
-        self.acceptors = tuple([atom for atom in atoms if atom.is_acceptor])
+        self.donor_atoms = []
+        self.acceptors = []
+
+        for atom in atoms:
+            if atom.is_donor_atom:
+                self.donor_atoms.append(atom)
+                atom.add_system(system_name=self._system_name)
+            elif atom.is_acceptor:
+                self.acceptors.append(atom)
+                atom.add_system(system_name=self._system_name)
+
+        self.donor_atoms = tuple(self.donor_atoms)
+        self.acceptors = tuple(self.acceptors)
 
     def __build_triplets__(self, distance_cutoff, angle_cutoff):
         # TODO: add multi processing
