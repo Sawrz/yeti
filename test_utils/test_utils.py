@@ -50,10 +50,10 @@ def build_atom_triplet():
     donor.add_covalent_bond(atom=donor_atom)
 
     donor_atom.update_donor_state(is_donor_atom=True, donor_slots=1)
-    donor_atom.add_system(system_name='test_system')
+    #donor_atom.add_system(system_name='test_system')
 
     acceptor.update_acceptor_state(is_acceptor=True, acceptor_slots=2)
-    acceptor.add_system(system_name='test_system')
+    #acceptor.add_system(system_name='test_system')
 
 
     return donor, donor_atom, acceptor
