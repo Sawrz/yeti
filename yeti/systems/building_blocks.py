@@ -271,3 +271,5 @@ class Residue(object):
     def finalize(self):
         self.atoms = tuple(self.atoms)
         self.sequence = tuple(self.sequence)
+
+    # TODO add method to refresh sequence?
