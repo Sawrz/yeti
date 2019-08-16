@@ -31,6 +31,10 @@ class HydrogenBondsTest(unittest.TestCase):
         self.assertTupleEqual((atoms[1],), hydrogen_bonds.donor_atoms)
         self.assertTupleEqual((atoms[2],), hydrogen_bonds.acceptors)
 
+        self.assertIsNone(atoms[0].hydrogen_bond_partners)
+        self.assertDictEqual({'test': [[], [], []]}, atoms[1].hydrogen_bond_partners)
+        self.assertDictEqual({'test': [[], [], []]}, atoms[2].hydrogen_bond_partners)
+
     def test_init_atoms_wrong_data_type(self):
         from yeti.get_features.hydrogen_bonds import HydrogenBonds, HydrogenBondsException
 
