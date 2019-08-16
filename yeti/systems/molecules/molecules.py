@@ -19,6 +19,10 @@ class BioMoleculeException(Exception):
 class TwoAtomsMolecule(object):
     def __init__(self, residues, molecule_name, box_information):
         self.ensure_data_type = EnsureDataTypes(exception_class=MoleculeException)
+        self.ensure_data_type.ensure_tuple(parameter=residues, parameter_name='residues')
+        self.ensure_data_type.ensure_string(parameter=molecule_name, parameter_name='molecule_name')
+        self.ensure_data_type.ensure_dict(parameter=box_information, parameter_name='box_information')
+
         self.molecule_name = molecule_name
         self.residues = residues
 
@@ -28,26 +32,32 @@ class TwoAtomsMolecule(object):
     def __get_atom_key_name__(self, atom):
         self.ensure_data_type.ensure_atom(parameter=atom, parameter_name='atom')
 
-        return '{atom_name}{atom_id:07d}_{residue_name}{residue_id:07d}'.format(
+        return '{residue_name}_{residue_id:04d}:{atom_name}_{atom_id:04d}'.format(
             atom_name=atom.name, atom_id=atom.subsystem_index, residue_name=atom.residue.name,
             residue_id=atom.residue.subsystem_index)
 
     def __generate_key__(self, atoms):
+        self.ensure_data_type.ensure_tuple(parameter=atoms, parameter_name='atoms')
+
         key = ''
 
         for atom_number, atom in enumerate(atoms):
             key += self.__get_atom_key_name__(atom=atom)
 
-            if atom_number < len(atoms):
+            if atom_number < len(atoms) - 1:
                 key += '-'
 
         return key
 
     def __get_atom__(self, atom_pos):
+        self.ensure_data_type.ensure_tuple(parameter=atom_pos, parameter_name='atom_pos')
+
         residue_pos, atom_pos_in_residue = atom_pos
-        return self.residues[residue_pos][atom_pos_in_residue]
+        return self.residues[residue_pos].atoms[atom_pos_in_residue]
 
     def __get_atoms__(self, atom_positions):
+        self.ensure_data_type.ensure_tuple(parameter=atom_positions, parameter_name='atom_positions')
+
         atoms = []
 
         for atom_pos in atom_positions:
@@ -57,8 +67,10 @@ class TwoAtomsMolecule(object):
 
     def get_distance(self, atom_01_pos, atom_02_pos, store_result=True, opt=True):
         # TODO: ensure it's a tuple of integers
-        self.ensure_data_type.ensure_tuple(parameter=atom_01_pos, parameter_name='atom_01')
-        self.ensure_data_type.ensure_tuple(parameter=atom_02_pos, parameter_name='atom_02')
+        self.ensure_data_type.ensure_tuple(parameter=atom_01_pos, parameter_name='atom_01_pos')
+        self.ensure_data_type.ensure_tuple(parameter=atom_02_pos, parameter_name='atom_02_pos')
+        self.ensure_data_type.ensure_boolean(parameter=store_result, parameter_name='store_result')
+        self.ensure_data_type.ensure_boolean(parameter=opt, parameter_name='opt')
 
         atoms = self.__get_atoms__(atom_positions=(atom_01_pos, atom_02_pos))
         distances = self._dist.calculate(atoms=atoms, opt=opt)
@@ -79,9 +91,11 @@ class ThreeAtomsMolecule(TwoAtomsMolecule):
 
     def get_angle(self, atom_01_pos, atom_02_pos, atom_03_pos, store_result=True, opt=True):
         # TODO: ensure it's a tuple of integers
-        self.ensure_data_type.ensure_tuple(parameter=atom_01_pos, parameter_name='atom_01')
-        self.ensure_data_type.ensure_tuple(parameter=atom_02_pos, parameter_name='atom_02')
-        self.ensure_data_type.ensure_tuple(parameter=atom_03_pos, parameter_name='atom_03')
+        self.ensure_data_type.ensure_tuple(parameter=atom_01_pos, parameter_name='atom_01_pos')
+        self.ensure_data_type.ensure_tuple(parameter=atom_02_pos, parameter_name='atom_02_pos')
+        self.ensure_data_type.ensure_tuple(parameter=atom_03_pos, parameter_name='atom_03_pos')
+        self.ensure_data_type.ensure_boolean(parameter=store_result, parameter_name='store_result')
+        self.ensure_data_type.ensure_boolean(parameter=opt, parameter_name='opt')
 
         atoms = self.__get_atoms__(atom_positions=(atom_01_pos, atom_02_pos, atom_03_pos))
         angles = self._angle.calculate(atoms=atoms, opt=opt)
@@ -96,16 +110,19 @@ class ThreeAtomsMolecule(TwoAtomsMolecule):
 class FourAtomsPlusMolecule(ThreeAtomsMolecule):
     def __init__(self, simulation_information, hydrogen_bond_information, *args, **kwargs):
         super(FourAtomsPlusMolecule, self).__init__(*args, **kwargs)
+        self.ensure_data_type.ensure_dict(parameter=simulation_information, parameter_name='simulation_information')
+        self.ensure_data_type.ensure_dict(parameter=hydrogen_bond_information,
+                                          parameter_name='hydrogen_bond_information')
 
         self._dih = Dihedral(**kwargs['box_information'])
         self.dihedral_angles = {}
 
-        atoms = itertools.chain.from_iterable(self.residues)
-        for atom in atoms:
-            atom.add_system(system_name=self.molecule_name)
+        # TODO: search if there is a more efficient way
+        atoms = tuple(itertools.chain.from_iterable(residue.atoms for residue in self.residues))
 
+        # TODO: Think of passing residues instead of atoms (reason againt it: inter system hbonds, but can extract atoms from residues)
         # TODO: think about estimate the number of frames from arbitrary atom since data from same simulation
-        self._hbonds = HydrogenBondsFirstComesFirstServes(atoms=tuple(atoms),
+        self._hbonds = HydrogenBondsFirstComesFirstServes(atoms=atoms,
                                                           number_of_frames=simulation_information['number_of_frames'],
                                                           system_name=self.molecule_name, **kwargs['box_information'])
         self.distance_cutoff = hydrogen_bond_information['distance_cutoff']
@@ -120,6 +137,8 @@ class FourAtomsPlusMolecule(ThreeAtomsMolecule):
         self.ensure_data_type.ensure_tuple(parameter=atom_02_pos, parameter_name='atom_02_pos')
         self.ensure_data_type.ensure_tuple(parameter=atom_03_pos, parameter_name='atom_03_pos')
         self.ensure_data_type.ensure_tuple(parameter=atom_04_pos, parameter_name='atom_04_pos')
+        self.ensure_data_type.ensure_boolean(parameter=store_result, parameter_name='store_result')
+        self.ensure_data_type.ensure_boolean(parameter=opt, parameter_name='opt')
 
         atoms = self.__get_atoms__(atom_positions=(atom_01_pos, atom_02_pos, atom_03_pos, atom_04_pos))
         dihedral_angles = self._dih.calculate(atoms=atoms, opt=opt)
@@ -130,18 +149,21 @@ class FourAtomsPlusMolecule(ThreeAtomsMolecule):
         else:
             return dihedral_angles
 
-    def recalculate_hydrogen_bonds(self, distance_cutoff, angle_cutoff):
-        self._hbonds.calculate_hydrogen_bonds(distance_cutoff=distance_cutoff, angle_cutoff=angle_cutoff)
-
-        self.distance_cutoff = distance_cutoff
-        self.angle_cutoff = angle_cutoff
-
     def purge_hydrogen_bonds(self):
         self.angle_cutoff = None
         self.distance_cutoff = None
 
-        for atom in itertools.chain.from_iterable(self.residues):
-            atom.purge_hydrogen_bond_partner_history(system_name=self.molecule_name)
+        # TODO: search if there is a more efficient way
+        for atom in itertools.chain.from_iterable(residue.atoms for residue in self.residues):
+            if atom.is_donor_atom or atom.is_acceptor:
+                atom.purge_hydrogen_bond_partner_history(system_name=self.molecule_name)
+
+    def recalculate_hydrogen_bonds(self, distance_cutoff, angle_cutoff):
+        self.purge_hydrogen_bonds()
+        self._hbonds.calculate_hydrogen_bonds(distance_cutoff=distance_cutoff, angle_cutoff=angle_cutoff)
+
+        self.distance_cutoff = distance_cutoff
+        self.angle_cutoff = angle_cutoff
 
     def get_hydrogen_bonds(self, representation_style):
         self.ensure_data_type.ensure_string(parameter=representation_style, parameter_name='representation_style')
@@ -160,22 +182,22 @@ class FourAtomsPlusMolecule(ThreeAtomsMolecule):
 class BioMolecule(FourAtomsPlusMolecule):
     def __init__(self, *args, **kwargs):
         super(BioMolecule, self).__init__(*args, **kwargs)
+        self.ensure_data_type.exception_class = MoleculeException
         self.dictionary = None
 
     def __get_atom_id__(self, name, residue_id):
         self.ensure_data_type.ensure_string(parameter=name, parameter_name='name')
         self.ensure_data_type.ensure_integer(parameter=residue_id, parameter_name='residue_id')
 
-        # TODO: think about if casting makes sense
         atom_index = np.where(np.array(self.residues[residue_id].sequence) == name)[0]
 
         if len(atom_index) == 0:
-            raise BioMoleculeException('Atom does not exist.')
+            raise BioMoleculeException('Atom does not exist in this residue.')
         elif len(atom_index) > 1:
             raise BioMoleculeException(
                 'Atom names are not distinguishable. Check your naming or contact the developer.')
         else:
-            return residue_id, atom_index
+            return residue_id, atom_index[0]
 
     def __get_atom_ids__(self, atom_names, residue_ids):
         self.ensure_data_type.ensure_tuple(parameter=atom_names, parameter_name='atom_names')
