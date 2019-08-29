@@ -157,7 +157,7 @@ class AtomsTest(TwoAtomsMoleculeTest):
     def setUp(self) -> None:
         super(AtomsTest, self).setUp()
 
-        self.atoms = self.molecule.residues[0].atoms
+        self.atoms = list(self.molecule.residues[0].atoms)
         self.atoms.extend(self.molecule.residues[1].atoms)
         self.atoms = tuple(self.atoms)
 
