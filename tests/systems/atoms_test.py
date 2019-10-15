@@ -19,34 +19,33 @@ class AtomTestCase(BlueprintTestCase):
 
 
 class TestStandardMethods(BlueprintTestCase):
-    def test_init(self):
-        from yeti.systems.building_blocks import Atom, AtomException
+    def setUp(self) -> None:
+        from yeti.systems.building_blocks import Atom
 
         xyz_trajectory = np.arange(6).reshape((2, 3))
 
-        atom = Atom(name='test', subsystem_index=16, structure_file_index=42, xyz_trajectory=xyz_trajectory)
+        self.atom = Atom(name='test', subsystem_index=16, structure_file_index=42, xyz_trajectory=xyz_trajectory)
 
-        self.assertEqual(atom.ensure_data_type.exception_class, AtomException)
-        self.assertEqual(atom.name, 'test')
-        self.assertEqual(atom.subsystem_index, 16)
-        self.assertEqual(atom.structure_file_index, 42)
-        self.assertIsNone(atom.residue)
-        npt.assert_equal(atom.xyz_trajectory, xyz_trajectory)
+    def test_init(self):
+        from yeti.systems.building_blocks import AtomException
 
-        self.assertIsNone(atom.element)
-        self.assertTupleEqual(atom.covalent_bond_partners, ())
-        self.assertFalse(atom.is_donor_atom)
-        self.assertFalse(atom.is_acceptor)
-        self.assertEqual(atom.donor_slots, 0)
-        self.assertEqual(atom.acceptor_slots, 0)
-        self.assertIsNone(atom.hydrogen_bond_partners)
+        self.assertEqual(self.atom.ensure_data_type.exception_class, AtomException)
+        self.assertEqual(self.atom.name, 'test')
+        self.assertEqual(self.atom.subsystem_index, 16)
+        self.assertEqual(self.atom.structure_file_index, 42)
+        self.assertIsNone(self.atom.residue)
+        npt.assert_equal(self.atom.xyz_trajectory, np.arange(6).reshape((2, 3)))
+
+        self.assertIsNone(self.atom.element)
+        self.assertTupleEqual(self.atom.covalent_bond_partners, ())
+        self.assertFalse(self.atom.is_donor_atom)
+        self.assertFalse(self.atom.is_acceptor)
+        self.assertEqual(self.atom.donor_slots, 0)
+        self.assertEqual(self.atom.acceptor_slots, 0)
+        self.assertIsNone(self.atom.hydrogen_bond_partners)
 
     def test_str(self):
-        from yeti.systems.building_blocks import Atom
-
-        atom = Atom(structure_file_index=1, subsystem_index=0, name='A', xyz_trajectory=np.arange(6).reshape((2, 3)))
-
-        self.assertEqual(str(atom), atom.name)
+        self.assertEqual(str(self.atom), self.atom.name)
 
 
 class TestIntraMolduleConnectionMethods(AtomTestCase):
@@ -498,6 +497,7 @@ class TestHydrogenBondMethodExceptions(AtomExceptionsTestCase):
 
         desired_msg = 'The given atom is neither donor nor acceptor. Purging does not make sense!'
         self.assertEqual(desired_msg, str(context.exception))
+
 
 if __name__ == '__main__':
     unittest.main()
