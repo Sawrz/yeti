@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 import numpy.testing as npt
 
-from test_utils.blueprints import BlueprintTestCase, BlueprintExceptionsTestCase
+from tests.blueprints_test import BlueprintTestCase, BlueprintExceptionsTestCase
 
 
 class AtomTestCase(BlueprintTestCase):

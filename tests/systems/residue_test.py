@@ -2,7 +2,7 @@ import unittest
 
 import numpy as np
 
-from test_utils.blueprints import BlueprintTestCase, BlueprintExceptionsTestCase
+from tests.blueprints_test import BlueprintTestCase, BlueprintExceptionsTestCase
 
 
 class ResidueTestCase(BlueprintTestCase):
