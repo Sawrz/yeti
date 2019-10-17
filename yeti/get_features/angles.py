@@ -39,7 +39,7 @@ class Angle(Metric):
 
         indices = np.array([[0, 1]], dtype=np.int32)
 
-        displacement = Displacement(periodic=periodic, unit_cell_angles=self.unit_cell_angles,
+        displacement = Displacement(unit_cell_angles=self.unit_cell_angles,
                                     unit_cell_vectors=self.unit_cell_vectors)
 
         u_prime = displacement.get_compatibility_layer(xyz=xyz01, indices=indices, periodic=periodic, opt=False)

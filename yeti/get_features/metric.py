@@ -9,9 +9,8 @@ class MetricException(Exception):
 
 
 class Metric(object):
-    def __init__(self, periodic, unit_cell_angles, unit_cell_vectors):
+    def __init__(self, unit_cell_angles, unit_cell_vectors):
         self.ensure_data_type = EnsureDataTypes(exception_class=MetricException)
-        self.ensure_data_type.ensure_boolean(parameter=periodic, parameter_name='periodic')
         self.ensure_data_type.ensure_numpy_array(parameter=unit_cell_angles, parameter_name='unit_cell_angles',
                                                  shape=(None, 3))
         self.ensure_data_type.ensure_numpy_array(parameter=unit_cell_vectors, parameter_name='unit_cell_vectors',
@@ -19,7 +18,6 @@ class Metric(object):
 
         self.unit_cell_vectors = unit_cell_vectors
         self.unit_cell_angles = unit_cell_angles
-        self.periodic = periodic
 
     def __prepare_xyz_data__(self, atoms):
         self.ensure_data_type.ensure_tuple(parameter=atoms, parameter_name='atoms')
@@ -74,15 +72,16 @@ class Metric(object):
     def __calculate_minimal_image_convention__(self, xyz, indices, opt):
         pass
 
-    def calculate(self, atoms, opt):
+    def calculate(self, atoms, opt, periodic):
         self.ensure_data_type.ensure_boolean(parameter=opt, parameter_name='opt')
+        self.ensure_data_type.ensure_boolean(parameter=periodic, parameter_name='periodic')
 
         xyz = self.__prepare_xyz_data__(atoms)
         indices = self.__prepare_atom_indices__(amount=len(atoms))
 
         kwargs = dict(xyz=xyz, indices=indices, opt=opt)
 
-        if self.periodic:
+        if periodic:
             feature = self.__calculate_minimal_image_convention__(**kwargs)
         else:
             feature = self.__calculate_no_pbc__(**kwargs)
