@@ -10,7 +10,7 @@ class MetricTestCase(BlueprintTestCase):
     def setUp(self) -> None:
         from yeti.get_features.metric import Metric
 
-        self.metric = Metric(periodic=True, unit_cell_angles=np.array([[90, 90, 90]]),
+        self.metric = Metric(unit_cell_angles=np.array([[90, 90, 90]]),
                              unit_cell_vectors=np.array([[[1, 0, 0], [0, 1, 0], [0, 0, 1]]]))
 
 
@@ -19,7 +19,6 @@ class TestStandardMethods(MetricTestCase):
         from yeti.get_features.metric import MetricException
 
         self.assertEqual(self.metric.ensure_data_type.exception_class, MetricException)
-        self.assertTrue(self.metric.periodic)
         npt.assert_array_equal(self.metric.unit_cell_angles, np.array([[90, 90, 90]]))
         npt.assert_array_equal(self.metric.unit_cell_vectors, np.array([[[1, 0, 0], [0, 1, 0], [0, 0, 1]]]))
 
@@ -86,7 +85,7 @@ class CalculationMethodsTestCase(MetricTestCase):
             def __calculate_minimal_image_convention__(self, xyz, indices, opt):
                 return xyz
 
-        self.metric = TestCalculate(periodic=True, unit_cell_angles=np.array([[90, 90, 90]]),
+        self.metric = TestCalculate(unit_cell_angles=np.array([[90, 90, 90]]),
                                     unit_cell_vectors=np.array([[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]))
 
         self.atom_01 = Atom(structure_file_index=1, subsystem_index=0, name='A',
@@ -96,14 +95,26 @@ class CalculationMethodsTestCase(MetricTestCase):
 
 
 class TestCalculationMethods(CalculationMethodsTestCase):
-    def test_calculate_opt_false(self):
-        res_feat = self.metric.calculate(atoms=(self.atom_01, self.atom_02), opt=False)
+    def test_calculate_opt_false_periodic(self):
+        res_feat = self.metric.calculate(atoms=(self.atom_01, self.atom_02), opt=False, periodic=True)
         exp_feat = np.array([0, 1, 2, 6, 7, 8, 3, 4, 5, 9, 10, 11], dtype=float)
 
         npt.assert_array_equal(exp_feat, res_feat)
 
-    def test_calculate_opt_true(self):
-        res_feat = self.metric.calculate(atoms=(self.atom_01, self.atom_02), opt=True)
+    def test_calculate_opt_true_periodic(self):
+        res_feat = self.metric.calculate(atoms=(self.atom_01, self.atom_02), opt=True, periodic=True)
+        exp_feat = np.array([0, 1, 2, 6, 7, 8, 3, 4, 5, 9, 10, 11], dtype=float)
+
+        npt.assert_array_equal(exp_feat, res_feat)
+
+    def test_calculate_opt_false_non_periodic(self):
+        res_feat = self.metric.calculate(atoms=(self.atom_01, self.atom_02), opt=False, periodic=False)
+        exp_feat = np.array([0, 1, 2, 6, 7, 8, 3, 4, 5, 9, 10, 11], dtype=float)
+
+        npt.assert_array_equal(exp_feat, res_feat)
+
+    def test_calculate_opt_true_non_periodic(self):
+        res_feat = self.metric.calculate(atoms=(self.atom_01, self.atom_02), opt=True, periodic=False)
         exp_feat = np.array([0, 1, 2, 6, 7, 8, 3, 4, 5, 9, 10, 11], dtype=float)
 
         npt.assert_array_equal(exp_feat, res_feat)
@@ -125,17 +136,9 @@ class TestStandardMethodExceptions(MetricExceptionsTestCase):
         super(TestStandardMethodExceptions, self).setUp()
         self.metric = Metric
 
-    def test_init_periodic_wrong_data_type(self):
-        with self.assertRaises(self.exception) as context:
-            self.metric(periodic=42, unit_cell_angles=np.array([[90, 90, 90]]),
-                        unit_cell_vectors=np.array([[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]))
-
-        desired_msg = self.create_data_type_exception_messages(parameter_name='periodic', data_type_name='bool')
-        self.assertEqual(desired_msg, str(context.exception))
-
     def test_init_unit_cell_angles_wrong_data_type(self):
         with self.assertRaises(self.exception) as context:
-            self.metric(periodic=True, unit_cell_angles=[[90, 90, 90]],
+            self.metric(unit_cell_angles=[[90, 90, 90]],
                         unit_cell_vectors=np.array([[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]))
 
         desired_msg = self.create_data_type_exception_messages(parameter_name='unit_cell_angles',
@@ -144,7 +147,7 @@ class TestStandardMethodExceptions(MetricExceptionsTestCase):
 
     def test_init_unit_cell_vectors_wrong_data_type(self):
         with self.assertRaises(self.exception) as context:
-            self.metric(periodic=True, unit_cell_angles=np.array([[90, 90, 90]]),
+            self.metric(unit_cell_angles=np.array([[90, 90, 90]]),
                         unit_cell_vectors=[[[1, 2, 3], [4, 5, 6], [7, 8, 9]]])
 
         desired_msg = self.create_data_type_exception_messages(parameter_name='unit_cell_vectors',
@@ -153,7 +156,7 @@ class TestStandardMethodExceptions(MetricExceptionsTestCase):
 
     def test_init_unit_cell_angles_wrong_shape(self):
         with self.assertRaises(self.exception) as context:
-            self.metric(periodic=True, unit_cell_angles=np.array([[90, 90, 90, 90]]),
+            self.metric(unit_cell_angles=np.array([[90, 90, 90, 90]]),
                         unit_cell_vectors=np.array([[[1, 2, 3], [4, 5, 6], [7, 8, 9]]]))
 
         desired_msg = self.create_array_shape_exception_messages(parameter_name='unit_cell_angles',
@@ -162,7 +165,7 @@ class TestStandardMethodExceptions(MetricExceptionsTestCase):
 
     def test_init_unit_unit_cell_vectors_wrong_shape(self):
         with self.assertRaises(self.exception) as context:
-            self.metric(periodic=True, unit_cell_angles=np.array([[90, 90, 90]]),
+            self.metric(unit_cell_angles=np.array([[90, 90, 90]]),
                         unit_cell_vectors=np.array([[[1, 2, 3, 4], [4, 5, 6, 7], [7, 8, 9, 10]]]))
 
         desired_msg = self.create_array_shape_exception_messages(parameter_name='unit_cell_vectors',
@@ -275,7 +278,7 @@ class TestCompatibilityCheckExceptions(CompatibilityChecksTestCase, MetricExcept
         with self.assertRaises(self.exception) as context:
             self.metric.__mdtraj_paramaeter_compatibility_check__(xyz=np.array([[[0, 0, 0], [1, 0, 0], [0, 1, 0]]],
                                                                                dtype=np.float32),
-                                                             indices=self.indices, opt=self.opt, atom_amount=2)
+                                                                  indices=self.indices, opt=self.opt, atom_amount=2)
 
         desired_msg = self.create_array_shape_exception_messages(parameter_name='xyz', desired_shape=(None, 2, 3))
         self.assertEqual(desired_msg, str(context.exception))
@@ -292,16 +295,23 @@ class TestCompatibilityCheckExceptions(CompatibilityChecksTestCase, MetricExcept
 class TestCalculationMethodExceptions(CalculationMethodsTestCase, MetricExceptionsTestCase):
     def test_calculate_atoms_wrong_data_type(self):
         with self.assertRaises(self.exception) as context:
-            self.metric.calculate(atoms=41, opt=True)
+            self.metric.calculate(atoms=41, opt=True, periodic=True)
 
         desired_msg = self.create_data_type_exception_messages(parameter_name='atoms', data_type_name='tuple')
         self.assertEqual(desired_msg, str(context.exception))
 
     def test_calculate_opt_wrong_data_type(self):
         with self.assertRaises(self.exception) as context:
-            self.metric.calculate(atoms=(self.atom_01, self.atom_02), opt=1)
+            self.metric.calculate(atoms=(self.atom_01, self.atom_02), opt=1, periodic=True)
 
         desired_msg = self.create_data_type_exception_messages(parameter_name='opt', data_type_name='bool')
+        self.assertEqual(desired_msg, str(context.exception))
+
+    def test_calculate_periodic_wrong_data_type(self):
+        with self.assertRaises(self.exception) as context:
+            self.metric.calculate(atoms=(self.atom_01, self.atom_02), opt=True, periodic=1)
+
+        desired_msg = self.create_data_type_exception_messages(parameter_name='periodic', data_type_name='bool')
         self.assertEqual(desired_msg, str(context.exception))
 
 
