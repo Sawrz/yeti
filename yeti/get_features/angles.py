@@ -128,8 +128,7 @@ class Dihedral(Metric):
 
         indices = np.array([[0, 1]], dtype=np.int32)
 
-        displacement = Displacement(periodic=periodic, unit_cell_angles=self.unit_cell_angles,
-                                    unit_cell_vectors=self.unit_cell_vectors)
+        displacement = Displacement(unit_cell_angles=self.unit_cell_angles, unit_cell_vectors=self.unit_cell_vectors)
         b1 = displacement.get_compatibility_layer(xyz=xyz10, indices=indices, periodic=periodic, opt=False)
         b2 = displacement.get_compatibility_layer(xyz=xyz21, indices=indices, periodic=periodic, opt=False)
         b3 = displacement.get_compatibility_layer(xyz=xyz32, indices=indices, periodic=periodic, opt=False)
