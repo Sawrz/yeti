@@ -98,7 +98,7 @@ class MultiDisplacementCalculationsNonOptimized(MultiDisplacementTestCase):
 
         npt.assert_almost_equal(res, self.exp_non_periodic, decimal=5)
 
-    def test_calculate_minimal_image_convention_not_optimized(self):
+    def test_calculate_minimal_image_convention(self):
         res = self.displacement.__calculate_minimal_image_convention__(xyz=self.xyz, indices=self.indices, opt=self.opt)
 
         npt.assert_almost_equal(res, self.exp_periodic, decimal=5)
