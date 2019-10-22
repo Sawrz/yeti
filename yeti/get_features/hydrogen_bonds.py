@@ -49,13 +49,11 @@ class Triplet(object):
         self.ensure_data_type.ensure_float(parameter=angle_cutoff, parameter_name='angle_cutoff')
 
         # calculate distances
-        dist = Distance(periodic=self.periodic, unit_cell_angles=self.unit_cell_angles,
-                        unit_cell_vectors=self.unit_cell_vectors)
-        distances = dist.calculate((self.donor, self.acceptor), opt=True)
+        dist = Distance(unit_cell_angles=self.unit_cell_angles, unit_cell_vectors=self.unit_cell_vectors)
+        distances = dist.calculate((self.donor, self.acceptor), opt=True, periodic=self.periodic)
 
-        angle = Angle(periodic=self.periodic, unit_cell_angles=self.unit_cell_angles,
-                      unit_cell_vectors=self.unit_cell_vectors)
-        angles = angle.calculate(self.triplet, opt=False)
+        angle = Angle(unit_cell_angles=self.unit_cell_angles, unit_cell_vectors=self.unit_cell_vectors)
+        angles = angle.calculate(self.triplet, opt=False, periodic=self.periodic)
 
         # Security check if some angle is nan
         is_there_nan = np.isnan(angles)
@@ -77,13 +75,11 @@ class TripletMultiThread(Triplet):
         self.ensure_data_type.ensure_float(parameter=angle_cutoff, parameter_name='angle_cutoff')
 
         # calculate distances
-        dist = Distance(periodic=self.periodic, unit_cell_angles=self.unit_cell_angles,
-                        unit_cell_vectors=self.unit_cell_vectors)
-        distances = dist.calculate((self.donor, self.acceptor), opt=True)
+        dist = Distance(unit_cell_angles=self.unit_cell_angles, unit_cell_vectors=self.unit_cell_vectors)
+        distances = dist.calculate((self.donor, self.acceptor), opt=True, periodic=self.periodic)
 
-        angle = Angle(periodic=self.periodic, unit_cell_angles=self.unit_cell_angles,
-                      unit_cell_vectors=self.unit_cell_vectors)
-        angles = angle.calculate(self.triplet, opt=False)
+        angle = Angle(unit_cell_angles=self.unit_cell_angles, unit_cell_vectors=self.unit_cell_vectors)
+        angles = angle.calculate(self.triplet, opt=False, periodic=self.periodic)
 
         # Security check if some angle is nan
         is_there_nan = np.isnan(angles)
