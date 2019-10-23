@@ -15,11 +15,11 @@ class TripletTestCase(BlueprintTestCase):
 
         # CREATE ATOMS
         # 1st frame: h-bond, 2nd frame: no h-bond because of distance, 3rd no h-bond because of angle
-        self.donor = Atom(structure_file_index=0, subsystem_index=0, name='A',
+        self.donor = Atom(structure_file_index=2, subsystem_index=0, name='A',
                           xyz_trajectory=np.array([[0.1, 0.4, 0.3], [0.1, 0.4, 0.3], [0.1, 0.4, 0.3]]))
-        self.donor_atom = Atom(structure_file_index=1, subsystem_index=1, name='B',
+        self.donor_atom = Atom(structure_file_index=3, subsystem_index=1, name='B',
                                xyz_trajectory=np.array([[0.1, 0.5, 0.2], [0.1, 0.5, 0.2], [0.5, 0.5, 0.2]]))
-        self.acceptor = Atom(structure_file_index=2, subsystem_index=2, name='C',
+        self.acceptor = Atom(structure_file_index=4, subsystem_index=2, name='C',
                              xyz_trajectory=np.array([[0.1, 0.6, 0.4], [0.1, 0.7, 0.4], [0.1, 0.6, 0.4]]))
 
         self.donor.add_covalent_bond(atom=self.donor_atom)
@@ -77,7 +77,7 @@ class TestStandardMethodExceptions(TripletExceptionsTestCase):
     def test_init_donor_atom_too_many_covalent_bonds(self):
         from yeti.systems.building_blocks import Atom
 
-        eve_atom = Atom(structure_file_index=3, subsystem_index=3, name='E', xyz_trajectory=np.array([[0.1, 0.1, 0.2]]))
+        eve_atom = Atom(structure_file_index=5, subsystem_index=3, name='E', xyz_trajectory=np.array([[0.1, 0.1, 0.2]]))
         eve_atom.add_covalent_bond(atom=self.donor_atom)
 
         with self.assertRaises(self.exception) as context:
