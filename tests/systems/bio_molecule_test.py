@@ -16,11 +16,11 @@ class BioMoleculeTestCase(FourAtomsPlusMoleculeTestCase):
                                     hydrogen_bond_information=self.hydrogen_bond_information)
 
 
-class TestBioStandardMethods(BioMoleculeTestCase, TestFourAtomsPlusStandardMethods):
+class TestBioMoleculeStandardMethods(BioMoleculeTestCase, TestFourAtomsPlusStandardMethods):
     def test_init(self):
         from yeti.systems.molecules.molecules import MoleculeException
 
-        super(TestBioStandardMethods, self).test_init()
+        super(TestBioMoleculeStandardMethods, self).test_init()
 
         self.assertIsNone(self.molecule.dictionary)
         self.assertEqual(self.molecule.ensure_data_type.exception_class, MoleculeException)
