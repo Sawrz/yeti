@@ -1,47 +1,60 @@
-from tests.systems.nucleic_acid_test import NucleicAcidInitTest, NucleicAcidGetPTOPDistance, NucleicAcidGetDihedral, \
-    NucleicAcidTest
+import unittest
+
+from tests.systems.nucleic_acid_test import NucleicAcidTestCase, TestNucleicAcidStandardMethods, \
+    TestNucleicAcidDistanceMethods, TestNucleicAcidDihedralAngleMethods, NucleicAcidExceptionsTestCase
 
 
-class DNAInitTest(NucleicAcidInitTest):
+class RiboNucleicAcidTestCase(NucleicAcidTestCase):
+    def setUp(self) -> None:
+        from yeti.systems.molecules.nucleic_acids import RNA
+
+        super(RiboNucleicAcidTestCase, self).setUp()
+
+        self.nucleic_acid = RNA(residues=self.residues, molecule_name=self.molecule_name,
+                                box_information=self.box_information,
+                                simulation_information=self.simulation_information, periodic=True,
+                                hydrogen_bond_information=self.hydrogen_bond_information)
+
+
+class TestRiboNucleicAcidStandardMethods(RiboNucleicAcidTestCase, TestNucleicAcidStandardMethods):
     def setUp(self) -> None:
         from yeti.systems.molecules.nucleic_acids import DNA
         from yeti.dictionaries.molecules import biomolecules
 
-        super(DNAInitTest, self).setUp()
-        self.nucleic_acid = DNA
+        super(TestRiboNucleicAcidStandardMethods, self).setUp()
+
         self.dictionary = biomolecules.DNA
+        self.nucleic_acid = DNA(residues=self.residues, molecule_name=self.molecule_name,
+                                box_information=self.box_information,
+                                simulation_information=self.simulation_information, periodic=True,
+                                hydrogen_bond_information=self.hydrogen_bond_information)
 
 
-class DNATest(NucleicAcidTest):
-    def setUp(self) -> None:
-        from yeti.systems.molecules.nucleic_acids import DNA, NucleicAcidException
-
-        unit_cell_angles, unit_cell_vectors = self.build_unit_cell_angles_and_vectors(number_of_frames=2)
-        residues = self.setUpResidues()
-
-        box_information = dict(
-            dict(periodic=True, unit_cell_angles=unit_cell_angles, unit_cell_vectors=unit_cell_vectors))
-
-        simulation_information = dict(number_of_frames=3)
-        hydrogen_bond_information = dict(distance_cutoff=0.25, angle_cutoff=2.0)
-
-        self.nucleic_acid = DNA(residues=residues, molecule_name='test', box_information=box_information,
-                                simulation_information=simulation_information,
-                                hydrogen_bond_information=hydrogen_bond_information)
-        self.exception = NucleicAcidException
-
-
-class DNAGetPTOPDistance(DNATest, NucleicAcidGetPTOPDistance):
+class TestRiboNucleicDistanceMethods(RiboNucleicAcidTestCase, TestNucleicAcidDistanceMethods):
     pass
 
 
-class DNAGetDihedral(DNATest, NucleicAcidGetDihedral):
-    def setUpResidues(self):
-        residue_01, residue_02, residue_03, residue_04 = super(DNAGetDihedral, self).setUpResidues()
+class TestRiboNucleicDihedralAngleMethods(RiboNucleicAcidTestCase, TestNucleicAcidDihedralAngleMethods):
+    def setUpResidues(self) -> None:
+        super(TestRiboNucleicDihedralAngleMethods, self).setUpResidues()
 
-        residue_01.name = 'T'
-        residue_02.name = 'G'
-        residue_03.name = 'T'
-        residue_04.name = 'T'
+        self.residues[0].name = 'T'
+        self.residues[1].name = 'G'
+        self.residues[2].name = 'T'
+        self.residues[3].name = 'T'
 
-        return residue_01, residue_02, residue_03, residue_04
+
+class RiboNucleicAcidExceptionsTestCase(RiboNucleicAcidTestCase, NucleicAcidExceptionsTestCase):
+    pass
+
+
+class TestDistanceMethodExceptions(RiboNucleicAcidExceptionsTestCase):
+    pass
+
+
+class TestDihedralAngleMethodExceptions(RiboNucleicAcidExceptionsTestCase):
+    pass
+
+
+if __name__ == '__main__':
+    unittest.main()
