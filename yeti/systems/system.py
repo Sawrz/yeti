@@ -7,9 +7,10 @@ from yeti.systems.molecules.nucleic_acids import RNA
 
 
 class System(object):
-    def __init__(self, trajectory_file_path, topology_file_path):
+    def __init__(self, trajectory_file_path, topology_file_path, periodic):
         self.trajectory_file_path = trajectory_file_path
         self.topology_file_path = topology_file_path
+        self.periodic = periodic
 
         # TODO store more parameters (see nucleoSim and mdTraj)
 
@@ -17,7 +18,6 @@ class System(object):
 
         self.unitcell_angles = self.trajectory.unitcell_angles
         self.unitcell_vectors = self.trajectory.unitcell_vectors
-        self.box_vectors = self.trajectory
 
         self.number_of_frames = self.trajectory.n_frames
         self.molecules = {}
@@ -27,11 +27,10 @@ class System(object):
         return Atom(subsystem_index=atom_index - shifting_index, structure_file_index=atom_index,
                     name=reference_atom.name, xyz_trajectory=self.trajectory.xyz[:, atom_index, :])
 
-    def __create_residue__(self, reference_residue, residue_shifting_index, atom_shifting_index):
+    def __create_residue__(self, reference_residue, subsystem_index, atom_shifting_index):
         residue_index = reference_residue.index
 
-        actual_residue = Residue(subsystem_index=residue_index - residue_shifting_index,
-                                 structure_file_index=residue_index,
+        actual_residue = Residue(subsystem_index=subsystem_index, structure_file_index=residue_index,
                                  name=reference_residue.name)
 
         for reference_atom in reference_residue.atoms:
@@ -39,7 +38,8 @@ class System(object):
             actual_atom.set_residue(residue=actual_residue)
 
             actual_residue.add_atom(atom=actual_atom)
-            actual_residue.finalize()
+
+        actual_residue.finalize()
 
         return actual_residue
 
@@ -53,7 +53,9 @@ class System(object):
             atom_02_id = np.where(sequence == bond[1])[0]
 
             # TODO: add right Exception type
-            if len(atom_01_id) != 1 or len(atom_02_id) != 1:
+            if len(atom_01_id) == 0 or len(atom_02_id) == 0:
+                raise Exception('Atom not found! Something went wrong.')
+            elif len(atom_01_id) != 1 or len(atom_02_id) != 1:
                 raise Exception('Indistinguishable atom names. Something went wrong.')
 
             atom_01 = atoms[atom_01_id[0]]
@@ -72,7 +74,9 @@ class System(object):
         atom_02_id = np.where(sequence_02 == pair[1])[0]
 
         # TODO: add right Exception type
-        if len(atom_01_id) != 1 or len(atom_02_id) != 1:
+        if len(atom_01_id) == 0 or len(atom_02_id) == 0:
+            raise Exception('Atom not found! Something went wrong.')
+        elif len(atom_01_id) != 1 or len(atom_02_id) != 1:
             raise Exception('Indistinguishable atom names. Something went wrong.')
 
         atom_01 = residue_01.atoms[atom_01_id[0]]
@@ -84,12 +88,16 @@ class System(object):
         atoms = residue.atoms
         sequence = np.array(residue.sequence)
 
-        for atom_name, available_slots in electron_dict:
+        for atom_name, available_slots in zip(electron_dict.keys(), electron_dict.values()):
             atom_id = np.where(sequence == atom_name)[0]
 
             # TODO: add right Exception type
-            if len(atom_id) != 1:
+            if len(atom_id) == 0:
+                raise Exception('Atom not found! Something went wrong.')
+            elif len(atom_id) != 1:
                 raise Exception('Indistinguishable atom names. Something went wrong.')
+
+            atom_id = atom_id[0]
 
             if is_donor and not is_acceptor:
                 atoms[atom_id].update_donor_state(is_donor_atom=True, donor_slots=available_slots)
@@ -99,46 +107,70 @@ class System(object):
                 # TODO: add right Exception type
                 raise Exception('Either, is_donor or is_acceptor must be True.')
 
-    def add_bio_molecule(self, residue_ids, system_type, name, distance_cutoff, angle_cutoff, is_range=True):
+    def __select_residues__(self, residue_ids, is_range):
         residues = []
+        residue_lengths = []
 
         if is_range:
-            residue_ids = list(np.arange(residue_ids[0], residue_ids[1]))
+            residue_ids = list(np.arange(residue_ids[0], residue_ids[1] + 1))
 
-        residue_shifting_index = residue_ids[0]
-        atom_shifting_index = self.trajectory.topology.residue(residue_ids[0])._atoms[0].index
+        for subsystem_index, residue_id in enumerate(residue_ids):
+            if subsystem_index == 0:
+                atom_shifting_index = int(self.trajectory.topology.residue(residue_ids[0])._atoms[0].index)
+            else:
+                atom_shifting_index = int(
+                    self.trajectory.topology.residue(residue_ids[subsystem_index])._atoms[0].index - sum(
+                        residue_lengths))
 
-        for residue_id in residue_ids:
             residue = self.__create_residue__(reference_residue=self.trajectory.topology.residue(residue_id),
-                                              residue_shifting_index=residue_shifting_index,
+                                              subsystem_index=subsystem_index,
                                               atom_shifting_index=atom_shifting_index)
+            residue_lengths.append(len(residue.atoms))
             residues.append(residue)
 
-        if system_type == 'RNA':
-            rna_dict = RNADict()
+        return tuple(residues)
 
-            for residue_id, residue in enumerate(residues):
-                self.__create_inner_covalent_bonds__(residue=residue, bond_dict=rna_dict.backbone_bonds_dictionary)
+    def select_rna(self, residue_ids, name, distance_cutoff, angle_cutoff, is_range=True):
+        rna_dict = RNADict()
+        residues = self.__select_residues__(residue_ids=residue_ids, is_range=is_range)
+
+        for residue_id, residue in enumerate(residues):
+            if not 'P' in residue.sequence and residue_id == 0:
+                backbone_bonds_dictionary = rna_dict.backbone_bonds_dictionary['p_capped']
+                backbone_acceptor_dictionary = rna_dict.acceptors_dictionary['backbone_p_capped']
                 self.__create_inner_covalent_bonds__(residue=residue,
-                                                     bond_dict=rna_dict.side_chain_bonds_dictionary[residue.name])
+                                                     bond_dict=rna_dict.termini_bonds_dictionary['p_capping'])
+            else:
+                backbone_bonds_dictionary = rna_dict.backbone_bonds_dictionary['residual']
+                backbone_acceptor_dictionary = rna_dict.acceptors_dictionary['backbone']
 
-                self.__update_electronic_state__(residue=residue, is_acceptor=True,
-                                                 electron_dict=rna_dict.acceptors_dictionary['backbone'])
-                self.__update_electronic_state__(residue=residue, is_donor=True,
-                                                 electron_dict=rna_dict.donors_dictionary['backbone'])
-                self.__update_electronic_state__(residue=residue, is_acceptor=True,
-                                                 electron_dict=rna_dict.acceptors_dictionary[residue.name])
-                self.__update_electronic_state__(residue=residue, is_donor=True,
-                                                 electron_dict=rna_dict.donors_dictionary[residue.name])
+            if residue_id == len(residues) - 1:
+                backbone_bonds_dictionary = rna_dict.backbone_bonds_dictionary['residual']
+                self.__create_inner_covalent_bonds__(residue=residue,
+                                                     bond_dict=rna_dict.termini_bonds_dictionary['last_residue'])
 
-                if residue_id < len(residues) - 1:
-                    self.__create_inter_covalent_bonds__(residue_01=residue, residue_02=residues[residue_id + 1],
-                                                         molecule_dict=rna_dict)
+            residue_name = rna_dict.abbreviation_dictionary[residue.name]
 
-            molecule = RNA(residues=residues, molecule_name=name,
-                           box_information=dict(periodic=self.periodic, unit_cell_angles=self.unitcell_angles,
-                                                unit_cell_vectors=self.unitcell_vectors),
-                           simulation_information=dict(number_of_frames=self.number_of_frames),
-                           hydrogen_bond_information=dict(distance_cutoff=distance_cutoff, angle_cutoff=angle_cutoff))
+            self.__create_inner_covalent_bonds__(residue=residue, bond_dict=backbone_bonds_dictionary)
+            self.__create_inner_covalent_bonds__(residue=residue,
+                                                 bond_dict=rna_dict.side_chain_bonds_dictionary[residue_name])
 
-        self.molecules[name] = molecule
+            self.__update_electronic_state__(residue=residue, is_acceptor=True,
+                                             electron_dict=backbone_acceptor_dictionary)
+            self.__update_electronic_state__(residue=residue, is_donor=True,
+                                             electron_dict=rna_dict.donors_dictionary['backbone'])
+            self.__update_electronic_state__(residue=residue, is_acceptor=True,
+                                             electron_dict=rna_dict.acceptors_dictionary[residue_name])
+            self.__update_electronic_state__(residue=residue, is_donor=True,
+                                             electron_dict=rna_dict.donors_dictionary[residue_name])
+
+            if residue_id < len(residues) - 1:
+                self.__create_inter_covalent_bonds__(residue_01=residue, residue_02=residues[residue_id + 1],
+                                                     molecule_dict=rna_dict)
+
+        self.molecules[name] = RNA(residues=residues, molecule_name=name, periodic=self.periodic,
+                                   box_information=dict(unit_cell_angles=self.unitcell_angles,
+                                                        unit_cell_vectors=self.unitcell_vectors),
+                                   simulation_information=dict(number_of_frames=self.number_of_frames),
+                                   hydrogen_bond_information=dict(distance_cutoff=distance_cutoff,
+                                                                  angle_cutoff=angle_cutoff))
