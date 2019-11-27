@@ -23,7 +23,7 @@ class Angle(Metric):
         super(Angle, self).__mdtraj_paramaeter_compatibility_check__(xyz=xyz, indices=indices, opt=opt,
                                                                      atom_amount=3)
 
-    def __calculate_angle__(self, xyz, indices, periodic, out):
+    def __calculate_angle__(self, xyz, indices, periodic, out, legacy):
         """SOURCE: mdTraj
            MODIFICATION: displacement function
         """
@@ -52,9 +52,23 @@ class Angle(Metric):
         u = u_prime / (u_norm[..., np.newaxis])
         v = v_prime / (v_norm[..., np.newaxis])
 
-        return np.arccos((u * v).sum(-1), out=out)
+        if legacy:
+            return np.arccos((u * v).sum(-1), out=out)
+        else:
+            cos_angles = (u[:, :] * v[:, :]).sum(axis=2) / (np.linalg.norm(u, axis=2) * np.linalg.norm(v, axis=2))
+            cos_angles = np.round(cos_angles, decimals=5)
 
-    def __calculate_no_pbc__(self, xyz, indices, opt):
+            if np.any(np.logical_or(cos_angles > 1, cos_angles < -1)):
+                raise AngleException('Some angles are beyond -1 or 1. Please check your data and submit a ticket!')
+
+            cos_boundary_angle_indices = np.where(np.logical_or(cos_angles == 1, cos_angles == -1))
+            cos_angles[cos_boundary_angle_indices] = np.round(cos_angles[cos_boundary_angle_indices])
+
+            return np.arccos(cos_angles)
+
+    def __calculate_no_pbc__(self, xyz, indices, opt, legacy):
+        # TODO: unit test for ensure type
+        self.ensure_data_type.ensure_boolean(legacy, 'legacy')
         self.__mdtraj_paramaeter_compatibility_check__(xyz=xyz, indices=indices, opt=opt)
 
         angles = np.zeros((xyz.shape[0], indices.shape[0]), dtype=np.float32)
@@ -62,11 +76,11 @@ class Angle(Metric):
         if opt:
             _angle(xyz, indices, angles)
         else:
-            self.__calculate_angle__(xyz=xyz, indices=indices, periodic=False, out=angles)
+            self.__calculate_angle__(xyz=xyz, indices=indices, periodic=False, out=angles, legacy=legacy)
 
         return angles
 
-    def __calculate_minimal_image_convention__(self, xyz, indices, opt):
+    def __calculate_minimal_image_convention__(self, xyz, indices, opt, legacy):
         self.__mdtraj_paramaeter_compatibility_check__(xyz=xyz, indices=indices, opt=opt)
 
         angles = np.zeros((xyz.shape[0], indices.shape[0]), dtype=np.float32)
@@ -78,9 +92,16 @@ class Angle(Metric):
             orthogonal = np.allclose(self.unit_cell_angles, 90)
             _angle_mic(xyz, indices, box.transpose(0, 2, 1).copy(), angles, orthogonal)
         else:
-            self.__calculate_angle__(xyz=xyz, indices=indices, periodic=True, out=angles)
+            self.__calculate_angle__(xyz=xyz, indices=indices, periodic=True, out=angles, legacy=legacy)
 
         return angles
+
+    # TODO: unit test for calculate
+    def calculate(self, atoms, opt, periodic, legacy=True):
+        self.ensure_data_type.ensure_boolean(parameter=legacy, parameter_name='legacy')
+
+        return super(Angle, self).calculate(atoms=atoms, opt=opt, periodic=periodic,
+                                            additional_kwargs=dict(legacy=legacy))
 
 
 class Dihedral(Metric):

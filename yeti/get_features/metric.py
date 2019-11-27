@@ -72,7 +72,7 @@ class Metric(object):
     def __calculate_minimal_image_convention__(self, xyz, indices, opt):
         pass
 
-    def calculate(self, atoms, opt, periodic):
+    def calculate(self, atoms, opt, periodic, additional_kwargs={}):
         self.ensure_data_type.ensure_boolean(parameter=opt, parameter_name='opt')
         self.ensure_data_type.ensure_boolean(parameter=periodic, parameter_name='periodic')
 
@@ -80,6 +80,7 @@ class Metric(object):
         indices = self.__prepare_atom_indices__(amount=len(atoms))
 
         kwargs = dict(xyz=xyz, indices=indices, opt=opt)
+        kwargs.update(additional_kwargs)
 
         if periodic:
             feature = self.__calculate_minimal_image_convention__(**kwargs)

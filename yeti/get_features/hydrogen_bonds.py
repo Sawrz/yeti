@@ -53,13 +53,7 @@ class Triplet(object):
         distances = dist.calculate((self.donor, self.acceptor), opt=True, periodic=self.periodic)
 
         angle = Angle(unit_cell_angles=self.unit_cell_angles, unit_cell_vectors=self.unit_cell_vectors)
-        angles = angle.calculate(self.triplet, opt=False, periodic=self.periodic)
-
-        # Security check if some angle is nan
-        is_there_nan = np.isnan(angles)
-
-        if is_there_nan.any():
-            raise TripletException('Angle calculation throws nan. Please contact the developer.')
+        angles = angle.calculate(self.triplet, opt=False, periodic=self.periodic, legacy=False)
 
         # angles should not be negative but for safety and mathematical correctness
         self.mask = np.logical_and(distances < distance_cutoff, np.pi - np.abs(angles) < angle_cutoff)
@@ -82,10 +76,11 @@ class TripletMultiThread(Triplet):
         angles = angle.calculate(self.triplet, opt=False, periodic=self.periodic)
 
         # Security check if some angle is nan
-        is_there_nan = np.isnan(angles)
+        if np.isnan(angles).any():
+            angles = angle.calculate_nan_safe(self.triplet, periodic=self.periodic)
 
-        if is_there_nan.any():
-            raise TripletException('Angle calculation throws nan. Please contact the developer.')
+            if np.isnan(angles).any():
+                raise TripletException('Angle calculation throws nan. Please contact the developer.')
 
         # angles should not be negative but for safety and mathematical correctness
         tmp_mask = np.logical_and(distances < distance_cutoff, np.pi - np.abs(angles) < angle_cutoff)
