@@ -284,9 +284,9 @@ class NucleicAcid(Biomolecule):
         super(NucleicAcid, self).__init__()
 
         # ABBREVIATION
-        abbreviations = {"adenine": "A",
-                         "guanine": "G",
-                         "cytosine": "C"}
+        abbreviations = {"A": "adenine",
+                         "G": "guanine",
+                         "C": "cytosine"}
 
         self.update_abbreviation_dictionary(abbreviations=abbreviations)
 
@@ -428,29 +428,40 @@ class RNA(NucleicAcid):
         super(RNA, self).__init__()
 
         # ABBREVIATION
-        abbreviations = {"uracil": "U"}
+        abbreviations = {"U": "uracil"}
 
         self.update_abbreviation_dictionary(abbreviations=abbreviations)
 
         # COVALENT BONDS
         # Backbone Bonds
+        backbone_bonds = {}
+        termini_bonds = {}
+
         full_backbone_bond_list = [("P", "OP1"), ("P", "OP2"), ("P", "O5\'"), ("O5\'", "C5\'"), ("C5\'", "H5\'1"),
                                    ("C5\'", "H5\'2"), ("C5\'", "C4\'"), ("C4\'", "H4\'"), ("C4\'", "O4\'"),
                                    ("C4\'", "C3\'"), ("O4\'", "C1\'"), ("C1\'", "H1\'"), ("C1\'", "C2\'"),
                                    ("C3\'", "H3\'"), ("C3\'", "C2\'"), ("C3\'", "O3\'"), ("C2\'", "H2\'1"),
-                                   ("C2\'", "O2\'"), ("O2\'", "HO\'2"), ("O5\'", "H5T"), ("O3'", "HO3\'")]
+                                   ("C2\'", "O2\'"), ("O2\'", "HO\'2")]
 
-        backbone_bonds = {"residual": tuple(full_backbone_bond_list)}
+        backbone_bonds["residual"] = tuple(full_backbone_bond_list)
 
+        # Backbone Bonds with P-capping
+        p_capping_bond_list = full_backbone_bond_list.copy()
+        for bond in full_backbone_bond_list:
+            if "P" in bond:
+                p_capping_bond_list.remove(bond)
+
+        backbone_bonds["p_capped"] = tuple(p_capping_bond_list)
+
+        # Update Backbone Dictionary
         self.update_backbone_bonds_dictionary(backbone_bonds=backbone_bonds)
 
         # Termini Bonds
-        p_capping_terminus = full_backbone_bond_list.copy()
-        for bond in full_backbone_bond_list:
-            if "P" in bond:
-                p_capping_terminus.remove(bond)
+        # P-capping bond
+        termini_bonds["p_capping"] = (("O5\'", "H5T"),)
 
-        termini_bonds = {"p_capping": tuple(p_capping_terminus)}
+        # last residue bond
+        termini_bonds['last_residue'] = (("O3'", "HO3\'"),)
 
         self.update_termini_bonds_dictionary(termini_bonds=termini_bonds)
 
@@ -475,7 +486,11 @@ class RNA(NucleicAcid):
                                   "O2\'": 2,
                                   "O3\'": 2,
                                   "O4\'": 2,
-                                  "O5\'": 2}}
+                                  "O5\'": 2},
+                     "backbone_p_capped": {"O2\'": 2,
+                                           "O3\'": 2,
+                                           "O4\'": 2,
+                                           "O5\'": 2}}
 
         self.update_hydrogen_bond_dictionary(hydrogen_bond_atoms=acceptors, update_donors=False)
 
