@@ -265,11 +265,11 @@ class TestSelectRna(SystemTestCase):
     def setUp(self) -> None:
         super(TestSelectRna, self).setUp()
 
-        self.system.select_rna(residue_ids=(0, 1, 4), name='RNA', distance_cutoff=0.1, angle_cutoff=2.1, is_range=False)
+        self.system.select_rna(residue_ids=(0, 1, 4), name='some_virus_rna', distance_cutoff=0.1, angle_cutoff=2.1, is_range=False)
 
-        self.atoms_res_00 = self.system.molecules['RNA'].residues[0].atoms
-        self.atoms_res_01 = self.system.molecules['RNA'].residues[1].atoms
-        self.atoms_res_02 = self.system.molecules['RNA'].residues[2].atoms
+        self.atoms_res_00 = self.system.molecules['some_virus_rna'].residues[0].atoms
+        self.atoms_res_01 = self.system.molecules['some_virus_rna'].residues[1].atoms
+        self.atoms_res_02 = self.system.molecules['some_virus_rna'].residues[2].atoms
 
     def test_covalent_bonds(self):
         # adenine residue 00
@@ -449,6 +449,242 @@ class TestSelectRna(SystemTestCase):
                               (self.atoms_res_02[34], self.atoms_res_02[27]))
         self.assertTupleEqual(self.atoms_res_02[34].covalent_bond_partners, (self.atoms_res_02[33],))
 
+    def test_electronic_states(self):
+        # adenine residue 00
+        atoms_with_electronic_state = [0, 7, 13, 16, 17, 18, 19, 22, 28, 29, 30]
+
+        # acceptors
+        self.assertTrue(self.atoms_res_00[0].is_acceptor)
+        self.assertEqual(self.atoms_res_00[0].acceptor_slots, 2)
+        self.assertFalse(self.atoms_res_00[0].is_donor_atom)
+        self.assertEqual(self.atoms_res_00[0].donor_slots, 0)
+
+        self.assertTrue(self.atoms_res_00[7].is_acceptor)
+        self.assertEqual(self.atoms_res_00[7].acceptor_slots, 2)
+        self.assertFalse(self.atoms_res_00[7].is_donor_atom)
+        self.assertEqual(self.atoms_res_00[7].donor_slots, 0)
+
+        self.assertTrue(self.atoms_res_00[13].is_acceptor)
+        self.assertEqual(self.atoms_res_00[13].acceptor_slots, 1)
+        self.assertFalse(self.atoms_res_00[13].is_donor_atom)
+        self.assertEqual(self.atoms_res_00[13].donor_slots, 0)
+
+        self.assertTrue(self.atoms_res_00[16].is_acceptor)
+        self.assertEqual(self.atoms_res_00[16].acceptor_slots, 1)
+        self.assertFalse(self.atoms_res_00[16].is_donor_atom)
+        self.assertEqual(self.atoms_res_00[16].donor_slots, 0)
+
+        self.assertTrue(self.atoms_res_00[19].is_acceptor)
+        self.assertEqual(self.atoms_res_00[19].acceptor_slots, 1)
+        self.assertFalse(self.atoms_res_00[19].is_donor_atom)
+        self.assertEqual(self.atoms_res_00[19].donor_slots, 0)
+
+        self.assertTrue(self.atoms_res_00[22].is_acceptor)
+        self.assertEqual(self.atoms_res_00[22].acceptor_slots, 1)
+        self.assertFalse(self.atoms_res_00[22].is_donor_atom)
+        self.assertEqual(self.atoms_res_00[22].donor_slots, 0)
+
+        self.assertTrue(self.atoms_res_00[28].is_acceptor)
+        self.assertEqual(self.atoms_res_00[28].acceptor_slots, 2)
+        self.assertFalse(self.atoms_res_00[28].is_donor_atom)
+        self.assertEqual(self.atoms_res_00[28].donor_slots, 0)
+
+        self.assertTrue(self.atoms_res_00[30].is_acceptor)
+        self.assertEqual(self.atoms_res_00[30].acceptor_slots, 2)
+        self.assertFalse(self.atoms_res_00[30].is_donor_atom)
+        self.assertEqual(self.atoms_res_00[30].donor_slots, 0)
+
+        # donors
+        self.assertFalse(self.atoms_res_00[17].is_acceptor)
+        self.assertEqual(self.atoms_res_00[17].acceptor_slots, 0)
+        self.assertTrue(self.atoms_res_00[17].is_donor_atom)
+        self.assertEqual(self.atoms_res_00[17].donor_slots, 1)
+
+        self.assertFalse(self.atoms_res_00[18].is_acceptor)
+        self.assertEqual(self.atoms_res_00[18].acceptor_slots, 0)
+        self.assertTrue(self.atoms_res_00[18].is_donor_atom)
+        self.assertEqual(self.atoms_res_00[18].donor_slots, 1)
+
+        self.assertFalse(self.atoms_res_00[29].is_acceptor)
+        self.assertEqual(self.atoms_res_00[29].acceptor_slots, 0)
+        self.assertTrue(self.atoms_res_00[29].is_donor_atom)
+        self.assertEqual(self.atoms_res_00[29].donor_slots, 1)
+
+        # non electric state atoms
+        for i, atom in enumerate(self.atoms_res_00):
+            if i in atoms_with_electronic_state:
+                continue
+            else:
+                self.assertFalse(self.atoms_res_00[i].is_acceptor)
+                self.assertEqual(self.atoms_res_00[i].acceptor_slots, 0)
+                self.assertFalse(self.atoms_res_00[i].is_donor_atom)
+                self.assertEqual(self.atoms_res_00[i].donor_slots, 0)
+
+        # guanine residue 01
+        atoms_with_electronic_state = [1, 2, 3, 9, 15, 18, 20, 23, 24, 25, 31, 32, 33]
+
+        # acceptors
+        self.assertTrue(self.atoms_res_01[1].is_acceptor)
+        self.assertEqual(self.atoms_res_01[1].acceptor_slots, 2)
+        self.assertFalse(self.atoms_res_01[1].is_donor_atom)
+        self.assertEqual(self.atoms_res_01[1].donor_slots, 0)
+
+        self.assertTrue(self.atoms_res_01[2].is_acceptor)
+        self.assertEqual(self.atoms_res_01[2].acceptor_slots, 2)
+        self.assertFalse(self.atoms_res_01[2].is_donor_atom)
+        self.assertEqual(self.atoms_res_01[2].donor_slots, 0)
+
+        self.assertTrue(self.atoms_res_01[3].is_acceptor)
+        self.assertEqual(self.atoms_res_01[3].acceptor_slots, 2)
+        self.assertFalse(self.atoms_res_01[3].is_donor_atom)
+        self.assertEqual(self.atoms_res_01[3].donor_slots, 0)
+
+        self.assertTrue(self.atoms_res_01[9].is_acceptor)
+        self.assertEqual(self.atoms_res_01[9].acceptor_slots, 2)
+        self.assertFalse(self.atoms_res_01[9].is_donor_atom)
+        self.assertEqual(self.atoms_res_01[9].donor_slots, 0)
+
+        self.assertTrue(self.atoms_res_01[15].is_acceptor)
+        self.assertEqual(self.atoms_res_01[15].acceptor_slots, 1)
+        self.assertFalse(self.atoms_res_01[15].is_donor_atom)
+        self.assertEqual(self.atoms_res_01[15].donor_slots, 0)
+
+        self.assertTrue(self.atoms_res_01[18].is_acceptor)
+        self.assertEqual(self.atoms_res_01[18].acceptor_slots, 2)
+        self.assertFalse(self.atoms_res_01[18].is_donor_atom)
+        self.assertEqual(self.atoms_res_01[18].donor_slots, 0)
+
+        self.assertTrue(self.atoms_res_01[25].is_acceptor)
+        self.assertEqual(self.atoms_res_01[25].acceptor_slots, 1)
+        self.assertFalse(self.atoms_res_01[25].is_donor_atom)
+        self.assertEqual(self.atoms_res_01[25].donor_slots, 0)
+
+        self.assertTrue(self.atoms_res_01[31].is_acceptor)
+        self.assertEqual(self.atoms_res_01[31].acceptor_slots, 2)
+        self.assertFalse(self.atoms_res_01[31].is_donor_atom)
+        self.assertEqual(self.atoms_res_01[31].donor_slots, 0)
+
+        self.assertTrue(self.atoms_res_01[33].is_acceptor)
+        self.assertEqual(self.atoms_res_01[33].acceptor_slots, 2)
+        self.assertFalse(self.atoms_res_01[33].is_donor_atom)
+        self.assertEqual(self.atoms_res_01[33].donor_slots, 0)
+
+        # donors
+        self.assertFalse(self.atoms_res_01[20].is_acceptor)
+        self.assertEqual(self.atoms_res_01[20].acceptor_slots, 0)
+        self.assertTrue(self.atoms_res_01[20].is_donor_atom)
+        self.assertEqual(self.atoms_res_01[20].donor_slots, 1)
+
+        self.assertFalse(self.atoms_res_01[23].is_acceptor)
+        self.assertEqual(self.atoms_res_01[23].acceptor_slots, 0)
+        self.assertTrue(self.atoms_res_01[23].is_donor_atom)
+        self.assertEqual(self.atoms_res_01[23].donor_slots, 1)
+
+        self.assertFalse(self.atoms_res_01[24].is_acceptor)
+        self.assertEqual(self.atoms_res_01[24].acceptor_slots, 0)
+        self.assertTrue(self.atoms_res_01[24].is_donor_atom)
+        self.assertEqual(self.atoms_res_01[24].donor_slots, 1)
+
+        self.assertFalse(self.atoms_res_01[32].is_acceptor)
+        self.assertEqual(self.atoms_res_01[32].acceptor_slots, 0)
+        self.assertTrue(self.atoms_res_01[32].is_donor_atom)
+        self.assertEqual(self.atoms_res_01[32].donor_slots, 1)
+
+        # non electric state atoms
+        for i, atom in enumerate(self.atoms_res_01):
+            if i in atoms_with_electronic_state:
+                continue
+            else:
+                self.assertFalse(self.atoms_res_01[i].is_acceptor)
+                self.assertEqual(self.atoms_res_01[i].acceptor_slots, 0)
+                self.assertFalse(self.atoms_res_01[i].is_donor_atom)
+                self.assertEqual(self.atoms_res_01[i].donor_slots, 0)
+
+        # guanine residue 02
+        atoms_with_electronic_state = [1, 2, 3, 9, 15, 18, 20, 23, 24, 25, 31, 32, 33]
+
+        # acceptors
+        self.assertTrue(self.atoms_res_02[1].is_acceptor)
+        self.assertEqual(self.atoms_res_02[1].acceptor_slots, 2)
+        self.assertFalse(self.atoms_res_02[1].is_donor_atom)
+        self.assertEqual(self.atoms_res_02[1].donor_slots, 0)
+
+        self.assertTrue(self.atoms_res_02[2].is_acceptor)
+        self.assertEqual(self.atoms_res_02[2].acceptor_slots, 2)
+        self.assertFalse(self.atoms_res_02[2].is_donor_atom)
+        self.assertEqual(self.atoms_res_02[2].donor_slots, 0)
+
+        self.assertTrue(self.atoms_res_02[3].is_acceptor)
+        self.assertEqual(self.atoms_res_02[3].acceptor_slots, 2)
+        self.assertFalse(self.atoms_res_02[3].is_donor_atom)
+        self.assertEqual(self.atoms_res_02[3].donor_slots, 0)
+
+        self.assertTrue(self.atoms_res_02[9].is_acceptor)
+        self.assertEqual(self.atoms_res_02[9].acceptor_slots, 2)
+        self.assertFalse(self.atoms_res_02[9].is_donor_atom)
+        self.assertEqual(self.atoms_res_02[9].donor_slots, 0)
+
+        self.assertTrue(self.atoms_res_02[15].is_acceptor)
+        self.assertEqual(self.atoms_res_02[15].acceptor_slots, 1)
+        self.assertFalse(self.atoms_res_02[15].is_donor_atom)
+        self.assertEqual(self.atoms_res_02[15].donor_slots, 0)
+
+        self.assertTrue(self.atoms_res_02[18].is_acceptor)
+        self.assertEqual(self.atoms_res_02[18].acceptor_slots, 2)
+        self.assertFalse(self.atoms_res_02[18].is_donor_atom)
+        self.assertEqual(self.atoms_res_02[18].donor_slots, 0)
+
+        self.assertTrue(self.atoms_res_02[25].is_acceptor)
+        self.assertEqual(self.atoms_res_02[25].acceptor_slots, 1)
+        self.assertFalse(self.atoms_res_02[25].is_donor_atom)
+        self.assertEqual(self.atoms_res_02[25].donor_slots, 0)
+
+        self.assertTrue(self.atoms_res_02[31].is_acceptor)
+        self.assertEqual(self.atoms_res_02[31].acceptor_slots, 2)
+        self.assertFalse(self.atoms_res_02[31].is_donor_atom)
+        self.assertEqual(self.atoms_res_02[31].donor_slots, 0)
+
+        self.assertTrue(self.atoms_res_02[33].is_acceptor)
+        self.assertEqual(self.atoms_res_02[33].acceptor_slots, 2)
+        self.assertFalse(self.atoms_res_02[33].is_donor_atom)
+        self.assertEqual(self.atoms_res_02[33].donor_slots, 0)
+
+        # donors
+        self.assertFalse(self.atoms_res_02[20].is_acceptor)
+        self.assertEqual(self.atoms_res_02[20].acceptor_slots, 0)
+        self.assertTrue(self.atoms_res_02[20].is_donor_atom)
+        self.assertEqual(self.atoms_res_02[20].donor_slots, 1)
+
+        self.assertFalse(self.atoms_res_02[23].is_acceptor)
+        self.assertEqual(self.atoms_res_02[23].acceptor_slots, 0)
+        self.assertTrue(self.atoms_res_02[23].is_donor_atom)
+        self.assertEqual(self.atoms_res_02[23].donor_slots, 1)
+
+        self.assertFalse(self.atoms_res_02[24].is_acceptor)
+        self.assertEqual(self.atoms_res_02[24].acceptor_slots, 0)
+        self.assertTrue(self.atoms_res_02[24].is_donor_atom)
+        self.assertEqual(self.atoms_res_02[24].donor_slots, 1)
+
+        self.assertFalse(self.atoms_res_02[32].is_acceptor)
+        self.assertEqual(self.atoms_res_02[32].acceptor_slots, 0)
+        self.assertTrue(self.atoms_res_02[32].is_donor_atom)
+        self.assertEqual(self.atoms_res_02[32].donor_slots, 1)
+
+        # non electric state atoms
+        for i, atom in enumerate(self.atoms_res_02):
+            if i in atoms_with_electronic_state:
+                continue
+            else:
+                self.assertFalse(self.atoms_res_02[i].is_acceptor)
+                self.assertEqual(self.atoms_res_02[i].acceptor_slots, 0)
+                self.assertFalse(self.atoms_res_02[i].is_donor_atom)
+                self.assertEqual(self.atoms_res_02[i].donor_slots, 0)
+
+    def test_rna_object(self):
+        from yeti.systems.molecules.nucleic_acids import RNA
+
+        self.assertListEqual(list(self.system.molecules.keys()), ['some_virus_rna'])
+        self.assertEqual(self.system.molecules['some_virus_rna'], RNA)
 
 if __name__ == '__main__':
     unittest.main()
