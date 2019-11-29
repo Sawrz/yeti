@@ -1,3 +1,5 @@
+from types import GeneratorType
+
 import mdtraj as md
 import numpy as np
 
@@ -11,46 +13,63 @@ class System(object):
         # TODO store more parameters (see nucleoSim and mdTraj)
         self.name = name
 
+        self.trajectory_file_path = None
+        self.topology_file_path = None
+        self.chunk_size = None
+
         self.periodic = None
         self.unitcell_angles = None
         self.unitcell_vectors = None
+        self.mdtraj_object = None
         self.trajectory = None
 
         self.number_of_frames = 0
         self.molecules = {}
 
-    def __trajectory_load__(self, trajectory_file_path, topology_file_path):
-        self.trajectory = md.load(filename_or_filenames=trajectory_file_path, top=topology_file_path)
+    def __trajectory_load__(self):
+        self.mdtraj_object = md.load(filename_or_filenames=self.trajectory_file_path, top=self.topology_file_path)
+        self.trajectory = self.mdtraj_object
 
         self.unitcell_angles = self.trajectory.unitcell_angles
         self.unitcell_vectors = self.trajectory.unitcell_vectors
         self.number_of_frames = self.trajectory.n_frames
 
-    def __iter_trajectory_load__(self, trajectory_file_path, topology_file_path, chunk_size):
-        self.trajectory = md.iterload(filename=trajectory_file_path, top=topology_file_path, chunk=chunk_size)
+    def __create_generator__(self):
+        del self.mdtraj_object
+        self.mdtraj_object = md.iterload(filename=self.trajectory_file_path, top=self.topology_file_path,
+                                         chunk=self.chunk_size)
 
-        for index, chunk in enumerate(self.trajectory):
+    def __iter_trajectory_load__(self):
+        # TODO: find better generator work araound
+        # need to recreate generator object again after usage
+        self.__create_generator__()
+
+        for index, self.trajectory in enumerate(self.mdtraj_object):
             if index == 0:
                 self.number_of_frames = 0
-                self.unitcell_angles = chunk.unitcell_angles
-                self.unitcell_vectors = chunk.unitcell_vectors
+                self.unitcell_angles = self.trajectory.unitcell_angles
+                self.unitcell_vectors = self.trajectory.unitcell_vectors
 
                 if self.unitcell_angles is None or self.unitcell_vectors is None:
                     break
             else:
-                self.unitcell_angles = np.vstack([self.unitcell_angles, chunk.unitcell_angles])
-                self.unitcell_vectors = np.vstack([self.unitcell_vectors, chunk.unitcell_vectors])
+                self.unitcell_angles = np.vstack([self.unitcell_angles, self.trajectory.unitcell_angles])
+                self.unitcell_vectors = np.vstack([self.unitcell_vectors, self.trajectory.unitcell_vectors])
 
-            self.number_of_frames += chunk.n_frames
+            self.number_of_frames += self.trajectory.n_frames
+
+        self.trajectory = None
 
     def load_trajectory(self, trajectory_file_path, topology_file_path, chunk_size=None):
         # TODO: Test for right data types
+        self.trajectory_file_path = trajectory_file_path
+        self.topology_file_path = topology_file_path
+        self.chunk_size = chunk_size
 
         if chunk_size is None:
-            self.__trajectory_load__(trajectory_file_path=trajectory_file_path, topology_file_path=topology_file_path)
+            self.__trajectory_load__()
         else:
-            self.__iter_trajectory_load__(trajectory_file_path=trajectory_file_path,
-                                          topology_file_path=topology_file_path, chunk_size=chunk_size)
+            self.__iter_trajectory_load__()
 
         if self.unitcell_angles is not None and self.unitcell_vectors is not None:
             self.periodic = True
@@ -69,7 +88,9 @@ class System(object):
                                  name=reference_residue.name)
 
         for reference_atom in reference_residue.atoms:
-            actual_atom = self.__create_atom__(reference_atom=reference_atom, shifting_index=atom_shifting_index)
+            atom_index = reference_atom.index
+            actual_atom = Atom(subsystem_index=atom_index - atom_shifting_index, structure_file_index=atom_index,
+                               name=reference_atom.name, xyz_trajectory=self.trajectory.xyz[:, atom_index, :])
             actual_atom.set_residue(residue=actual_residue)
 
             actual_residue.add_atom(atom=actual_atom)
@@ -142,7 +163,7 @@ class System(object):
                 # TODO: add right Exception type
                 raise Exception('Either, is_donor or is_acceptor must be True.')
 
-    def __select_residues__(self, residue_ids, is_range):
+    def __select_residues_simple__(self, residue_ids, is_range):
         residues = []
         residue_lengths = []
 
@@ -164,6 +185,29 @@ class System(object):
             residues.append(residue)
 
         return tuple(residues)
+
+    def __select_residues_iter__(self, residue_ids, is_range):
+        self.__create_generator__()
+
+        for index, chunk in enumerate(self.mdtraj_object):
+            self.trajectory = chunk
+            if index == 0:
+                residues = self.__select_residues_simple__(residue_ids=residue_ids, is_range=is_range)
+            else:
+                for residue in residues:
+                    for atom in residue.atoms:
+                        atom.xyz_trajectory = np.vstack(
+                            [atom.xyz_trajectory, self.trajectory.xyz[:, atom.structure_file_index, :]])
+                pass
+
+        self.trajectory = None
+        return residues
+
+    def __select_residues__(self, residue_ids, is_range):
+        if type(self.mdtraj_object) is GeneratorType:
+            return self.__select_residues_iter__(residue_ids=residue_ids, is_range=is_range)
+        else:
+            return self.__select_residues_simple__(residue_ids=residue_ids, is_range=is_range)
 
     def select_rna(self, residue_ids, name, distance_cutoff, angle_cutoff, is_range=True):
         rna_dict = RNADict()
