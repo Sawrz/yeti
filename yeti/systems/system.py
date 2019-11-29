@@ -7,20 +7,55 @@ from yeti.systems.molecules.nucleic_acids import RNA
 
 
 class System(object):
-    def __init__(self, trajectory_file_path, topology_file_path, periodic):
-        self.trajectory_file_path = trajectory_file_path
-        self.topology_file_path = topology_file_path
-        self.periodic = periodic
-
+    def __init__(self, name):
         # TODO store more parameters (see nucleoSim and mdTraj)
+        self.name = name
 
-        self.trajectory = md.load(filename_or_filenames=self.trajectory_file_path, top=self.topology_file_path)
+        self.periodic = None
+        self.unitcell_angles = None
+        self.unitcell_vectors = None
+        self.trajectory = None
+
+        self.number_of_frames = 0
+        self.molecules = {}
+
+    def __trajectory_load__(self, trajectory_file_path, topology_file_path):
+        self.trajectory = md.load(filename_or_filenames=trajectory_file_path, top=topology_file_path)
 
         self.unitcell_angles = self.trajectory.unitcell_angles
         self.unitcell_vectors = self.trajectory.unitcell_vectors
-
         self.number_of_frames = self.trajectory.n_frames
-        self.molecules = {}
+
+    def __iter_trajectory_load__(self, trajectory_file_path, topology_file_path, chunk_size):
+        self.trajectory = md.iterload(filename=trajectory_file_path, top=topology_file_path, chunk=chunk_size)
+
+        for index, chunk in enumerate(self.trajectory):
+            if index == 0:
+                self.number_of_frames = 0
+                self.unitcell_angles = chunk.unitcell_angles
+                self.unitcell_vectors = chunk.unitcell_vectors
+
+                if self.unitcell_angles is None or self.unitcell_vectors is None:
+                    break
+            else:
+                self.unitcell_angles = np.vstack([self.unitcell_angles, chunk.unitcell_angles])
+                self.unitcell_vectors = np.vstack([self.unitcell_vectors, chunk.unitcell_vectors])
+
+            self.number_of_frames += chunk.n_frames
+
+    def load_trajectory(self, trajectory_file_path, topology_file_path, chunk_size=None):
+        # TODO: Test for right data types
+
+        if chunk_size is None:
+            self.__trajectory_load__(trajectory_file_path=trajectory_file_path, topology_file_path=topology_file_path)
+        else:
+            self.__iter_trajectory_load__(trajectory_file_path=trajectory_file_path,
+                                          topology_file_path=topology_file_path, chunk_size=chunk_size)
+
+        if self.unitcell_angles is not None and self.unitcell_vectors is not None:
+            self.periodic = True
+        else:
+            self.periodic = False
 
     def __create_atom__(self, reference_atom, shifting_index):
         atom_index = reference_atom.index
