@@ -26,9 +26,14 @@ class TestStandardMethods(SystemTestCase):
     def test_init(self):
         self.assertEqual(self.system.name, 'My System')
 
+        self.assertIsNone(self.system.trajectory_file_path)
+        self.assertIsNone(self.system.topology_file_path)
+        self.assertIsNone(self.system.chunk_size)
+
         self.assertIsNone(self.system.periodic)
         self.assertIsNone(self.system.unitcell_angles)
         self.assertIsNone(self.system.unitcell_vectors)
+        self.assertIsNone(self.system.mdtraj_object)
         self.assertIsNone(self.system.trajectory)
 
         self.assertEqual(self.system.number_of_frames, 0)
@@ -39,7 +44,6 @@ class TestLoadMethods(SystemTestCase):
     def setUp(self) -> None:
         from types import GeneratorType
         super(TestLoadMethods, self).setUp()
-
         self.exp_generator = GeneratorType
         self.exp_number_of_frames = 6
         self.exp_unit_cell_angles = np.array([[90, 90, 90], [90, 90, 90], [90, 90, 90], [90, 90, 90], [90, 90, 90],
@@ -50,8 +54,18 @@ class TestLoadMethods(SystemTestCase):
              [[6.45998, 0, 0], [0, 6.45998, 0], [0, 0, 6.45998]], [[6.45998, 0, 0], [0, 6.45998, 0], [0, 0, 6.45998]]],
             dtype=np.float32)
 
+        self.system.trajectory_file_path = self.xtc_file_path
+        self.system.topology_file_path = self.gro_file_path
+        self.system.chunk_size = None
+
+    def test_create_generator(self):
+        self.system.chunk_size = 1
+        self.system.__create_generator__()
+
+        self.assertEqual(type(self.system.mdtraj_object), self.exp_generator)
+
     def test_trajectory_load(self):
-        self.system.__trajectory_load__(trajectory_file_path=self.xtc_file_path, topology_file_path=self.gro_file_path)
+        self.system.__trajectory_load__()
 
         self.assertEqual(self.system.trajectory, self.reference_trajectory)
         self.assertEqual(self.system.number_of_frames, self.exp_number_of_frames)
@@ -59,10 +73,12 @@ class TestLoadMethods(SystemTestCase):
         npt.assert_almost_equal(self.system.unitcell_vectors, self.exp_unit_cell_vectors, decimal=5)
 
     def test_iter_trajectory_load(self):
-        self.system.__iter_trajectory_load__(trajectory_file_path=self.xtc_file_path,
-                                             topology_file_path=self.gro_file_path, chunk_size=2)
+        self.system.chunk_size = 2
 
-        self.assertEqual(type(self.system.trajectory), self.exp_generator)
+        self.system.__iter_trajectory_load__()
+
+        self.assertIsNone(self.system.trajectory)
+        self.assertEqual(type(self.system.mdtraj_object), self.exp_generator)
         self.assertEqual(self.system.number_of_frames, self.exp_number_of_frames)
         npt.assert_almost_equal(self.system.unitcell_angles, self.exp_unit_cell_angles, decimal=5)
         npt.assert_almost_equal(self.system.unitcell_vectors, self.exp_unit_cell_vectors, decimal=5)
@@ -70,6 +86,10 @@ class TestLoadMethods(SystemTestCase):
     def test_load_trajectory_no_chunksize(self):
         self.system.load_trajectory(trajectory_file_path=self.xtc_file_path, topology_file_path=self.gro_file_path,
                                     chunk_size=None)
+
+        self.assertEqual(self.system.trajectory_file_path, self.xtc_file_path)
+        self.assertEqual(self.system.topology_file_path, self.gro_file_path)
+        self.assertIsNone(self.system.chunk_size)
 
         self.assertEqual(self.system.trajectory, self.reference_trajectory)
         self.assertEqual(self.system.number_of_frames, self.exp_number_of_frames)
@@ -82,7 +102,12 @@ class TestLoadMethods(SystemTestCase):
         self.system.load_trajectory(trajectory_file_path=self.xtc_file_path, topology_file_path=self.gro_file_path,
                                     chunk_size=1)
 
-        self.assertEqual(type(self.system.trajectory), self.exp_generator)
+        self.assertEqual(self.system.trajectory_file_path, self.xtc_file_path)
+        self.assertEqual(self.system.topology_file_path, self.gro_file_path)
+        self.assertEqual(self.system.chunk_size, 1)
+
+        self.assertIsNone(self.system.trajectory)
+        self.assertEqual(type(self.system.mdtraj_object), self.exp_generator)
         self.assertEqual(self.system.number_of_frames, self.exp_number_of_frames)
         npt.assert_almost_equal(self.system.unitcell_angles, self.exp_unit_cell_angles, decimal=5)
         npt.assert_almost_equal(self.system.unitcell_vectors, self.exp_unit_cell_vectors, decimal=5)
@@ -753,19 +778,7 @@ class IterTrajectoryLoadTestCase(SystemTestCase):
         super(IterTrajectoryLoadTestCase, self).setUp()
 
         self.system.load_trajectory(trajectory_file_path=self.xtc_file_path, topology_file_path=self.gro_file_path,
-                                    chunk_size=4)
-
-
-class TestCreateBuildingBlockMethodsIterLoad(IterTrajectoryLoadTestCase, TestCreateBuildingBlockMethodsSimpleLoad):
-    pass
-
-
-class TestCreateBondsIterLoad(IterTrajectoryLoadTestCase, TestCreateBondsSimpleLoad):
-    pass
-
-
-class TestElectronicStatesIterLoad(IterTrajectoryLoadTestCase, TestElectronicStatesSimpleLoad):
-    pass
+                                    chunk_size=2)
 
 
 class TestSelectorsIterLoad(IterTrajectoryLoadTestCase, TestSelectorsSimpleLoad):
