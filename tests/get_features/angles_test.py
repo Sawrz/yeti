@@ -151,6 +151,13 @@ class MultiAngleCalculations(MultiAngleTestCase):
         self.exp_non_periodic[2, 0] = 0
         npt.assert_almost_equal(res, self.exp_non_periodic, decimal=5)
 
+    def test_calculate_no_pbc_non_legacy(self):
+        res = self.angle.__calculate_no_pbc__(xyz=self.xyz, indices=self.indices, opt=False, legacy=False)
+
+        # optimization seems nan-safe
+        self.exp_non_periodic[2, 0] = 0
+        npt.assert_almost_equal(res, self.exp_non_periodic, decimal=5)
+
     def test_calculate_minimal_image_convention_not_optimized(self):
         res = self.angle.__calculate_minimal_image_convention__(xyz=self.xyz, indices=self.indices, opt=False,
                                                                 legacy=True)
@@ -160,6 +167,14 @@ class MultiAngleCalculations(MultiAngleTestCase):
     def test_calculate_minimal_image_convention_optimized(self):
         res = self.angle.__calculate_minimal_image_convention__(xyz=self.xyz, indices=self.indices, opt=True,
                                                                 legacy=True)
+
+        # optimization seems nan-safe
+        self.exp_periodic[2, 0] = 0
+        npt.assert_almost_equal(res, self.exp_periodic, decimal=5)
+
+    def test_calculate_minimal_image_convention_non_legacy(self):
+        res = self.angle.__calculate_minimal_image_convention__(xyz=self.xyz, indices=self.indices, opt=False,
+                                                                legacy=False)
 
         # optimization seems nan-safe
         self.exp_periodic[2, 0] = 0

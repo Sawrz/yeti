@@ -56,7 +56,7 @@ class Angle(Metric):
             return np.arccos((u * v).sum(-1), out=out)
         else:
             cos_angles = (u[:, :] * v[:, :]).sum(axis=2) / (np.linalg.norm(u, axis=2) * np.linalg.norm(v, axis=2))
-            cos_angles = np.round(cos_angles, decimals=5)
+            cos_angles = np.round(cos_angles, decimals=6)
 
             if np.any(np.logical_or(cos_angles > 1, cos_angles < -1)):
                 raise AngleException('Some angles are beyond -1 or 1. Please check your data and submit a ticket!')
@@ -64,7 +64,7 @@ class Angle(Metric):
             cos_boundary_angle_indices = np.where(np.logical_or(cos_angles == 1, cos_angles == -1))
             cos_angles[cos_boundary_angle_indices] = np.round(cos_angles[cos_boundary_angle_indices])
 
-            return np.arccos(cos_angles)
+            return np.arccos(cos_angles, out=out)
 
     def __calculate_no_pbc__(self, xyz, indices, opt, legacy):
         # TODO: unit test for ensure type
