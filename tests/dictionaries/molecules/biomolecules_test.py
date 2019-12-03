@@ -902,10 +902,10 @@ class TestRNA(TestCase):
     def test_abbreviations_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import RNA
 
-        reference = {"adenine": "A",
-                     "cytosine": "C",
-                     "guanine": "G",
-                     "uracil": "U"}
+        reference = {"A": "adenine",
+                     "C": "cytosine",
+                     "G": "guanine",
+                     "U": "uracil"}
 
         rna = RNA()
         result = rna.abbreviation_dictionary
@@ -984,8 +984,12 @@ class TestRNA(TestCase):
                                   ("C5\'", "H5\'1"), ("C5\'", "H5\'2"), ("C5\'", "C4\'"), ("C4\'", "H4\'"),
                                   ("C4\'", "O4\'"), ("C4\'", "C3\'"), ("O4\'", "C1\'"), ("C1\'", "H1\'"),
                                   ("C1\'", "C2\'"), ("C3\'", "H3\'"), ("C3\'", "C2\'"), ("C3\'", "O3\'"),
-                                  ("C2\'", "H2\'1"), ("C2\'", "O2\'"), ("O2\'", "HO\'2"), ("O5\'", "H5T"),
-                                  ("O3'", "HO3\'"))}
+                                  ("C2\'", "H2\'1"), ("C2\'", "O2\'"), ("O2\'", "HO\'2")),
+                     "p_capped": (("O5\'", "C5\'"), ("C5\'", "H5\'1"), ("C5\'", "H5\'2"), ("C5\'", "C4\'"),
+                                  ("C4\'", "H4\'"), ("C4\'", "O4\'"), ("C4\'", "C3\'"), ("O4\'", "C1\'"),
+                                  ("C1\'", "H1\'"), ("C1\'", "C2\'"), ("C3\'", "H3\'"), ("C3\'", "C2\'"),
+                                  ("C3\'", "O3\'"), ("C2\'", "H2\'1"), ("C2\'", "O2\'"), ("O2\'", "HO\'2"))
+                     }
 
         rna = RNA()
         result = rna.backbone_bonds_dictionary
@@ -1002,11 +1006,9 @@ class TestRNA(TestCase):
     def test_termini_bonds_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import RNA
 
-        reference = {"p_capping": (("O5\'", "C5\'"), ("C5\'", "H5\'1"), ("C5\'", "H5\'2"), ("C5\'", "C4\'"),
-                                   ("C4\'", "H4\'"), ("C4\'", "O4\'"), ("C4\'", "C3\'"), ("O4\'", "C1\'"),
-                                   ("C1\'", "H1\'"), ("C1\'", "C2\'"), ("C3\'", "H3\'"), ("C3\'", "C2\'"),
-                                   ("C3\'", "O3\'"), ("C2\'", "H2\'1"), ("C2\'", "O2\'"), ("O2\'", "HO\'2"),
-                                   ("O5\'", "H5T"), ("O3'", "HO3\'"))}
+        reference = {"p_capped": (("O5\'", "H5T"),),
+                     "last_residue": (("O3'", "HO3\'"),)
+                     }
 
         rna = RNA()
         result = rna.termini_bonds_dictionary
@@ -1104,7 +1106,12 @@ class TestRNA(TestCase):
                                   "O2\'": 2,
                                   "O3\'": 2,
                                   "O4\'": 2,
-                                  "O5\'": 2}
+                                  "O5\'": 2
+                                  },
+                     "backbone_p_capped": {"O2\'": 2,
+                                           "O3\'": 2,
+                                           "O4\'": 2,
+                                           "O5\'": 2}
                      }
 
         rna = RNA()
@@ -1146,16 +1153,15 @@ class TestDNA(TestCase):
     def test_abbreviations_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import DNA
 
-        reference = {"adenine": "A",
-                     "cytosine": "C",
-                     "guanine": "G",
-                     "thymine": "T"}
+        reference = {"A": "adenine",
+                     "C": "cytosine",
+                     "G": "guanine",
+                     "T": "thymine"}
 
         dna = DNA()
         result = dna.abbreviation_dictionary
 
         for base in reference.keys():
-            print(base)
             tmp_reference = reference[base]
             tmp_result = result[base]
 

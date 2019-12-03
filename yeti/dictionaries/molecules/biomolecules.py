@@ -458,7 +458,7 @@ class RNA(NucleicAcid):
 
         # Termini Bonds
         # P-capping bond
-        termini_bonds["p_capping"] = (("O5\'", "H5T"),)
+        termini_bonds["p_capped"] = (("O5\'", "H5T"),)
 
         # last residue bond
         termini_bonds['last_residue'] = (("O3'", "HO3\'"),)
@@ -510,7 +510,7 @@ class DNA(NucleicAcid):
         super(DNA, self).__init__()
 
         # ABBREVIATION
-        abbreviations = {"thymine": "T"}
+        abbreviations = {"T": "thymine"}
 
         self.update_abbreviation_dictionary(abbreviations=abbreviations)
 
