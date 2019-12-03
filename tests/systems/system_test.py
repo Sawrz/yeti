@@ -258,8 +258,8 @@ class TestElectronicStatesSimpleLoad(SimpleTrajectoryLoadTestCase):
 
 
 class TestSelectorsSimpleLoad(SimpleTrajectoryLoadTestCase):
-    def test_select_residues_is_range(self):
-        residues = self.system.__select_residues__(residue_ids=(1, 3), is_range=True)
+    def test_select_residues_with_generator(self):
+        residues = self.system.__select_residues__(residue_ids=range(1, 4))
 
         self.assertEqual(len(residues), 3)
 
@@ -290,8 +290,8 @@ class TestSelectorsSimpleLoad(SimpleTrajectoryLoadTestCase):
         self.assertEqual(residues[index].atoms[0].structure_file_index, 96)
         self.assertEqual(residues[index].atoms[0].subsystem_index, 65)
 
-    def test_select_residues_is_not_range_two(self):
-        residues = self.system.__select_residues__(residue_ids=(1, 3), is_range=False)
+    def test_select_residues_two_residues(self):
+        residues = self.system.__select_residues__(residue_ids=(1, 3))
 
         self.assertEqual(len(residues), 2)
 
@@ -313,8 +313,8 @@ class TestSelectorsSimpleLoad(SimpleTrajectoryLoadTestCase):
         self.assertEqual(residues[index].atoms[0].structure_file_index, 96)
         self.assertEqual(residues[index].atoms[0].subsystem_index, 34)
 
-    def test_select_residues_is_not_range_three(self):
-        residues = self.system.__select_residues__(residue_ids=(0, 1, 4), is_range=False)
+    def test_select_residues_three_residues(self):
+        residues = self.system.__select_residues__(residue_ids=(0, 1, 4))
 
         self.assertEqual(len(residues), 3)
 
@@ -350,8 +350,7 @@ class TestSelectRnaSimpleLoad(SimpleTrajectoryLoadTestCase):
     def setUp(self) -> None:
         super(TestSelectRnaSimpleLoad, self).setUp()
 
-        self.system.select_rna(residue_ids=(0, 1, 4), name='some_virus_rna', distance_cutoff=0.1, angle_cutoff=2.1,
-                               is_range=False)
+        self.system.select_rna(residue_ids=(0, 1, 4), name='some_virus_rna', distance_cutoff=0.1, angle_cutoff=2.1)
 
         self.atoms_res_00 = self.system.molecules['some_virus_rna'].residues[0].atoms
         self.atoms_res_01 = self.system.molecules['some_virus_rna'].residues[1].atoms

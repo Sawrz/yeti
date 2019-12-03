@@ -163,12 +163,9 @@ class System(object):
                 # TODO: add right Exception type
                 raise Exception('Either, is_donor or is_acceptor must be True.')
 
-    def __select_residues_simple__(self, residue_ids, is_range):
+    def __select_residues_simple__(self, residue_ids):
         residues = []
         residue_lengths = []
-
-        if is_range:
-            residue_ids = list(np.arange(residue_ids[0], residue_ids[1] + 1))
 
         for subsystem_index, residue_id in enumerate(residue_ids):
             if subsystem_index == 0:
@@ -186,13 +183,13 @@ class System(object):
 
         return tuple(residues)
 
-    def __select_residues_iter__(self, residue_ids, is_range):
+    def __select_residues_iter__(self, residue_ids):
         self.__create_generator__()
 
         for index, chunk in enumerate(self.mdtraj_object):
             self.trajectory = chunk
             if index == 0:
-                residues = self.__select_residues_simple__(residue_ids=residue_ids, is_range=is_range)
+                residues = self.__select_residues_simple__(residue_ids=residue_ids)
             else:
                 for residue in residues:
                     for atom in residue.atoms:
@@ -203,15 +200,15 @@ class System(object):
         self.trajectory = None
         return residues
 
-    def __select_residues__(self, residue_ids, is_range):
+    def __select_residues__(self, residue_ids):
         if type(self.mdtraj_object) is GeneratorType:
-            return self.__select_residues_iter__(residue_ids=residue_ids, is_range=is_range)
+            return self.__select_residues_iter__(residue_ids=residue_ids)
         else:
-            return self.__select_residues_simple__(residue_ids=residue_ids, is_range=is_range)
+            return self.__select_residues_simple__(residue_ids=residue_ids)
 
-    def select_rna(self, residue_ids, name, distance_cutoff, angle_cutoff, is_range=True):
+    def select_rna(self, residue_ids, name, distance_cutoff, angle_cutoff):
         rna_dict = RNADict()
-        residues = self.__select_residues__(residue_ids=residue_ids, is_range=is_range)
+        residues = self.__select_residues__(residue_ids=residue_ids)
 
         for residue_id, residue in enumerate(residues):
             if not 'P' in residue.sequence and residue_id == 0:
