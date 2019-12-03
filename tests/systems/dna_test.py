@@ -4,39 +4,35 @@ from tests.systems.nucleic_acid_test import NucleicAcidTestCase, TestNucleicAcid
     TestNucleicAcidDistanceMethods, TestNucleicAcidDihedralAngleMethods, NucleicAcidExceptionsTestCase
 
 
-class RiboNucleicAcidTestCase(NucleicAcidTestCase):
+class DeoxyriboNucleicAcidTestCase(NucleicAcidTestCase):
     def setUp(self) -> None:
-        from yeti.systems.molecules.nucleic_acids import RNA
+        from yeti.systems.molecules.nucleic_acids import DNA
 
-        super(RiboNucleicAcidTestCase, self).setUp()
+        super(DeoxyriboNucleicAcidTestCase, self).setUp()
 
-        self.nucleic_acid = RNA(residues=self.residues, molecule_name=self.molecule_name,
-                                box_information=self.box_information,
-                                simulation_information=self.simulation_information, periodic=True,
-                                hydrogen_bond_information=self.hydrogen_bond_information)
+        self.molecule = DNA(residues=self.residues, molecule_name=self.molecule_name,
+                            box_information=self.box_information, periodic=True)
 
 
-class TestRiboNucleicAcidStandardMethods(RiboNucleicAcidTestCase, TestNucleicAcidStandardMethods):
+class TestDeoxyriboNucleicAcidStandardMethods(DeoxyriboNucleicAcidTestCase, TestNucleicAcidStandardMethods):
     def setUp(self) -> None:
         from yeti.systems.molecules.nucleic_acids import DNA
         from yeti.dictionaries.molecules import biomolecules
 
-        super(TestRiboNucleicAcidStandardMethods, self).setUp()
+        super(TestDeoxyriboNucleicAcidStandardMethods, self).setUp()
 
         self.dictionary = biomolecules.DNA
-        self.nucleic_acid = DNA(residues=self.residues, molecule_name=self.molecule_name,
-                                box_information=self.box_information,
-                                simulation_information=self.simulation_information, periodic=True,
-                                hydrogen_bond_information=self.hydrogen_bond_information)
+        self.molecule = DNA(residues=self.residues, molecule_name=self.molecule_name,
+                            box_information=self.box_information, periodic=True)
 
 
-class TestRiboNucleicDistanceMethods(RiboNucleicAcidTestCase, TestNucleicAcidDistanceMethods):
+class TestDeoxyriboNucleicDistanceMethods(DeoxyriboNucleicAcidTestCase, TestNucleicAcidDistanceMethods):
     pass
 
 
-class TestRiboNucleicDihedralAngleMethods(RiboNucleicAcidTestCase, TestNucleicAcidDihedralAngleMethods):
+class TestDeoxyriboNucleicDihedralAngleMethods(DeoxyriboNucleicAcidTestCase, TestNucleicAcidDihedralAngleMethods):
     def setUpResidues(self) -> None:
-        super(TestRiboNucleicDihedralAngleMethods, self).setUpResidues()
+        super(TestDeoxyriboNucleicDihedralAngleMethods, self).setUpResidues()
 
         self.residues[0].name = 'T'
         self.residues[1].name = 'G'
@@ -44,15 +40,15 @@ class TestRiboNucleicDihedralAngleMethods(RiboNucleicAcidTestCase, TestNucleicAc
         self.residues[3].name = 'T'
 
 
-class RiboNucleicAcidExceptionsTestCase(RiboNucleicAcidTestCase, NucleicAcidExceptionsTestCase):
+class DeoxyriboNucleicAcidExceptionsTestCase(DeoxyriboNucleicAcidTestCase, NucleicAcidExceptionsTestCase):
     pass
 
 
-class TestDistanceMethodExceptions(RiboNucleicAcidExceptionsTestCase):
+class TestDistanceMethodExceptions(DeoxyriboNucleicAcidExceptionsTestCase):
     pass
 
 
-class TestDihedralAngleMethodExceptions(RiboNucleicAcidExceptionsTestCase):
+class TestDihedralAngleMethodExceptions(DeoxyriboNucleicAcidExceptionsTestCase):
     pass
 
 

@@ -17,16 +17,21 @@ class BioMoleculeException(Exception):
 
 
 class TwoAtomsMolecule(object):
-    def __init__(self, residues, molecule_name, box_information):
+    def __init__(self, residues, molecule_name, periodic, box_information):
         self.ensure_data_type = EnsureDataTypes(exception_class=MoleculeException)
         self.ensure_data_type.ensure_tuple(parameter=residues, parameter_name='residues')
         self.ensure_data_type.ensure_string(parameter=molecule_name, parameter_name='molecule_name')
         self.ensure_data_type.ensure_dict(parameter=box_information, parameter_name='box_information')
+        self.ensure_data_type.ensure_boolean(parameter=periodic, parameter_name='periodic')
 
         self.molecule_name = molecule_name
         self.residues = residues
+        self.periodic = periodic
 
-        self._dist = Distance(**box_information)
+        # TODO: find a better way to transfer this information
+        self.box_information = box_information
+
+        self._dist = Distance(**self.box_information)
         self.distances = {}
 
     def __get_atom_key_name__(self, atom):
@@ -65,16 +70,15 @@ class TwoAtomsMolecule(object):
 
         return tuple(atoms)
 
-    def get_distance(self, atom_01_pos, atom_02_pos, store_result=True, opt=True, periodic=True):
+    def get_distance(self, atom_01_pos, atom_02_pos, store_result=True, opt=True):
         # TODO: ensure it's a tuple of integers
         self.ensure_data_type.ensure_tuple(parameter=atom_01_pos, parameter_name='atom_01_pos')
         self.ensure_data_type.ensure_tuple(parameter=atom_02_pos, parameter_name='atom_02_pos')
         self.ensure_data_type.ensure_boolean(parameter=store_result, parameter_name='store_result')
         self.ensure_data_type.ensure_boolean(parameter=opt, parameter_name='opt')
-        self.ensure_data_type.ensure_boolean(parameter=periodic, parameter_name='periodic')
 
         atoms = self.__get_atoms__(atom_positions=(atom_01_pos, atom_02_pos))
-        distances = self._dist.calculate(atoms=atoms, opt=opt, periodic=periodic)
+        distances = self._dist.calculate(atoms=atoms, opt=opt, periodic=self.periodic)
 
         if store_result:
             key = self.__generate_key__(atoms=atoms)
@@ -87,20 +91,19 @@ class ThreeAtomsMolecule(TwoAtomsMolecule):
     def __init__(self, *args, **kwargs):
         super(ThreeAtomsMolecule, self).__init__(*args, **kwargs)
 
-        self._angle = Angle(**kwargs['box_information'])
+        self._angle = Angle(**self.box_information)
         self.angles = {}
 
-    def get_angle(self, atom_01_pos, atom_02_pos, atom_03_pos, store_result=True, opt=True, periodic=True):
+    def get_angle(self, atom_01_pos, atom_02_pos, atom_03_pos, store_result=True, opt=True):
         # TODO: ensure it's a tuple of integers
         self.ensure_data_type.ensure_tuple(parameter=atom_01_pos, parameter_name='atom_01_pos')
         self.ensure_data_type.ensure_tuple(parameter=atom_02_pos, parameter_name='atom_02_pos')
         self.ensure_data_type.ensure_tuple(parameter=atom_03_pos, parameter_name='atom_03_pos')
         self.ensure_data_type.ensure_boolean(parameter=store_result, parameter_name='store_result')
         self.ensure_data_type.ensure_boolean(parameter=opt, parameter_name='opt')
-        self.ensure_data_type.ensure_boolean(parameter=periodic, parameter_name='periodic')
 
         atoms = self.__get_atoms__(atom_positions=(atom_01_pos, atom_02_pos, atom_03_pos))
-        angles = self._angle.calculate(atoms=atoms, opt=opt, periodic=periodic)
+        angles = self._angle.calculate(atoms=atoms, opt=opt, periodic=self.periodic)
 
         if store_result:
             key = self.__generate_key__(atoms=atoms)
@@ -110,31 +113,17 @@ class ThreeAtomsMolecule(TwoAtomsMolecule):
 
 
 class FourAtomsPlusMolecule(ThreeAtomsMolecule):
-    def __init__(self, simulation_information, hydrogen_bond_information, periodic, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super(FourAtomsPlusMolecule, self).__init__(*args, **kwargs)
-        self.ensure_data_type.ensure_dict(parameter=simulation_information, parameter_name='simulation_information')
-        self.ensure_data_type.ensure_dict(parameter=hydrogen_bond_information,
-                                          parameter_name='hydrogen_bond_information')
-        self.ensure_data_type.ensure_boolean(parameter=periodic, parameter_name='periodic')
 
-        self._dih = Dihedral(**kwargs['box_information'])
+        self._dih = Dihedral(**self.box_information)
         self.dihedral_angles = {}
 
-        # TODO: search if there is a more efficient way
-        atoms = tuple(itertools.chain.from_iterable(residue.atoms for residue in self.residues))
+        self.angle_cutoff = None
+        self.distance_cutoff = None
+        self._hbonds = None
 
-        # TODO: Think of passing residues instead of atoms (reason againt it: inter system hbonds, but can extract atoms from residues)
-        # TODO: think about estimate the number of frames from arbitrary atom since data from same simulation
-        self._hbonds = HydrogenBondsFirstComesFirstServes(atoms=atoms, periodic=periodic,
-                                                          number_of_frames=simulation_information['number_of_frames'],
-                                                          system_name=self.molecule_name, **kwargs['box_information'])
-        self.distance_cutoff = hydrogen_bond_information['distance_cutoff']
-        self.angle_cutoff = hydrogen_bond_information['angle_cutoff']
-
-        if self.distance_cutoff is not None and self.angle_cutoff is not None:
-            self._hbonds.calculate_hydrogen_bonds(distance_cutoff=self.distance_cutoff, angle_cutoff=self.angle_cutoff)
-
-    def get_dihedral(self, atom_01_pos, atom_02_pos, atom_03_pos, atom_04_pos, periodic, store_result=True, opt=True):
+    def get_dihedral(self, atom_01_pos, atom_02_pos, atom_03_pos, atom_04_pos, store_result=True, opt=True):
         # TODO: ensure it's a tuple of integers
         self.ensure_data_type.ensure_tuple(parameter=atom_01_pos, parameter_name='atom_01_pos')
         self.ensure_data_type.ensure_tuple(parameter=atom_02_pos, parameter_name='atom_02_pos')
@@ -142,16 +131,31 @@ class FourAtomsPlusMolecule(ThreeAtomsMolecule):
         self.ensure_data_type.ensure_tuple(parameter=atom_04_pos, parameter_name='atom_04_pos')
         self.ensure_data_type.ensure_boolean(parameter=store_result, parameter_name='store_result')
         self.ensure_data_type.ensure_boolean(parameter=opt, parameter_name='opt')
-        self.ensure_data_type.ensure_boolean(parameter=periodic, parameter_name='periodic')
 
         atoms = self.__get_atoms__(atom_positions=(atom_01_pos, atom_02_pos, atom_03_pos, atom_04_pos))
-        dihedral_angles = self._dih.calculate(atoms=atoms, opt=opt, periodic=periodic)
+        dihedral_angles = self._dih.calculate(atoms=atoms, opt=opt, periodic=self.periodic)
 
         if store_result:
             key = self.__generate_key__(atoms=atoms)
             self.dihedral_angles[key] = dihedral_angles
         else:
             return dihedral_angles
+
+    def calculate_hydrogen_bonds(self, distance_cutoff, angle_cutoff):
+        self.distance_cutoff = distance_cutoff
+        self.angle_cutoff = angle_cutoff
+
+        # estimate the number of frames from arbitrary atom since data from same simulation
+        number_of_frames = self.residues[0].atoms[0].xyz_trajectory.shape[0]
+
+        # TODO: search if there is a more efficient way
+        atoms = tuple(itertools.chain.from_iterable(residue.atoms for residue in self.residues))
+
+        # TODO: Think of passing residues instead of atoms (reason againt it: inter system hbonds, but can extract atoms from residues)
+        self._hbonds = HydrogenBondsFirstComesFirstServes(atoms=atoms, periodic=self.periodic,
+                                                          number_of_frames=number_of_frames,
+                                                          system_name=self.molecule_name, **self.box_information)
+        self._hbonds.calculate_hydrogen_bonds(distance_cutoff=self.distance_cutoff, angle_cutoff=self.angle_cutoff)
 
     def purge_hydrogen_bonds(self):
         self.angle_cutoff = None
@@ -164,10 +168,11 @@ class FourAtomsPlusMolecule(ThreeAtomsMolecule):
 
     def recalculate_hydrogen_bonds(self, distance_cutoff, angle_cutoff):
         self.purge_hydrogen_bonds()
-        self._hbonds.calculate_hydrogen_bonds(distance_cutoff=distance_cutoff, angle_cutoff=angle_cutoff)
 
         self.distance_cutoff = distance_cutoff
         self.angle_cutoff = angle_cutoff
+
+        self._hbonds.calculate_hydrogen_bonds(distance_cutoff=self.distance_cutoff, angle_cutoff=self.angle_cutoff)
 
     def get_hydrogen_bonds(self, representation_style):
         self.ensure_data_type.ensure_string(parameter=representation_style, parameter_name='representation_style')

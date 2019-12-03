@@ -206,7 +206,7 @@ class System(object):
         else:
             return self.__select_residues_simple__(residue_ids=residue_ids)
 
-    def select_rna(self, residue_ids, name, distance_cutoff, angle_cutoff):
+    def select_rna(self, residue_ids, name):
         rna_dict = RNADict()
         residues = self.__select_residues__(residue_ids=residue_ids)
 
@@ -215,7 +215,7 @@ class System(object):
                 backbone_bonds_dictionary = rna_dict.backbone_bonds_dictionary['p_capped']
                 backbone_acceptor_dictionary = rna_dict.acceptors_dictionary['backbone_p_capped']
                 self.__create_inner_covalent_bonds__(residue=residue,
-                                                     bond_dict=rna_dict.termini_bonds_dictionary['p_capping'])
+                                                     bond_dict=rna_dict.termini_bonds_dictionary['p_capped'])
             else:
                 backbone_bonds_dictionary = rna_dict.backbone_bonds_dictionary['residual']
                 backbone_acceptor_dictionary = rna_dict.acceptors_dictionary['backbone']
@@ -246,7 +246,4 @@ class System(object):
 
         self.molecules[name] = RNA(residues=residues, molecule_name=name, periodic=self.periodic,
                                    box_information=dict(unit_cell_angles=self.unitcell_angles,
-                                                        unit_cell_vectors=self.unitcell_vectors),
-                                   simulation_information=dict(number_of_frames=self.number_of_frames),
-                                   hydrogen_bond_information=dict(distance_cutoff=distance_cutoff,
-                                                                  angle_cutoff=angle_cutoff))
+                                                        unit_cell_vectors=self.unitcell_vectors))

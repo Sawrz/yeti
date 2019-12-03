@@ -45,9 +45,7 @@ class NucleicAcidTestCase(BioMoleculeTestCase):
             [[[1, 0, 0], [0, 1, 0], [0, 0, 1]], [[1, 0, 0], [0, 1, 0], [0, 0, 1]]], dtype=np.float32)
 
         self.molecule = NucleicAcid(residues=self.residues, molecule_name=self.molecule_name,
-                                    box_information=self.box_information,
-                                    simulation_information=self.simulation_information, periodic=True,
-                                    hydrogen_bond_information=self.hydrogen_bond_information)
+                                    box_information=self.box_information, periodic=True)
 
 
 class TestNucleicAcidStandardMethods(TestBioMoleculeStandardMethods):
@@ -58,17 +56,15 @@ class TestNucleicAcidStandardMethods(TestBioMoleculeStandardMethods):
         super(TestNucleicAcidStandardMethods, self).setUp()
 
         self.dictionary = biomolecules.NucleicAcid
-        self.nucleic_acid = NucleicAcid(residues=self.residues, molecule_name=self.molecule_name,
-                                        box_information=self.box_information,
-                                        simulation_information=self.simulation_information, periodic=True,
-                                        hydrogen_bond_information=self.hydrogen_bond_information)
+        self.molecule = NucleicAcid(residues=self.residues, molecule_name=self.molecule_name,
+                                    box_information=self.box_information, periodic=True)
 
     def test_init(self):
         from yeti.systems.molecules.nucleic_acids import NucleicAcidException
 
 
-        self.assertEqual(NucleicAcidException, self.nucleic_acid.ensure_data_type.exception_class)
-        self.assertEqual(self.dictionary, type(self.nucleic_acid.dictionary))
+        self.assertEqual(NucleicAcidException, self.molecule.ensure_data_type.exception_class)
+        self.assertEqual(self.dictionary, type(self.molecule.dictionary))
 
 
 class TestNucleicAcidDistanceMethods(NucleicAcidTestCase):
@@ -110,7 +106,7 @@ class TestNucleicAcidDistanceMethods(NucleicAcidTestCase):
         self.residues = (residue_01, residue_02, residue_03, residue_04)
 
     def test_get_p_to_p_distance(self):
-        self.molecule.get_p_to_p_distance(residue_id_01=0, residue_id_02=2, periodic=True)
+        self.molecule.get_p_to_p_distance(residue_id_01=0, residue_id_02=2)
         exp_key = 'RESA_0000:P_0003-RESC_0002:P_0002'
         exp_distances = np.array([0.519615242, 0.692820323])
 
@@ -118,7 +114,7 @@ class TestNucleicAcidDistanceMethods(NucleicAcidTestCase):
         npt.assert_array_almost_equal(exp_distances, self.molecule.distances[exp_key], decimal=5)
 
     def test_get_all_p_to_p_distances(self):
-        self.molecule.get_all_p_to_p_distances(periodic=True)
+        self.molecule.get_all_p_to_p_distances()
 
         exp = {'RESA_0000:P_0003-RESB_0001:P_0001': np.array([0.173205081, 0.346410162]),
                'RESB_0001:P_0001-RESC_0002:P_0002': np.array([0.346410162, 0.692820323]),
@@ -216,7 +212,7 @@ class TestNucleicAcidDihedralAngleMethods(NucleicAcidTestCase):
         self.residues = (residue_01, residue_02, residue_03, residue_04)
 
     def test_get_dihedral_alpha(self):
-        self.molecule.get_dihedral(dihedral_name='alpha', residue_id=1, periodic=True)
+        self.molecule.get_dihedral(dihedral_name='alpha', residue_id=1)
         exp = {'alpha_001': np.array([np.pi, np.pi])}
 
         self.assertEqual(exp.keys(), self.molecule.dihedral_angles.keys())
@@ -225,7 +221,7 @@ class TestNucleicAcidDihedralAngleMethods(NucleicAcidTestCase):
             npt.assert_array_almost_equal(exp[key], self.molecule.dihedral_angles[key], decimal=5)
 
     def test_get_dihedral_chi_pu(self):
-        self.molecule.get_dihedral(dihedral_name='chi', residue_id=1, periodic=True)
+        self.molecule.get_dihedral(dihedral_name='chi', residue_id=1)
         exp = {'chi_001': np.array([2.42560681293738, np.pi])}
 
         self.assertEqual(exp.keys(), self.molecule.dihedral_angles.keys())
@@ -234,7 +230,7 @@ class TestNucleicAcidDihedralAngleMethods(NucleicAcidTestCase):
             npt.assert_array_almost_equal(exp[key], self.molecule.dihedral_angles[key], decimal=5)
 
     def test_get_dihedral_chi_py(self):
-        self.molecule.get_dihedral(dihedral_name='chi', residue_id=2, periodic=True)
+        self.molecule.get_dihedral(dihedral_name='chi', residue_id=2)
         exp = {'chi_002': np.array([np.pi, 2.42560681293738])}
 
         self.assertEqual(exp.keys(), self.molecule.dihedral_angles.keys())
@@ -243,7 +239,7 @@ class TestNucleicAcidDihedralAngleMethods(NucleicAcidTestCase):
             npt.assert_array_almost_equal(exp[key], self.molecule.dihedral_angles[key], decimal=5)
 
     def test_get_all_dihedral_angles(self):
-        self.molecule.get_all_dihedral_angles(periodic=True)
+        self.molecule.get_all_dihedral_angles()
 
         exp = {'alpha_001': np.array([np.pi, np.pi]),
                'chi_001': np.array([2.42560681293738, np.pi]),
@@ -267,48 +263,36 @@ class NucleicAcidExceptionsTestCase(NucleicAcidTestCase, BlueprintExceptionsTest
 class TestNucleicAcidDistanceMethodExceptions(NucleicAcidExceptionsTestCase):
     def test_get_p_to_p_distance_residue_id_01_wrong_data_type(self):
         with self.assertRaises(self.exception) as context:
-            self.molecule.get_p_to_p_distance(residue_id_01=0., residue_id_02=2, periodic=True)
+            self.molecule.get_p_to_p_distance(residue_id_01=0., residue_id_02=2)
 
         desired_msg = self.create_data_type_exception_messages(parameter_name='residue_id_01', data_type_name='int')
         self.assertEqual(desired_msg, str(context.exception))
 
     def test_get_p_to_p_distance_residue_id_02_wrong_data_type(self):
         with self.assertRaises(self.exception) as context:
-            self.molecule.get_p_to_p_distance(residue_id_01=0, residue_id_02=2., periodic=True)
+            self.molecule.get_p_to_p_distance(residue_id_01=0, residue_id_02=2.)
 
         desired_msg = self.create_data_type_exception_messages(parameter_name='residue_id_02', data_type_name='int')
-        self.assertEqual(desired_msg, str(context.exception))
-
-    def test_get_p_to_p_distance_periodic_wrong_data_type(self):
-        with self.assertRaises(self.exception) as context:
-            self.molecule.get_p_to_p_distance(residue_id_01=0, residue_id_02=2, periodic=42)
-
-        desired_msg = self.create_data_type_exception_messages(parameter_name='periodic', data_type_name='bool')
         self.assertEqual(desired_msg, str(context.exception))
 
 
 class TestNucleicAcidDihedralAngleMethodExceptions(NucleicAcidExceptionsTestCase):
     def test_get_dihedral_dihedral_name_wrong_data_type(self):
         with self.assertRaises(self.exception) as context:
-            self.molecule.get_dihedral(dihedral_name=4, residue_id=1, periodic=True)
+            self.molecule.get_dihedral(dihedral_name=4, residue_id=1)
 
         desired_msg = self.create_data_type_exception_messages(parameter_name='dihedral_name', data_type_name='str')
         self.assertEqual(desired_msg, str(context.exception))
 
     def test_get_dihedral_residue_id_wrong_data_type(self):
         with self.assertRaises(self.exception) as context:
-            self.molecule.get_dihedral(dihedral_name='alpha', residue_id='1', periodic=True)
+            self.molecule.get_dihedral(dihedral_name='alpha', residue_id='1')
 
         desired_msg = self.create_data_type_exception_messages(parameter_name='residue_id', data_type_name='int')
         self.assertEqual(desired_msg, str(context.exception))
 
 
-    def test_get_dihedral_periodic_wrong_data_type(self):
-        with self.assertRaises(self.exception) as context:
-            self.molecule.get_dihedral(dihedral_name='alpha', residue_id=1, periodic='Yes')
 
-        desired_msg = self.create_data_type_exception_messages(parameter_name='periodic', data_type_name='bool')
-        self.assertEqual(desired_msg, str(context.exception))
 
 
 if __name__ == '__main__':

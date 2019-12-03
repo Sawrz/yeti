@@ -44,7 +44,7 @@ class TwoAtomsMoleculeTestCase(TripletTestCase):
         # initialize object
         self.atoms = (self.donor, self.donor_atom, self.acceptor)
         self.molecule = TwoAtomsMolecule(residues=self.residues, molecule_name=self.molecule_name,
-                                         box_information=self.box_information)
+                                         box_information=self.box_information, periodic=True)
 
 
 class TestTwoAtomsStandardMethods(TwoAtomsMoleculeTestCase):
@@ -88,7 +88,7 @@ class TestAtomMethods(TwoAtomsMoleculeTestCase):
 
 class TestDistanceMethods(TwoAtomsMoleculeTestCase):
     def test_store(self):
-        self.molecule.get_distance(atom_01_pos=(0, 0), atom_02_pos=(1, 0), store_result=True, opt=True, periodic=True)
+        self.molecule.get_distance(atom_01_pos=(0, 0), atom_02_pos=(1, 0), store_result=True, opt=True)
         exp_key = 'RESA_0000:A_0000-RESB_0001:C_0002'
         exp_dict = {exp_key: np.array([0.22360681, 0.31622773, 0.22360681])}
 
@@ -96,7 +96,7 @@ class TestDistanceMethods(TwoAtomsMoleculeTestCase):
         npt.assert_array_almost_equal(self.molecule.distances[exp_key], exp_dict[exp_key], decimal=5)
 
     def test_not_store(self):
-        res = self.molecule.get_distance(atom_01_pos=(0, 0), atom_02_pos=(1, 0), store_result=False, opt=True, periodic=True)
+        res = self.molecule.get_distance(atom_01_pos=(0, 0), atom_02_pos=(1, 0), store_result=False, opt=True)
 
         npt.assert_array_almost_equal(np.array([0.22360681, 0.31622773, 0.22360681]), res, decimal=5)
 
@@ -112,30 +112,39 @@ class TwoAtomsMoleculeExceptionsTestCase(TwoAtomsMoleculeTestCase, BlueprintExce
 class TestTwoAtomsStandardMethodExceptions(TwoAtomsMoleculeExceptionsTestCase):
     def setUp(self) -> None:
         from yeti.systems.molecules.molecules import TwoAtomsMolecule
-        
+
         super(TestTwoAtomsStandardMethodExceptions, self).setUp()
 
         self.molecule = TwoAtomsMolecule
 
     def test_init_residues_wrong_data_type(self):
         with self.assertRaises(self.exception) as context:
-            self.molecule(residues=4.2, molecule_name=self.molecule_name, box_information=self.box_information)
+            self.molecule(residues=4.2, molecule_name=self.molecule_name, box_information=self.box_information,
+                          periodic=True)
 
         desired_msg = self.create_data_type_exception_messages(parameter_name='residues', data_type_name='tuple')
         self.assertEqual(desired_msg, str(context.exception))
 
     def test_init_molecule_name_wrong_data_type(self):
         with self.assertRaises(self.exception) as context:
-            self.molecule(residues=self.residues, molecule_name=42, box_information=self.box_information)
+            self.molecule(residues=self.residues, molecule_name=42, box_information=self.box_information, periodic=True)
 
         desired_msg = self.create_data_type_exception_messages(parameter_name='molecule_name', data_type_name='str')
         self.assertEqual(desired_msg, str(context.exception))
 
     def test_init_box_information_wrong_data_type(self):
         with self.assertRaises(self.exception) as context:
-            self.molecule(residues=self.residues, molecule_name=self.molecule_name, box_information=[])
+            self.molecule(residues=self.residues, molecule_name=self.molecule_name, box_information=[], periodic=True)
 
         desired_msg = self.create_data_type_exception_messages(parameter_name='box_information', data_type_name='dict')
+        self.assertEqual(desired_msg, str(context.exception))
+
+    def test_init_periodic_wrong_data_type(self):
+        with self.assertRaises(self.exception) as context:
+            self.molecule(residues=self.residues, molecule_name=self.molecule_name,
+                          box_information=self.box_information, periodic='No')
+
+        desired_msg = self.create_data_type_exception_messages(parameter_name='periodic', data_type_name='bool')
         self.assertEqual(desired_msg, str(context.exception))
 
 
@@ -174,39 +183,33 @@ class TestAtomMethodExceptions(TwoAtomsMoleculeExceptionsTestCase):
 class TestDistanceMethodExceptions(TwoAtomsMoleculeExceptionsTestCase):
     def test_atom_01_pos_wrong_data_type(self):
         with self.assertRaises(self.exception) as context:
-            self.molecule.get_distance(atom_01_pos=[0, 0], atom_02_pos=(1, 0), store_result=False, opt=True, periodic=True)
+            self.molecule.get_distance(atom_01_pos=[0, 0], atom_02_pos=(1, 0), store_result=False, opt=True)
 
         desired_msg = self.create_data_type_exception_messages(parameter_name='atom_01_pos', data_type_name='tuple')
         self.assertEqual(desired_msg, str(context.exception))
 
     def test_atom_02_pos_wrong_data_type(self):
         with self.assertRaises(self.exception) as context:
-            self.molecule.get_distance(atom_01_pos=(0, 0), atom_02_pos=[1, 0], store_result=False, opt=True, periodic=True)
+            self.molecule.get_distance(atom_01_pos=(0, 0), atom_02_pos=[1, 0], store_result=False, opt=True)
 
         desired_msg = self.create_data_type_exception_messages(parameter_name='atom_02_pos', data_type_name='tuple')
         self.assertEqual(desired_msg, str(context.exception))
 
     def test_store_result_wrong_data_type(self):
         with self.assertRaises(self.exception) as context:
-            self.molecule.get_distance(atom_01_pos=(0, 0), atom_02_pos=(1, 0), store_result=42, opt=True, periodic=True)
+            self.molecule.get_distance(atom_01_pos=(0, 0), atom_02_pos=(1, 0), store_result=42, opt=True)
 
         desired_msg = self.create_data_type_exception_messages(parameter_name='store_result', data_type_name='bool')
         self.assertEqual(desired_msg, str(context.exception))
 
     def test_opt_wrong_data_type(self):
         with self.assertRaises(self.exception) as context:
-            self.molecule.get_distance(atom_01_pos=(0, 0), atom_02_pos=(1, 0), store_result=False, opt=13,
-                                       periodic=True)
+            self.molecule.get_distance(atom_01_pos=(0, 0), atom_02_pos=(1, 0), store_result=False, opt=13)
 
         desired_msg = self.create_data_type_exception_messages(parameter_name='opt', data_type_name='bool')
         self.assertEqual(desired_msg, str(context.exception))
 
-    def test_periodic_wrong_data_type(self):
-        with self.assertRaises(self.exception) as context:
-            self.molecule.get_distance(atom_01_pos=(0, 0), atom_02_pos=(1, 0), store_result=False, opt=True, periodic=12)
 
-        desired_msg = self.create_data_type_exception_messages(parameter_name='periodic', data_type_name='bool')
-        self.assertEqual(desired_msg, str(context.exception))
 
 
 if __name__ == '__main__':

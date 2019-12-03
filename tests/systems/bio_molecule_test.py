@@ -11,9 +11,7 @@ class BioMoleculeTestCase(FourAtomsPlusMoleculeTestCase):
         super(BioMoleculeTestCase, self).setUp()
 
         self.molecule = BioMolecule(residues=self.residues, molecule_name=self.molecule_name,
-                                    box_information=self.box_information,
-                                    simulation_information=self.simulation_information, periodic=True,
-                                    hydrogen_bond_information=self.hydrogen_bond_information)
+                                    box_information=self.box_information, periodic=True)
 
 
 class TestBioMoleculeStandardMethods(BioMoleculeTestCase, TestFourAtomsPlusStandardMethods):

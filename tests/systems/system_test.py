@@ -13,7 +13,10 @@ class SystemTestCase(BlueprintTestCase):
         from yeti.systems.system import System
         from yeti.dictionaries.molecules.biomolecules import RNA
 
-        test_data_path = '../test_data/'
+        test_data_path = os.path.dirname(os.path.abspath(__file__))
+        test_data_path = os.path.split(test_data_path)[0]
+        test_data_path = os.path.join(test_data_path, 'test_data')
+
         self.xtc_file_path = os.path.join(test_data_path, 'AGCUG.xtc')
         self.gro_file_path = os.path.join(test_data_path, 'AGCUG.gro')
 
@@ -350,7 +353,7 @@ class TestSelectRnaSimpleLoad(SimpleTrajectoryLoadTestCase):
     def setUp(self) -> None:
         super(TestSelectRnaSimpleLoad, self).setUp()
 
-        self.system.select_rna(residue_ids=(0, 1, 4), name='some_virus_rna', distance_cutoff=0.1, angle_cutoff=2.1)
+        self.system.select_rna(residue_ids=(0, 1, 4), name='some_virus_rna')
 
         self.atoms_res_00 = self.system.molecules['some_virus_rna'].residues[0].atoms
         self.atoms_res_01 = self.system.molecules['some_virus_rna'].residues[1].atoms

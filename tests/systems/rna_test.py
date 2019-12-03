@@ -10,10 +10,8 @@ class RiboNucleicAcidTestCase(NucleicAcidTestCase):
 
         super(RiboNucleicAcidTestCase, self).setUp()
 
-        self.nucleic_acid = RNA(residues=self.residues, molecule_name=self.molecule_name,
-                                box_information=self.box_information,
-                                simulation_information=self.simulation_information, periodic=True,
-                                hydrogen_bond_information=self.hydrogen_bond_information)
+        self.molecule = RNA(residues=self.residues, molecule_name=self.molecule_name,
+                            box_information=self.box_information, periodic=True)
 
 
 class TestRiboNucleicAcidStandardMethods(RiboNucleicAcidTestCase, TestNucleicAcidStandardMethods):
@@ -24,17 +22,15 @@ class TestRiboNucleicAcidStandardMethods(RiboNucleicAcidTestCase, TestNucleicAci
         super(TestRiboNucleicAcidStandardMethods, self).setUp()
 
         self.dictionary = biomolecules.RNA
-        self.nucleic_acid = RNA(residues=self.residues, molecule_name=self.molecule_name,
-                                box_information=self.box_information,
-                                simulation_information=self.simulation_information, periodic=True,
-                                hydrogen_bond_information=self.hydrogen_bond_information)
+        self.molecule = RNA(residues=self.residues, molecule_name=self.molecule_name,
+                            box_information=self.box_information, periodic=True)
 
 
 class TestRiboNucleicDistanceMethods(RiboNucleicAcidTestCase, TestNucleicAcidDistanceMethods):
     pass
 
 
-class TestRiboNucleicDihedralAngleMethods(RiboNucleicAcidTestCase, TestNucleicAcidDihedralAngleMethods):
+class TestRiboNucleicDihedralAngleMethods(TestNucleicAcidDihedralAngleMethods, RiboNucleicAcidTestCase):
     def setUpResidues(self) -> None:
         super(TestRiboNucleicDihedralAngleMethods, self).setUpResidues()
 
