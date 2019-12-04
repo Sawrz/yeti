@@ -1,6 +1,6 @@
-from ctypes import c_bool
-from multiprocessing import Lock
-from multiprocessing.sharedctypes import Array
+import itertools
+import threading
+from multiprocessing import Pool
 
 import numpy as np
 
@@ -59,34 +59,6 @@ class Triplet(object):
         self.mask = np.logical_and(distances < distance_cutoff, np.pi - np.abs(angles) < angle_cutoff)
 
 
-class TripletMultiThread(Triplet):
-    def __init__(self, *args, **kwargs):
-        super(TripletMultiThread, self).__init__(*args, **kwargs)
-        self.mask = Array(c_bool, np.zeros(self.donor_atom.xyz_trajectory.shape[0], dtype=bool), lock=Lock())
-
-    def create_mask(self, distance_cutoff, angle_cutoff):
-        self.ensure_data_type.ensure_float(parameter=distance_cutoff, parameter_name='distance_cutoff')
-        self.ensure_data_type.ensure_float(parameter=angle_cutoff, parameter_name='angle_cutoff')
-
-        # calculate distances
-        dist = Distance(unit_cell_angles=self.unit_cell_angles, unit_cell_vectors=self.unit_cell_vectors)
-        distances = dist.calculate((self.donor, self.acceptor), opt=True, periodic=self.periodic)
-
-        angle = Angle(unit_cell_angles=self.unit_cell_angles, unit_cell_vectors=self.unit_cell_vectors)
-        angles = angle.calculate(self.triplet, opt=False, periodic=self.periodic)
-
-        # Security check if some angle is nan
-        if np.isnan(angles).any():
-            angles = angle.calculate_nan_safe(self.triplet, periodic=self.periodic)
-
-            if np.isnan(angles).any():
-                raise TripletException('Angle calculation throws nan. Please contact the developer.')
-
-        # angles should not be negative but for safety and mathematical correctness
-        tmp_mask = np.logical_and(distances < distance_cutoff, np.pi - np.abs(angles) < angle_cutoff)
-        self.mask.value = tmp_mask
-
-
 class HydrogenBonds(object):
     def __init__(self, atoms, periodic, unit_cell_angles, unit_cell_vectors, system_name, number_of_frames):
         self.ensure_data_type = EnsureDataTypes(exception_class=HydrogenBondsException)
@@ -122,23 +94,31 @@ class HydrogenBonds(object):
         self.donor_atoms = tuple(self.donor_atoms)
         self.acceptors = tuple(self.acceptors)
 
+    def __build_triplet__(self, donor_atom, acceptor):
+        return Triplet(donor_atom=donor_atom, acceptor=acceptor, periodic=self.periodic,
+                       unit_cell_angles=self.unit_cell_angles, unit_cell_vectors=self.unit_cell_vectors)
+
     def __build_triplets__(self, distance_cutoff, angle_cutoff):
         # TODO: add multi processing
 
         self.ensure_data_type.ensure_float(parameter=distance_cutoff, parameter_name='distance_cutoff')
         self.ensure_data_type.ensure_float(parameter=angle_cutoff, parameter_name='angle_cutoff')
 
-        triplets = []
-
         # initialize triplets
-        for donor_atom in self.donor_atoms:
-            for acceptor in self.acceptors:
-                triplet = Triplet(donor_atom=donor_atom, acceptor=acceptor, periodic=self.periodic,
-                                  unit_cell_angles=self.unit_cell_angles, unit_cell_vectors=self.unit_cell_vectors)
-                triplets.append(triplet)
+        donor_acceptor_combinations = itertools.product(*[self.donor_atoms, self.acceptors])
 
+        pool = Pool()
+        triplets = pool.starmap(self.__build_triplet__, donor_acceptor_combinations)
+        pool.close()
+
+        threads = []
         for triplet in triplets:
-            triplet.create_mask(distance_cutoff=distance_cutoff, angle_cutoff=angle_cutoff)
+            threads.append(threading.Thread(target=triplet.create_mask, kwargs=dict(distance_cutoff=distance_cutoff,
+                                                                                    angle_cutoff=angle_cutoff)))
+
+        for thread in threads:
+            thread.start()
+            thread.join()
 
         return tuple(triplets)
 
@@ -146,8 +126,13 @@ class HydrogenBonds(object):
         pass
 
     def __get_hydrogen_bonds__(self, triplets):
-        # TODO: add multi processing
         self.ensure_data_type.ensure_tuple(parameter=triplets, parameter_name='triplets')
+
+        # TODO: Multi Threading
+        # pool = Pool()
+        # mapfunc = partial(self.__get_hydrogen_bonds_in_frame__, **dict(triplets=triplets))
+        # pool.starmap(mapfunc, range(self.number_of_frames))
+        # pool.close()
 
         for frame in range(self.number_of_frames):
             self.__get_hydrogen_bonds_in_frame__(triplets=triplets, frame=frame)

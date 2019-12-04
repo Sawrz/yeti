@@ -1,3 +1,4 @@
+import copy
 import unittest
 
 import numpy as np
@@ -75,15 +76,58 @@ class TestStandardMethods(HydrogenBondTestCase):
 
 
 class TestBuildMethods(HydrogenBondTestCase):
+    def setUp(self) -> None:
+        super(TestBuildMethods, self).setUp()
+
+        self.exp = [np.array([True, False, False]), np.array([False, False, False]), np.array([True, True, True]),
+                    np.array([True, False, False])]
+
     def test_build_triplets(self):
         triplets = self.hydrogen_bonds.__build_triplets__(distance_cutoff=0.25, angle_cutoff=2.)
 
-        exp = [np.array([True, False, False]), np.array([False, False, False]), np.array([True, True, True]),
-               np.array([True, False, False])]
+        self.assertEqual(len(self.exp), len(triplets))
 
-        self.assertEqual(len(exp), len(triplets))
+        for triplet_exp, triplet_res in zip(self.exp, triplets):
+            npt.assert_array_equal(triplet_exp, triplet_res.mask)
 
-        for triplet_exp, triplet_res in zip(exp, triplets):
+    def test_build_triplets_many_threads(self):
+        from yeti.get_features.hydrogen_bonds import HydrogenBonds
+
+        self.atoms = (self.donor_01, self.donor_atom_01, self.acceptor_01,
+                      self.donor_02, self.donor_atom_02, self.acceptor_02,
+                      copy.deepcopy(self.donor_01), copy.deepcopy(self.donor_atom_01), copy.deepcopy(self.acceptor_01),
+                      copy.deepcopy(self.donor_02), copy.deepcopy(self.donor_atom_02), copy.deepcopy(self.acceptor_02),
+                      copy.deepcopy(self.donor_01), copy.deepcopy(self.donor_atom_01), copy.deepcopy(self.acceptor_01),
+                      copy.deepcopy(self.donor_02), copy.deepcopy(self.donor_atom_02), copy.deepcopy(self.acceptor_02))
+
+        self.exp = [np.array([True, False, False]), np.array([False, False, False]), np.array([True, False, False]),
+                    np.array([False, False, False]), np.array([True, False, False]), np.array([False, False, False]),
+
+                    np.array([True, True, True]), np.array([True, False, False]), np.array([True, True, True]),
+                    np.array([True, False, False]), np.array([True, True, True]), np.array([True, False, False]),
+
+                    np.array([True, False, False]), np.array([False, False, False]), np.array([True, False, False]),
+                    np.array([False, False, False]), np.array([True, False, False]), np.array([False, False, False]),
+
+                    np.array([True, True, True]), np.array([True, False, False]), np.array([True, True, True]),
+                    np.array([True, False, False]), np.array([True, True, True]), np.array([True, False, False]),
+
+                    np.array([True, False, False]), np.array([False, False, False]), np.array([True, False, False]),
+                    np.array([False, False, False]), np.array([True, False, False]), np.array([False, False, False]),
+
+                    np.array([True, True, True]), np.array([True, False, False]), np.array([True, True, True]),
+                    np.array([True, False, False]), np.array([True, True, True]), np.array([True, False, False])]
+
+        self.hydrogen_bonds = HydrogenBonds(atoms=self.atoms, periodic=True,
+                                            unit_cell_angles=self.unit_cell_angles,
+                                            unit_cell_vectors=self.unit_cell_vectors, system_name='test',
+                                            number_of_frames=self.number_of_frames)
+
+        triplets = self.hydrogen_bonds.__build_triplets__(distance_cutoff=0.25, angle_cutoff=2.)
+
+        self.assertEqual(len(self.exp), len(triplets))
+
+        for triplet_exp, triplet_res in zip(self.exp, triplets):
             npt.assert_array_equal(triplet_exp, triplet_res.mask)
 
 
