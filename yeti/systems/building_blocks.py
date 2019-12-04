@@ -41,7 +41,7 @@ class EnsureDataTypes(object):
     def __check_numpy_data_type__(self, parameter, parameter_name, desired_dtype):
         desired_dtype = np.dtype(desired_dtype)
 
-        if parameter.dtype is not desired_dtype:
+        if parameter.dtype != desired_dtype:
             msg = 'Wrong dtype for ndarray "{name}". Desired dtype is {data_type}'.format(name=parameter_name,
                                                                                           data_type=desired_dtype)
             raise self.exception_class(msg)
