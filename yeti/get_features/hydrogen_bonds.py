@@ -1,6 +1,6 @@
 import itertools
-import threading
-from multiprocessing import Pool
+from multiprocessing.pool import ThreadPool
+from threading import Thread
 
 import numpy as np
 
@@ -99,26 +99,25 @@ class HydrogenBonds(object):
                        unit_cell_angles=self.unit_cell_angles, unit_cell_vectors=self.unit_cell_vectors)
 
     def __build_triplets__(self, distance_cutoff, angle_cutoff):
-        # TODO: add multi processing
-
         self.ensure_data_type.ensure_float(parameter=distance_cutoff, parameter_name='distance_cutoff')
         self.ensure_data_type.ensure_float(parameter=angle_cutoff, parameter_name='angle_cutoff')
 
         # initialize triplets
         donor_acceptor_combinations = itertools.product(*[self.donor_atoms, self.acceptors])
 
-        pool = Pool()
+        pool = ThreadPool()
         triplets = pool.starmap(self.__build_triplet__, donor_acceptor_combinations)
         pool.close()
 
         threads = []
         for triplet in triplets:
-            threads.append(threading.Thread(target=triplet.create_mask, kwargs=dict(distance_cutoff=distance_cutoff,
-                                                                                    angle_cutoff=angle_cutoff)))
+            process = Thread(target=triplet.create_mask,
+                             kwargs=dict(distance_cutoff=distance_cutoff, angle_cutoff=angle_cutoff))
+            process.start()
+            threads.append(process)
 
-        for thread in threads:
-            thread.start()
-            thread.join()
+        for process in threads:
+            process.join()
 
         return tuple(triplets)
 
