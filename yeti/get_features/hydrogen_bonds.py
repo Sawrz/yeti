@@ -125,16 +125,18 @@ class HydrogenBonds(object):
         pass
 
     def __get_hydrogen_bonds__(self, triplets):
+        # TODO: Create Multi Process Unit Test
+
         self.ensure_data_type.ensure_tuple(parameter=triplets, parameter_name='triplets')
 
-        # TODO: Multi Threading
-        # pool = Pool()
-        # mapfunc = partial(self.__get_hydrogen_bonds_in_frame__, **dict(triplets=triplets))
-        # pool.starmap(mapfunc, range(self.number_of_frames))
-        # pool.close()
-
+        threads = []
         for frame in range(self.number_of_frames):
-            self.__get_hydrogen_bonds_in_frame__(triplets=triplets, frame=frame)
+            process = Thread(target=self.__get_hydrogen_bonds_in_frame__, kwargs=dict(triplets=triplets, frame=frame))
+            process.start()
+            threads.append(process)
+
+        for process in threads:
+            process.join()
 
     def calculate_hydrogen_bonds(self, distance_cutoff, angle_cutoff):
         for donor_atom in self.donor_atoms:
@@ -142,7 +144,9 @@ class HydrogenBonds(object):
         for acceptor_atom in self.acceptors:
             acceptor_atom.purge_hydrogen_bond_partner_history(system_name=self._system_name)
 
+        print('Building Triplets...')
         triplets = self.__build_triplets__(distance_cutoff=distance_cutoff, angle_cutoff=angle_cutoff)
+        print('Getting Hydrogen Bonds...')
         self.__get_hydrogen_bonds__(triplets=triplets)
 
     def __get_hydrogen_bond_matrix_in_frame__(self, index_dictionary, frame):
