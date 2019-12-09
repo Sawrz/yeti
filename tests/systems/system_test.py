@@ -843,7 +843,14 @@ class TestSelectRnaIterLoad(IterTrajectoryLoadTestCase, TestSelectRnaSimpleLoad)
 
 
 class TestMemoryEfficiencyIterLoad(IterTrajectoryLoadTestCase, TestMemoryEfficiencySimpleLoad):
-    pass
+    def setUp(self) -> None:
+        super(TestMemoryEfficiencyIterLoad, self).setUp()
+
+        self.system.select_rna(residue_ids=(0, 1, 2, 3, 4), name='test_rna')
+        self.system.molecules['test_rna'].calculate_hydrogen_bonds(distance_cutoff=0.1, angle_cutoff=1.2)
+
+        self.rna = self.system.molecules['test_rna']
+        self.assertTrue(self.system.molecules['test_rna'] is self.rna)
 
 
 if __name__ == '__main__':

@@ -134,7 +134,13 @@ class TestBuildMethods(HydrogenBondTestCase):
         self.assertEqual(len(self.exp), len(triplets))
 
         for triplet_exp, triplet_res in zip(self.exp, triplets):
-            npt.assert_array_equal(triplet_exp, triplet_res.mask)
+            for frame_mask_exp in triplet_exp:
+                npt.assert_array_equal(frame_mask_exp, triplet_res.next_mask_frame())
+
+            try:
+                triplet_res.next_mask_frame()
+            except StopIteration:
+                pass
 
 
 class TestBuildMethodsMultiProcessing(HydrogenBondMultiProcessTestCase, TestBuildMethods):
@@ -214,7 +220,7 @@ class TestHydrogenBondRepresentationMethods(TestHydrogenBondMethods):
         class TestClass(HydrogenBonds):
             def __get_hydrogen_bonds_in_frame__(self, triplets, frame):
                 for triplet in triplets:
-                    if triplet.mask[frame]:
+                    if triplet.next_mask_frame():
                         triplet.acceptor.hydrogen_bond_partners[self._system_name][frame].append(triplet.donor_atom)
                         triplet.donor_atom.hydrogen_bond_partners[self._system_name][frame].append(triplet.acceptor)
 

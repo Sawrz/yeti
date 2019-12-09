@@ -53,11 +53,23 @@ class TestStandardMethods(TripletTestCase):
 
 
 class TestMaskMethods(TripletTestCase):
-    def test_create_mask(self):
+    def setUp(self) -> None:
+        super(TestMaskMethods, self).setUp()
+
         self.triplet.create_mask(distance_cutoff=0.25, angle_cutoff=2.)
 
-        npt.assert_array_equal(np.array([True, False, False]), self.triplet.mask)
+    def test_create_mask(self):
+        from collections import Iterator
+        self.assertTrue(isinstance(self.triplet.mask, Iterator))
 
+    def test_next_mask_frame(self):
+        self.assertTrue(self.triplet.next_mask_frame())
+
+    def test_create_mask_results(self):
+        exp = np.array([True, False, False])
+
+        for exp_frame in exp:
+            self.assertEqual(self.triplet.next_mask_frame(), exp_frame)
 
 class TripletExceptionsTestCase(TripletTestCase, BlueprintExceptionsTestCase):
     def setUp(self) -> None:
