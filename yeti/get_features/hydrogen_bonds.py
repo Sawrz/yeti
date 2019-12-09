@@ -1,4 +1,5 @@
 import itertools
+import time
 from multiprocessing.pool import ThreadPool
 from threading import Thread
 
@@ -42,6 +43,7 @@ class Triplet(object):
         self.acceptor = acceptor
 
         self.triplet = (self.donor, self.donor_atom, self.acceptor)
+        self.mask_frame = 0
         self.mask = None
 
     def create_mask(self, distance_cutoff, angle_cutoff):
@@ -56,7 +58,12 @@ class Triplet(object):
         angles = angle.calculate(self.triplet, opt=False, periodic=self.periodic, legacy=False)
 
         # angles should not be negative but for safety and mathematical correctness
-        self.mask = np.logical_and(distances < distance_cutoff, np.pi - np.abs(angles) < angle_cutoff)
+        self.mask = iter(np.logical_and(distances < distance_cutoff, np.pi - np.abs(angles) < angle_cutoff))
+
+    def next_mask_frame(self):
+        self.mask_frame += 1
+
+        return next(self.mask)
 
 
 class HydrogenBonds(object):
@@ -216,7 +223,16 @@ class HydrogenBondsFirstComesFirstServes(HydrogenBonds):
         self.ensure_data_type.ensure_integer(parameter=frame, parameter_name='frame')
 
         for triplet in triplets:
-            if triplet.mask[frame] == 0:
+            if triplet.mask_frame > frame:
+                # TODO: More specific exception class
+                raise Exception(
+                    'Mask frame already used. This leads to wrong results, therefore cancelling operation.\
+                     That is a bug, so open an issue')
+            elif triplet.mask_frame < frame:
+                while triplet.mask_frame != frame:
+                    time.sleep(0.05)
+
+            if triplet.next_mask_frame() == 0:
                 continue
 
             donor_slot_free = len(

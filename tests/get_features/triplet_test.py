@@ -48,6 +48,7 @@ class TestStandardMethods(TripletTestCase):
         self.assertEqual(self.triplet.donor_atom, self.donor_atom)
         self.assertEqual(self.triplet.acceptor, self.acceptor)
         self.assertTupleEqual(self.triplet.triplet, (self.donor, self.donor_atom, self.acceptor))
+        self.assertEqual(self.triplet.mask_frame, 0)
         self.assertIsNone(self.triplet.mask)
 
 
