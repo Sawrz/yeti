@@ -775,6 +775,57 @@ class TestSelectRnaSimpleLoad(SimpleTrajectoryLoadTestCase):
         self.assertEqual(type(self.system.molecules['some_virus_rna']), RNA)
 
 
+class TestMemoryEfficiencySimpleLoad(SimpleTrajectoryLoadTestCase):
+    def setUp(self) -> None:
+        super(TestMemoryEfficiencySimpleLoad, self).setUp()
+
+        self.system.select_rna(residue_ids=(0, 1, 2, 3, 4), name='test_rna')
+        self.system.molecules['test_rna'].calculate_hydrogen_bonds(distance_cutoff=0.1, angle_cutoff=1.2)
+
+        self.rna = self.system.molecules['test_rna']
+        self.assertTrue(self.system.molecules['test_rna'] is self.rna)
+
+    def test_unit_cell_vectors_distances(self):
+        self.assertTrue(self.rna._dist.unit_cell_vectors is self.system.unitcell_vectors)
+
+    def test_unit_cell_angles_distances(self):
+        self.assertTrue(self.rna._dist.unit_cell_angles is self.system.unitcell_angles)
+
+    def test_unit_cell_vectors_angles(self):
+        self.assertTrue(self.rna._angle.unit_cell_vectors is self.system.unitcell_vectors)
+
+    def test_unit_cell_angles_angles(self):
+        self.assertTrue(self.rna._angle.unit_cell_angles is self.system.unitcell_angles)
+
+    def test_unit_cell_vectors_hbonds(self):
+        self.assertTrue(self.rna._hbonds.unit_cell_vectors is self.system.unitcell_vectors)
+
+    def test_unit_cell_angles_hbonds(self):
+        self.assertTrue(self.rna._hbonds.unit_cell_angles is self.system.unitcell_angles)
+
+    def test_atoms_in_build_triplet(self):
+        # acceptor: A0 05'
+        # donor atom: A0 H61
+
+        triplet = self.rna._hbonds.__build_triplet__(donor_atom=self.rna.residues[0].atoms[17], acceptor=self.rna.residues[0].atoms[0])
+
+        self.assertTrue(self.rna.residues[0].atoms[0] is triplet.acceptor)
+        self.assertTrue(self.rna.residues[0].atoms[17] is triplet.donor_atom)
+
+        self.assertTrue(self.rna.residues[0].atoms[0].xyz_trajectory is triplet.acceptor.xyz_trajectory)
+        self.assertTrue(self.rna.residues[0].atoms[17].xyz_trajectory is triplet.donor_atom.xyz_trajectory)
+
+
+    def test_atoms_in_build_triplets(self):
+        triplets = self.rna._hbonds.__build_triplets__(distance_cutoff=0.1, angle_cutoff=1.2)
+
+        self.assertTrue(self.rna.residues[0].atoms[0] is triplets[0].acceptor)
+        self.assertTrue(self.rna.residues[0].atoms[17] is triplets[0].donor_atom)
+
+        self.assertTrue(self.rna.residues[0].atoms[0].xyz_trajectory is triplets[0].acceptor.xyz_trajectory)
+        self.assertTrue(self.rna.residues[0].atoms[17].xyz_trajectory is triplets[0].donor_atom.xyz_trajectory)
+
+
 class IterTrajectoryLoadTestCase(SystemTestCase):
     def setUp(self) -> None:
         super(IterTrajectoryLoadTestCase, self).setUp()
@@ -788,6 +839,10 @@ class TestSelectorsIterLoad(IterTrajectoryLoadTestCase, TestSelectorsSimpleLoad)
 
 
 class TestSelectRnaIterLoad(IterTrajectoryLoadTestCase, TestSelectRnaSimpleLoad):
+    pass
+
+
+class TestMemoryEfficiencyIterLoad(IterTrajectoryLoadTestCase, TestMemoryEfficiencySimpleLoad):
     pass
 
 
