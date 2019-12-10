@@ -93,8 +93,9 @@ class HydrogenBonds(object):
         self._system_name = system_name
         self.number_of_frames = number_of_frames
 
-        if core_units > cpu_count():
+        if core_units is not None and core_units > cpu_count():
             # TODO: proper excpetion type
+            # TODO: Test data type of core units
             raise Exception('More cores assigned than exist.')
         elif core_units is None:
             self.core_units = cpu_count()
