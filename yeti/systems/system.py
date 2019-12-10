@@ -58,6 +58,7 @@ class System(object):
 
             self.number_of_frames += self.trajectory.n_frames
 
+        del self.trajectory
         self.trajectory = None
 
     def load_trajectory(self, trajectory_file_path, topology_file_path, chunk_size=None):
@@ -197,6 +198,7 @@ class System(object):
                             [atom.xyz_trajectory, self.trajectory.xyz[:, atom.structure_file_index, :]])
                 pass
 
+        del self.trajectory
         self.trajectory = None
         return residues
 
