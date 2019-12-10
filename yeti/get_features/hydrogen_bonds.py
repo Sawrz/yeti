@@ -55,7 +55,11 @@ class Triplet(object):
         distances = dist.calculate((self.donor, self.acceptor), opt=True, periodic=self.periodic)
 
         angle = Angle(unit_cell_angles=self.unit_cell_angles, unit_cell_vectors=self.unit_cell_vectors)
-        angles = angle.calculate(self.triplet, opt=False, periodic=self.periodic, legacy=False)
+        angles = angle.calculate(self.triplet, opt=True, periodic=self.periodic, legacy=True)
+
+        if np.any(np.isnan(angles)):
+            del angles
+            angles = angle.calculate(self.triplet, opt=False, periodic=self.periodic, legacy=False)
 
         # angles should not be negative but for safety and mathematical correctness
         self.mask = iter(np.logical_and(distances < distance_cutoff, np.pi - np.abs(angles) < angle_cutoff))
