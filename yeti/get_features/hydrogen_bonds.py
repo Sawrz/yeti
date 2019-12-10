@@ -71,7 +71,8 @@ class Triplet(object):
 
 
 class HydrogenBonds(object):
-    def __init__(self, atoms, periodic, unit_cell_angles, unit_cell_vectors, system_name, number_of_frames):
+    def __init__(self, atoms, periodic, unit_cell_angles, unit_cell_vectors, system_name, number_of_frames,
+                 core_units=None):
         self.ensure_data_type = EnsureDataTypes(exception_class=HydrogenBondsException)
 
         self.ensure_data_type.ensure_tuple(parameter=atoms, parameter_name='atoms')
@@ -90,6 +91,8 @@ class HydrogenBonds(object):
         self.atoms = atoms
         self._system_name = system_name
         self.number_of_frames = number_of_frames
+
+        self.core_units = core_units
 
         self.donor_atoms = []
         self.acceptors = []

@@ -102,13 +102,14 @@ class HydrogenBondMultiProcessTestCase(HydrogenBondTestCase):
 
 
 class TestStandardMethods(HydrogenBondTestCase):
-    def test_init(self):
+    def test_init_default(self):
         self.assertTupleEqual(self.atoms, self.hydrogen_bonds.atoms)
         self.assertTrue(self.hydrogen_bonds.periodic)
         npt.assert_array_equal(self.unit_cell_angles, self.hydrogen_bonds.unit_cell_angles)
         npt.assert_array_equal(self.unit_cell_vectors, self.hydrogen_bonds.unit_cell_vectors)
         self.assertEqual('test', self.hydrogen_bonds._system_name)
         self.assertEqual(self.number_of_frames, self.hydrogen_bonds.number_of_frames)
+        self.assertIsNone(self.hydrogen_bonds.core_units)
 
         self.assertTupleEqual((self.donor_atom_01, self.donor_atom_02), self.hydrogen_bonds.donor_atoms)
         self.assertTupleEqual((self.acceptor_01, self.acceptor_02), self.hydrogen_bonds.acceptors)
@@ -119,6 +120,16 @@ class TestStandardMethods(HydrogenBondTestCase):
         self.assertDictEqual({'test': [[], [], []]}, self.donor_atom_02.hydrogen_bond_partners)
         self.assertDictEqual({'test': [[], [], []]}, self.acceptor_01.hydrogen_bond_partners)
         self.assertDictEqual({'test': [[], [], []]}, self.acceptor_02.hydrogen_bond_partners)
+
+    def test_init_with_core_units(self):
+        from yeti.get_features.hydrogen_bonds import HydrogenBonds
+
+        self.hydrogen_bonds = HydrogenBonds(atoms=self.atoms, periodic=True,
+                                            unit_cell_angles=self.unit_cell_angles,
+                                            unit_cell_vectors=self.unit_cell_vectors, system_name='test',
+                                            number_of_frames=self.number_of_frames, core_units=6)
+
+        self.assertEqual(self.hydrogen_bonds.core_units, 6)
 
 
 class TestBuildMethods(HydrogenBondTestCase):
