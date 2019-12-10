@@ -93,6 +93,9 @@ class HydrogenBonds(object):
         self._system_name = system_name
         self.number_of_frames = number_of_frames
 
+        self.current_cutoff_distance = None
+        self.current_cutoff_angle = None
+
         if core_units is not None and core_units > cpu_count():
             # TODO: proper excpetion type
             # TODO: Test data type of core units
@@ -116,9 +119,28 @@ class HydrogenBonds(object):
         self.donor_atoms = tuple(self.donor_atoms)
         self.acceptors = tuple(self.acceptors)
 
+    #def __build_triplet__(self, donor_atom, acceptor):
+    #    return Triplet(donor_atom=donor_atom, acceptor=acceptor, periodic=self.periodic,
+    #                   unit_cell_angles=self.unit_cell_angles, unit_cell_vectors=self.unit_cell_vectors)
+
     def __build_triplet__(self, donor_atom, acceptor):
-        return Triplet(donor_atom=donor_atom, acceptor=acceptor, periodic=self.periodic,
-                       unit_cell_angles=self.unit_cell_angles, unit_cell_vectors=self.unit_cell_vectors)
+        # return Triplet(donor_atom=donor_atom, acceptor=acceptor, periodic=self.periodic,
+        #               unit_cell_angles=self.unit_cell_angles, unit_cell_vectors=self.unit_cell_vectors)
+
+        triplet = Triplet(donor_atom=donor_atom, acceptor=acceptor, periodic=self.periodic,
+                          unit_cell_angles=self.unit_cell_angles, unit_cell_vectors=self.unit_cell_vectors)
+        triplet.create_mask(distance_cutoff=self.distance_cutoff, angle_cutoff=self.angle_cutoff)
+
+        return triplet
+
+    def __exceute_queue__(self, queue, distance_cutoff, angle_cutoff):
+        while True:
+            triplet = queue.get()
+            triplet.create_mask(distance_cutoff=distance_cutoff, angle_cutoff=angle_cutoff)
+
+            queue.task_done()
+
+            return triplet
 
     def __build_triplets__(self, distance_cutoff, angle_cutoff):
         self.ensure_data_type.ensure_float(parameter=distance_cutoff, parameter_name='distance_cutoff')
@@ -126,20 +148,61 @@ class HydrogenBonds(object):
 
         # initialize triplets
         donor_acceptor_combinations = itertools.product(*[self.donor_atoms, self.acceptors])
+        triplet_amount = len(self.donor_atoms) * len(self.acceptors)
 
-        pool = ThreadPool()
+        #pool = ThreadPool()
+        #triplets = pool.starmap(self.__build_triplet__, donor_acceptor_combinations)
+        #pool.close()
+
+        # queue = JoinableQueue(maxsize=0)
+        # workers = []
+        # for i in range(self.core_units):
+        #   worker = Thread(target=self.__exceute_queue__,
+        #                   kwargs=dict(queue=queue, distance_cutoff=distance_cutoff, angle_cutoff=angle_cutoff))
+        #   worker.setDaemon(True)
+        #   worker.start()
+        #   workers.append()
+
+        # for triplet in triplets:
+        #   queue.put(triplet)
+
+        # queue.join()
+
+        #queue = JoinableQueue(maxsize=0)
+        #for triplet in triplets:
+        #    queue.put(triplet)
+
+        self.angle_cutoff = angle_cutoff
+        self.distance_cutoff = distance_cutoff
+
+        pool = ThreadPool(processes=self.core_units)
         triplets = pool.starmap(self.__build_triplet__, donor_acceptor_combinations)
+        #triplets = triplets.get()
         pool.close()
 
-        threads = []
-        for triplet in triplets:
-            process = Thread(target=triplet.create_mask,
-                             kwargs=dict(distance_cutoff=distance_cutoff, angle_cutoff=angle_cutoff))
-            process.start()
-            threads.append(process)
+        # queue.join()
 
-        for process in threads:
-            process.join()
+        # threads = []
+        # for triplet in triplets:
+        #   process = Thread(target=triplet.create_mask,
+        #                    kwargs=dict(distance_cutoff=distance_cutoff, angle_cutoff=angle_cutoff))
+        #   process.start()
+        #   threads.append(process)
+
+        # for process in threads:
+        #    process.join()
+
+        # queue = Queue(maxsize=0)
+        # for triplet in triplets:
+        #   queue.put(triplet)
+
+        # for triplet in triplets:
+        #    while active_count() > self.core_units:
+        #        tmp = active_count()
+        #        time.sleep(0.05)
+
+        #    self.__thread_queue__(triplet_slice=triplet_slice, distance_cutoff=distance_cutoff,
+        #                          angle_cutoff=angle_cutoff)
 
         return tuple(triplets)
 
