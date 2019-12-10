@@ -1,5 +1,6 @@
 import itertools
 import time
+from multiprocessing import cpu_count
 from multiprocessing.pool import ThreadPool
 from threading import Thread
 
@@ -92,7 +93,13 @@ class HydrogenBonds(object):
         self._system_name = system_name
         self.number_of_frames = number_of_frames
 
-        self.core_units = core_units
+        if core_units > cpu_count():
+            # TODO: proper excpetion type
+            raise Exception('More cores assigned than exist.')
+        elif core_units is None:
+            self.core_units = cpu_count()
+        else:
+            self.core_units = core_units
 
         self.donor_atoms = []
         self.acceptors = []
