@@ -1,4 +1,5 @@
 import itertools
+import multiprocessing as mp
 import time
 from multiprocessing import cpu_count
 from multiprocessing.pool import ThreadPool
@@ -119,7 +120,7 @@ class HydrogenBonds(object):
         self.donor_atoms = tuple(self.donor_atoms)
         self.acceptors = tuple(self.acceptors)
 
-    #def __build_triplet__(self, donor_atom, acceptor):
+    # def __build_triplet__(self, donor_atom, acceptor):
     #    return Triplet(donor_atom=donor_atom, acceptor=acceptor, periodic=self.periodic,
     #                   unit_cell_angles=self.unit_cell_angles, unit_cell_vectors=self.unit_cell_vectors)
 
@@ -133,15 +134,6 @@ class HydrogenBonds(object):
 
         return triplet
 
-    def __exceute_queue__(self, queue, distance_cutoff, angle_cutoff):
-        while True:
-            triplet = queue.get()
-            triplet.create_mask(distance_cutoff=distance_cutoff, angle_cutoff=angle_cutoff)
-
-            queue.task_done()
-
-            return triplet
-
     def __build_triplets__(self, distance_cutoff, angle_cutoff):
         self.ensure_data_type.ensure_float(parameter=distance_cutoff, parameter_name='distance_cutoff')
         self.ensure_data_type.ensure_float(parameter=angle_cutoff, parameter_name='angle_cutoff')
@@ -150,9 +142,9 @@ class HydrogenBonds(object):
         donor_acceptor_combinations = itertools.product(*[self.donor_atoms, self.acceptors])
         triplet_amount = len(self.donor_atoms) * len(self.acceptors)
 
-        #pool = ThreadPool()
-        #triplets = pool.starmap(self.__build_triplet__, donor_acceptor_combinations)
-        #pool.close()
+        # pool = ThreadPool()
+        # triplets = pool.starmap(self.__build_triplet__, donor_acceptor_combinations)
+        # pool.close()
 
         # queue = JoinableQueue(maxsize=0)
         # workers = []
@@ -168,8 +160,8 @@ class HydrogenBonds(object):
 
         # queue.join()
 
-        #queue = JoinableQueue(maxsize=0)
-        #for triplet in triplets:
+        # queue = JoinableQueue(maxsize=0)
+        # for triplet in triplets:
         #    queue.put(triplet)
 
         self.angle_cutoff = angle_cutoff
@@ -177,7 +169,7 @@ class HydrogenBonds(object):
 
         pool = ThreadPool(processes=self.core_units)
         triplets = pool.starmap(self.__build_triplet__, donor_acceptor_combinations)
-        #triplets = triplets.get()
+        # triplets = triplets.get()
         pool.close()
 
         # queue.join()
@@ -209,19 +201,36 @@ class HydrogenBonds(object):
     def __get_hydrogen_bonds_in_frame__(self, triplets, frame):
         pass
 
+    def __execute_frame_queue__(self, queue, triplets):
+        frame = queue.get()
+        self.__get_hydrogen_bonds_in_frame__(triplets=triplets, frame=frame)
+
+        queue.task_done()
+
     def __get_hydrogen_bonds__(self, triplets):
         # TODO: Create Multi Process Unit Test
 
         self.ensure_data_type.ensure_tuple(parameter=triplets, parameter_name='triplets')
 
-        threads = []
-        for frame in range(self.number_of_frames):
-            process = Thread(target=self.__get_hydrogen_bonds_in_frame__, kwargs=dict(triplets=triplets, frame=frame))
-            process.start()
-            threads.append(process)
+        queue = mp.JoinableQueue(maxsize=0)
+        for i in range(self.core_units):
+            worker = Thread(target=self.__execute_frame_queue__, kwargs=dict(queue=queue, triplets=triplets))
+            worker.setDaemon(True)
+            worker.start()
 
-        for process in threads:
-            process.join()
+        for frame in range(self.number_of_frames):
+            queue.put(frame)
+
+        queue.join()
+
+        # threads = []
+        # for frame in range(self.number_of_frames):
+        #    process = Thread(target=self.__get_hydrogen_bonds_in_frame__, kwargs=dict(triplets=triplets, frame=frame))
+        #    process.start()
+        #    threads.append(process)
+
+        # for process in threads:
+        #    process.join()
 
     def calculate_hydrogen_bonds(self, distance_cutoff, angle_cutoff):
         threads = []
