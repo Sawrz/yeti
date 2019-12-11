@@ -327,8 +327,12 @@ class HydrogenBondsFirstComesFirstServes(HydrogenBonds):
                      That is a bug, so open an issue')
             elif triplet.mask_frame < frame:
                 while triplet.mask_frame != frame:
+                    print('Waiting for frame {frame} to come. Current frame is {curr_frame}'.format(frame=frame,
+                                                                                                    curr_frame=triplet.mask_frame))
                     time.sleep(0.05)
+                    print('Continuing with frame {frame}'.format(frame=frame))
 
+            # get current mask value which is only necessary for check
             if triplet.next_mask_frame() == 0:
                 continue
 
