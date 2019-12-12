@@ -1,5 +1,4 @@
 import itertools
-import multiprocessing as mp
 from multiprocessing import cpu_count
 from multiprocessing.pool import ThreadPool
 from threading import Thread
@@ -208,19 +207,21 @@ class HydrogenBonds(object):
 
     def __get_hydrogen_bonds__(self, triplets):
         # TODO: Create Multi Process Unit Test
+        # TODO: add multi-threading support
 
         self.ensure_data_type.ensure_tuple(parameter=triplets, parameter_name='triplets')
 
-        queue = mp.JoinableQueue(maxsize=0)
-        for i in range(self.core_units):
-            worker = Thread(target=self.__execute_frame_queue__, kwargs=dict(queue=queue, triplets=triplets))
-            worker.setDaemon(True)
-            worker.start()
+        #queue = mp.JoinableQueue(maxsize=self.core_units)
+        #for i in range(self.core_units):
+        #    worker = Thread(target=self.__execute_frame_queue__, kwargs=dict(queue=queue, triplets=triplets))
+        #    worker.setDaemon(True)
+        #    worker.start()
 
         for frame in range(self.number_of_frames):
-            queue.put(frame)
+            #queue.put(frame)
+            self.__get_hydrogen_bonds_in_frame__(triplets=triplets, frame=frame)
 
-        queue.join()
+        #queue.join()
 
         # threads = []
         # for frame in range(self.number_of_frames):
@@ -278,6 +279,7 @@ class HydrogenBonds(object):
 
     def get_hydrogen_bond_matrix(self):
         # TODO: make use multi thread
+        # TODO: use only donor atoms and acceptors for matrix
 
         index_dictionary = {}
         for index, atom in enumerate(self.atoms):
