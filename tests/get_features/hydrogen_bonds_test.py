@@ -1,8 +1,7 @@
 import copy
-import unittest
-
 import numpy as np
 import numpy.testing as npt
+import unittest
 
 from tests.blueprints_test import BlueprintExceptionsTestCase
 from tests.get_features.triplet_test import TripletTestCase
@@ -56,14 +55,17 @@ class HydrogenBondTestCase(TripletTestCase):
 
 
 class HydrogenBondMultiProcessTestCase(HydrogenBondTestCase):
+    def setUpMultipliers(self):
+        self.atom_multiplier = 24
+        self.trajectory_multiplier = 200
+
     def setUp(self) -> None:
         from yeti.get_features.hydrogen_bonds import HydrogenBonds
 
         super(HydrogenBondMultiProcessTestCase, self).setUp()
 
         # setup settings
-        self.atom_multiplier = 24
-        self.trajectory_multiplier = 200
+        self.setUpMultipliers()
 
         # parameters for quick checks
         # self.atom_multiplier = 3
@@ -88,6 +90,12 @@ class HydrogenBondMultiProcessTestCase(HydrogenBondTestCase):
         self.acceptor_02.xyz_trajectory = np.repeat(self.acceptor_02.xyz_trajectory, repeats=self.trajectory_multiplier,
                                                     axis=0)
 
+        for key in self.donor_atom_01.hydrogen_bond_partners.keys():
+            self.donor_atom_01.add_system(system_name=key)
+            self.acceptor_01.add_system(system_name=key)
+            self.donor_atom_02.add_system(system_name=key)
+            self.acceptor_02.add_system(system_name=key)
+
         atoms = []
         for i in range(self.atom_multiplier):
             atoms.extend([copy.deepcopy(self.donor_01), copy.deepcopy(self.donor_atom_01),
@@ -99,6 +107,13 @@ class HydrogenBondMultiProcessTestCase(HydrogenBondTestCase):
                                             unit_cell_angles=self.unit_cell_angles,
                                             unit_cell_vectors=self.unit_cell_vectors, system_name='test',
                                             number_of_frames=self.number_of_frames)
+
+        del self.donor_01
+        del self.donor_atom_01
+        del self.acceptor_01
+        del self.donor_02
+        del self.donor_atom_02
+        del self.acceptor_02
 
 
 class TestStandardMethods(HydrogenBondTestCase):
@@ -149,6 +164,7 @@ class TestBuildMethods(HydrogenBondTestCase):
         for triplet_exp, triplet_res in zip(self.exp, triplets):
             npt.assert_array_equal(triplet_exp, triplet_res.mask)
 
+
 class TestBuildMethodsMultiProcessing(HydrogenBondMultiProcessTestCase, TestBuildMethods):
     def setUp(self) -> None:
         super(TestBuildMethodsMultiProcessing, self).setUp()
@@ -164,12 +180,12 @@ class TestBuildMethodsMultiProcessing(HydrogenBondMultiProcessTestCase, TestBuil
             self.exp.extend(exp_donor_02_masks * self.atom_multiplier)
 
 
-class TestHydrogenBondMethods(HydrogenBondTestCase):
+class HydrogenBondMethodWithCustomClassTestCase(HydrogenBondTestCase):
     def setUpClassMethod(self):
         return None
 
     def setUp(self) -> None:
-        super(TestHydrogenBondMethods, self).setUp()
+        super(HydrogenBondMethodWithCustomClassTestCase, self).setUp()
 
         hydrogen_bonds_class = self.setUpClassMethod()
 
@@ -179,7 +195,7 @@ class TestHydrogenBondMethods(HydrogenBondTestCase):
                                                    number_of_frames=self.number_of_frames)
 
 
-class TestObtainHydrogenBondMethods(TestHydrogenBondMethods):
+class ObtainHydrogenBondsTestCase(HydrogenBondMethodWithCustomClassTestCase):
     def setUpClassMethod(self):
         from yeti.get_features.hydrogen_bonds import HydrogenBonds
 
@@ -197,29 +213,99 @@ class TestObtainHydrogenBondMethods(TestHydrogenBondMethods):
 
         return TestClass
 
+
+class TestObtainHydrogenBondsSimple(ObtainHydrogenBondsTestCase):
+    def setUp(self) -> None:
+        super(TestObtainHydrogenBondsSimple, self).setUp()
+
+        self.exp_donor_atom_01_hydrogen_bond_partners = [[] for i in range(3)]
+        self.exp_acceptor_01_hydrogen_bond_partners = [[] for i in range(3)]
+        self.exp_donor_atom_02_hydrogen_bond_partners = [[] for i in range(3)]
+        self.exp_acceptor_02_hydrogen_bond_partners = [[] for i in range(3)]
+
     def test_get_hydrogen_bonds(self):
         self.hydrogen_bonds.__get_hydrogen_bonds__(triplets=self.triplets)
 
+        # prepare expected outcome
+        self.exp_donor_atom_01_hydrogen_bond_partners[1].append(self.acceptor_01)
+        self.exp_acceptor_01_hydrogen_bond_partners[1].append(self.donor_atom_01)
+        self.exp_donor_atom_02_hydrogen_bond_partners[0].append(self.acceptor_02)
+        self.exp_acceptor_02_hydrogen_bond_partners[0].append(self.donor_atom_02)
+
+        # test
         self.assertIsNone(self.donor_01.hydrogen_bond_partners)
-        self.assertListEqual([[], [self.acceptor_01], []], self.donor_atom_01.hydrogen_bond_partners['test_system'])
-        self.assertListEqual([[], [self.donor_atom_01], []], self.acceptor_01.hydrogen_bond_partners['test_system'])
+        self.assertListEqual(self.exp_donor_atom_01_hydrogen_bond_partners,
+                             self.donor_atom_01.hydrogen_bond_partners['test_system'])
+        self.assertListEqual(self.exp_acceptor_01_hydrogen_bond_partners,
+                             self.acceptor_01.hydrogen_bond_partners['test_system'])
         self.assertIsNone(self.donor_02.hydrogen_bond_partners)
-        self.assertListEqual([[self.acceptor_02], [], []], self.donor_atom_02.hydrogen_bond_partners['test_system'])
-        self.assertListEqual([[self.donor_atom_02], [], []], self.acceptor_02.hydrogen_bond_partners['test_system'])
+        self.assertListEqual(self.exp_donor_atom_02_hydrogen_bond_partners,
+                             self.donor_atom_02.hydrogen_bond_partners['test_system'])
+        self.assertListEqual(self.exp_acceptor_02_hydrogen_bond_partners,
+                             self.acceptor_02.hydrogen_bond_partners['test_system'])
 
     def test_calculate_hydrogen_bonds(self):
         self.hydrogen_bonds.calculate_hydrogen_bonds(distance_cutoff=0.25, angle_cutoff=2.0)
 
+        # prepare expected outcome
+        self.exp_donor_atom_01_hydrogen_bond_partners[0].append(self.acceptor_02)
+        self.exp_donor_atom_01_hydrogen_bond_partners[1].append(self.acceptor_01)
+        self.exp_acceptor_01_hydrogen_bond_partners[1].append(self.donor_atom_01)
+        self.exp_acceptor_02_hydrogen_bond_partners[0].append(self.donor_atom_01)
+
+        # test
         self.assertIsNone(self.donor_01.hydrogen_bond_partners)
-        self.assertListEqual([[self.acceptor_02], [self.acceptor_01], []],
+        self.assertListEqual(self.exp_donor_atom_01_hydrogen_bond_partners,
                              self.donor_atom_01.hydrogen_bond_partners['test_system'])
-        self.assertListEqual([[], [self.donor_atom_01], []], self.acceptor_01.hydrogen_bond_partners['test_system'])
+        self.assertListEqual(self.exp_acceptor_01_hydrogen_bond_partners,
+                             self.acceptor_01.hydrogen_bond_partners['test_system'])
         self.assertIsNone(self.donor_02.hydrogen_bond_partners)
-        self.assertListEqual([[], [], []], self.donor_atom_02.hydrogen_bond_partners['test_system'])
-        self.assertListEqual([[self.donor_atom_01], [], []], self.acceptor_02.hydrogen_bond_partners['test_system'])
+        self.assertListEqual(self.exp_donor_atom_02_hydrogen_bond_partners,
+                             self.donor_atom_02.hydrogen_bond_partners['test_system'])
+        self.assertListEqual(self.exp_acceptor_02_hydrogen_bond_partners,
+                             self.acceptor_02.hydrogen_bond_partners['test_system'])
 
 
-class TestHydrogenBondRepresentationMethods(TestHydrogenBondMethods):
+class TestObtainHydrogenBondsForceMultiThreadQueue(TestObtainHydrogenBondsSimple, HydrogenBondMultiProcessTestCase):
+    def setUpMultipliers(self):
+        self.atom_multiplier = 1
+        self.trajectory_multiplier = 200
+
+    def setUp(self) -> None:
+        super(TestObtainHydrogenBondsForceMultiThreadQueue, self).setUp()
+
+        self.donor_01 = self.atoms[0]
+        self.donor_atom_01 = self.atoms[1]
+        self.acceptor_01 = self.atoms[2]
+        self.donor_02 = self.atoms[3]
+        self.donor_atom_02 = self.atoms[4]
+        self.acceptor_02 = self.atoms[5]
+
+        self.triplets[0].donor = self.donor_01
+        self.triplets[0].donor_atom = self.donor_atom_01
+        self.triplets[0].acceptor = self.acceptor_01
+
+        self.triplets[1].donor = self.donor_02
+        self.triplets[1].donor_atom = self.donor_atom_02
+        self.triplets[1].acceptor = self.acceptor_02
+
+        hydrogen_bonds_class = self.setUpClassMethod()
+
+        self.hydrogen_bonds = hydrogen_bonds_class(atoms=self.atoms, periodic=True,
+                                                   unit_cell_angles=self.unit_cell_angles,
+                                                   unit_cell_vectors=self.unit_cell_vectors, system_name='test_system',
+                                                   number_of_frames=self.number_of_frames*self.trajectory_multiplier)
+
+        self.exp_donor_atom_01_hydrogen_bond_partners = [[] for i in range(3 * self.trajectory_multiplier)]
+        self.exp_acceptor_01_hydrogen_bond_partners = [[] for i in range(3 * self.trajectory_multiplier)]
+        self.exp_donor_atom_02_hydrogen_bond_partners = [[] for i in range(3 * self.trajectory_multiplier)]
+        self.exp_acceptor_02_hydrogen_bond_partners = [[] for i in range(3 * self.trajectory_multiplier)]
+        
+    def test_get_hydrogen_bonds(self):
+        super(TestObtainHydrogenBondsForceMultiThreadQueue, self).test_get_hydrogen_bonds()
+
+
+class HydrogenBondRepresentationMethodWithCustomClassTestCase(HydrogenBondMethodWithCustomClassTestCase):
     def setUpClassMethod(self):
         from yeti.get_features.hydrogen_bonds import HydrogenBonds
 
@@ -233,7 +319,7 @@ class TestHydrogenBondRepresentationMethods(TestHydrogenBondMethods):
         return TestClass
 
     def setUp(self) -> None:
-        super(TestHydrogenBondRepresentationMethods, self).setUp()
+        super(HydrogenBondRepresentationMethodWithCustomClassTestCase, self).setUp()
 
         self.hydrogen_bonds.calculate_hydrogen_bonds(distance_cutoff=0.25, angle_cutoff=2.0)
 
