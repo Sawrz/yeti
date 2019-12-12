@@ -1,7 +1,8 @@
 import copy
+import unittest
+
 import numpy as np
 import numpy.testing as npt
-import unittest
 
 from tests.blueprints_test import BlueprintExceptionsTestCase
 from tests.get_features.triplet_test import TripletTestCase
@@ -294,13 +295,13 @@ class TestObtainHydrogenBondsForceMultiThreadQueue(TestObtainHydrogenBondsSimple
         self.hydrogen_bonds = hydrogen_bonds_class(atoms=self.atoms, periodic=True,
                                                    unit_cell_angles=self.unit_cell_angles,
                                                    unit_cell_vectors=self.unit_cell_vectors, system_name='test_system',
-                                                   number_of_frames=self.number_of_frames*self.trajectory_multiplier)
+                                                   number_of_frames=self.number_of_frames * self.trajectory_multiplier)
 
         self.exp_donor_atom_01_hydrogen_bond_partners = [[] for i in range(3 * self.trajectory_multiplier)]
         self.exp_acceptor_01_hydrogen_bond_partners = [[] for i in range(3 * self.trajectory_multiplier)]
         self.exp_donor_atom_02_hydrogen_bond_partners = [[] for i in range(3 * self.trajectory_multiplier)]
         self.exp_acceptor_02_hydrogen_bond_partners = [[] for i in range(3 * self.trajectory_multiplier)]
-        
+
     def test_get_hydrogen_bonds(self):
         super(TestObtainHydrogenBondsForceMultiThreadQueue, self).test_get_hydrogen_bonds()
 
@@ -323,26 +324,27 @@ class HydrogenBondRepresentationMethodWithCustomClassTestCase(HydrogenBondMethod
 
         self.hydrogen_bonds.calculate_hydrogen_bonds(distance_cutoff=0.25, angle_cutoff=2.0)
 
-        first_frame = np.zeros((6, 6))
+        first_frame = np.zeros((4, 4), dtype=int)
+        first_frame[0, 2] = 1
+        first_frame[2, 0] = 1
         first_frame[1, 2] = 1
         first_frame[2, 1] = 1
-        first_frame[2, 4] = 1
-        first_frame[4, 2] = 1
-        first_frame[4, 5] = 1
-        first_frame[5, 4] = 1
+        first_frame[1, 3] = 1
+        first_frame[3, 1] = 1
 
-        second_frame = np.zeros((6, 6))
-        second_frame[2, 4] = 1
-        second_frame[4, 2] = 1
+        second_frame = np.zeros((4, 4), dtype=int)
+        second_frame[1, 2] = 1
+        second_frame[2, 1] = 1
 
-        third_frame = np.zeros((6, 6))
-        third_frame[2, 4] = 1
-        third_frame[4, 2] = 1
+        third_frame = np.zeros((4, 4), dtype=int)
+        third_frame[1, 2] = 1
+        third_frame[2, 1] = 1
 
         self.exp = np.array([first_frame, second_frame, third_frame])
 
     def test_get_hydrogen_bond_matrix_in_frame(self):
-        index_dictionary = {atom.structure_file_index: atom.subsystem_index for atom in self.atoms}
+        index_dictionary = {atom.structure_file_index: i for i, atom in
+                            enumerate((self.donor_atom_01, self.donor_atom_02, self.acceptor_01, self.acceptor_02))}
         res = self.hydrogen_bonds.__get_hydrogen_bond_matrix_in_frame__(index_dictionary=index_dictionary, frame=0)
 
         npt.assert_array_equal(self.exp[0], res)

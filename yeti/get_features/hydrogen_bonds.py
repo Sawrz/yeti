@@ -257,7 +257,8 @@ class HydrogenBonds(object):
         self.ensure_data_type.ensure_dict(parameter=index_dictionary, parameter_name='index_dictionary')
         self.ensure_data_type.ensure_integer(parameter=frame, parameter_name='frame')
 
-        hydrogen_bond_matrix = np.zeros((len(self.atoms), len(self.atoms)))
+        matrix_dim = len(index_dictionary.keys())
+        hydrogen_bond_matrix = np.zeros((matrix_dim, matrix_dim), dtype=int)
 
         for acceptor in self.acceptors:
             hydrogen_bond_partners = acceptor.hydrogen_bond_partners[self._system_name][frame]
@@ -282,7 +283,7 @@ class HydrogenBonds(object):
         # TODO: use only donor atoms and acceptors for matrix
 
         index_dictionary = {}
-        for index, atom in enumerate(self.atoms):
+        for index, atom in enumerate(iter(self.donor_atoms + self.acceptors)):
             index_dictionary[atom.structure_file_index] = index
 
         matrices = []
