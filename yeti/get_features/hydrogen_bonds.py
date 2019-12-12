@@ -1,6 +1,5 @@
 import itertools
 import multiprocessing as mp
-import time
 from multiprocessing import cpu_count
 from multiprocessing.pool import ThreadPool
 from threading import Thread
@@ -64,12 +63,12 @@ class Triplet(object):
             angles = angle.calculate(self.triplet, opt=False, periodic=self.periodic, legacy=False)
 
         # angles should not be negative but for safety and mathematical correctness
-        self.mask = iter(np.logical_and(distances < distance_cutoff, np.pi - np.abs(angles) < angle_cutoff))
+        self.mask = np.logical_and(distances < distance_cutoff, np.pi - np.abs(angles) < angle_cutoff)
 
-    def next_mask_frame(self):
-        self.mask_frame += 1
+    #def next_mask_frame(self):
+    #    self.mask_frame += 1
 
-        return next(self.mask)
+    #    return next(self.mask)
 
 
 class HydrogenBonds(object):
@@ -320,20 +319,7 @@ class HydrogenBondsFirstComesFirstServes(HydrogenBonds):
         self.ensure_data_type.ensure_integer(parameter=frame, parameter_name='frame')
 
         for triplet in triplets:
-            if triplet.mask_frame > frame:
-                # TODO: More specific exception class
-                raise Exception(
-                    'Mask frame already used. This leads to wrong results, therefore cancelling operation.\
-                     That is a bug, so open an issue')
-            elif triplet.mask_frame < frame:
-                while triplet.mask_frame != frame:
-                    print('Waiting for frame {frame} to come. Current frame is {curr_frame}'.format(frame=frame,
-                                                                                                    curr_frame=triplet.mask_frame))
-                    time.sleep(0.05)
-                    print('Continuing with frame {frame}'.format(frame=frame))
-
-            # get current mask value which is only necessary for check
-            if triplet.next_mask_frame() == 0:
+            if not triplet.mask[frame]:
                 continue
 
             donor_slot_free = len(
