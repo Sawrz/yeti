@@ -254,11 +254,14 @@ class HydrogenBonds(object):
         self.__get_hydrogen_bonds__(triplets=triplets)
 
     def __get_hydrogen_bond_matrix_in_frame__(self, index_dictionary, frame):
+        # REMARK: the matrix in frame methods supports onlt atoms which have a max 256 donor or acceptor slots.
+        # From a scientific point of view, that should be more than enough!
+
         self.ensure_data_type.ensure_dict(parameter=index_dictionary, parameter_name='index_dictionary')
         self.ensure_data_type.ensure_integer(parameter=frame, parameter_name='frame')
 
         matrix_dim = len(index_dictionary.keys())
-        hydrogen_bond_matrix = np.zeros((matrix_dim, matrix_dim), dtype=int)
+        hydrogen_bond_matrix = np.zeros((matrix_dim, matrix_dim), dtype=np.int8)
 
         for acceptor in self.acceptors:
             hydrogen_bond_partners = acceptor.hydrogen_bond_partners[self._system_name][frame]

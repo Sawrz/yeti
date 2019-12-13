@@ -324,7 +324,7 @@ class HydrogenBondRepresentationMethodWithCustomClassTestCase(HydrogenBondMethod
 
         self.hydrogen_bonds.calculate_hydrogen_bonds(distance_cutoff=0.25, angle_cutoff=2.0)
 
-        first_frame = np.zeros((4, 4), dtype=int)
+        first_frame = np.zeros((4, 4), dtype=np.int8)
         first_frame[0, 2] = 1
         first_frame[2, 0] = 1
         first_frame[1, 2] = 1
@@ -332,11 +332,11 @@ class HydrogenBondRepresentationMethodWithCustomClassTestCase(HydrogenBondMethod
         first_frame[1, 3] = 1
         first_frame[3, 1] = 1
 
-        second_frame = np.zeros((4, 4), dtype=int)
+        second_frame = np.zeros((4, 4), dtype=np.int8)
         second_frame[1, 2] = 1
         second_frame[2, 1] = 1
 
-        third_frame = np.zeros((4, 4), dtype=int)
+        third_frame = np.zeros((4, 4), dtype=np.int8)
         third_frame[1, 2] = 1
         third_frame[2, 1] = 1
 
