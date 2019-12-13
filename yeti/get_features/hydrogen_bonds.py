@@ -10,6 +10,8 @@ from yeti.get_features.distances import Distance
 from yeti.systems.building_blocks import EnsureDataTypes
 
 
+# TODO: clean up
+
 class TripletException(Exception):
     pass
 
@@ -294,10 +296,6 @@ class HydrogenBonds(object):
                                 zip(itertools.repeat(index_dictionary, times=self.number_of_frames),
                                     iter(range(self.number_of_frames))))
         pool.close()
-
-        # for frame in range(self.number_of_frames):
-        #    matrix = self.__get_hydrogen_bond_matrix_in_frame__(index_dictionary=index_dictionary, frame=frame)
-        #    matrices.append(matrix)
 
         return np.array(matrices)
 
