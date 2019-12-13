@@ -64,7 +64,7 @@ class Triplet(object):
         # angles should not be negative but for safety and mathematical correctness
         self.mask = np.logical_and(distances < distance_cutoff, np.pi - np.abs(angles) < angle_cutoff)
 
-    #def next_mask_frame(self):
+    # def next_mask_frame(self):
     #    self.mask_frame += 1
 
     #    return next(self.mask)
@@ -211,17 +211,17 @@ class HydrogenBonds(object):
 
         self.ensure_data_type.ensure_tuple(parameter=triplets, parameter_name='triplets')
 
-        #queue = mp.JoinableQueue(maxsize=self.core_units)
-        #for i in range(self.core_units):
+        # queue = mp.JoinableQueue(maxsize=self.core_units)
+        # for i in range(self.core_units):
         #    worker = Thread(target=self.__execute_frame_queue__, kwargs=dict(queue=queue, triplets=triplets))
         #    worker.setDaemon(True)
         #    worker.start()
 
         for frame in range(self.number_of_frames):
-            #queue.put(frame)
+            # queue.put(frame)
             self.__get_hydrogen_bonds_in_frame__(triplets=triplets, frame=frame)
 
-        #queue.join()
+        # queue.join()
 
         # threads = []
         # for frame in range(self.number_of_frames):
@@ -286,11 +286,15 @@ class HydrogenBonds(object):
         for index, atom in enumerate(iter(self.donor_atoms + self.acceptors)):
             index_dictionary[atom.structure_file_index] = index
 
-        matrices = []
+        pool = ThreadPool(processes=self.core_units)
+        matrices = pool.starmap(self.__get_hydrogen_bond_matrix_in_frame__,
+                                zip(itertools.repeat(index_dictionary, times=self.number_of_frames),
+                                    iter(range(self.number_of_frames))))
+        pool.close()
 
-        for frame in range(self.number_of_frames):
-            matrix = self.__get_hydrogen_bond_matrix_in_frame__(index_dictionary=index_dictionary, frame=frame)
-            matrices.append(matrix)
+        # for frame in range(self.number_of_frames):
+        #    matrix = self.__get_hydrogen_bond_matrix_in_frame__(index_dictionary=index_dictionary, frame=frame)
+        #    matrices.append(matrix)
 
         return np.array(matrices)
 
