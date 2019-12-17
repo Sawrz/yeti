@@ -324,28 +324,28 @@ class HydrogenBondRepresentationMethodWithCustomClassTestCase(HydrogenBondMethod
 
         self.hydrogen_bonds.calculate_hydrogen_bonds(distance_cutoff=0.25, angle_cutoff=2.0)
 
-        first_frame = np.zeros((4, 4), dtype=np.int8)
-        first_frame[0, 2] = 1
-        first_frame[2, 0] = 1
-        first_frame[1, 2] = 1
-        first_frame[2, 1] = 1
-        first_frame[1, 3] = 1
-        first_frame[3, 1] = 1
+        first_frame = np.zeros((2, 2), dtype=np.int8)
+        first_frame[0, 0] = 1
+        first_frame[0, 1] = 1
+        first_frame[1, 1] = 1
 
-        second_frame = np.zeros((4, 4), dtype=np.int8)
-        second_frame[1, 2] = 1
-        second_frame[2, 1] = 1
+        second_frame = np.zeros((2, 2), dtype=np.int8)
+        second_frame[0, 1] = 1
 
-        third_frame = np.zeros((4, 4), dtype=np.int8)
-        third_frame[1, 2] = 1
-        third_frame[2, 1] = 1
+        third_frame = np.zeros((2, 2), dtype=np.int8)
+        third_frame[0, 1] = 1
 
         self.exp = np.array([first_frame, second_frame, third_frame])
 
     def test_get_hydrogen_bond_matrix_in_frame(self):
-        index_dictionary = {atom.structure_file_index: i for i, atom in
-                            enumerate((self.donor_atom_01, self.donor_atom_02, self.acceptor_01, self.acceptor_02))}
-        res = self.hydrogen_bonds.__get_hydrogen_bond_matrix_in_frame__(index_dictionary=index_dictionary, frame=0)
+        index_dictionary_donor_atoms = {self.donor_atom_01.structure_file_index: 0,
+                                        self.donor_atom_02.structure_file_index: 1}
+        index_dictionary_acceptors = {self.acceptor_01.structure_file_index: 0,
+                                      self.acceptor_02.structure_file_index: 1}
+
+        res = self.hydrogen_bonds.__get_hydrogen_bond_matrix_in_frame__(
+            index_dictionary_donor_atoms=index_dictionary_donor_atoms,
+            index_dictionary_acceptors=index_dictionary_acceptors, frame=0)
 
         npt.assert_array_equal(self.exp[0], res)
 

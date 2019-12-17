@@ -255,27 +255,30 @@ class HydrogenBonds(object):
         print('Getting Hydrogen Bonds...')
         self.__get_hydrogen_bonds__(triplets=triplets)
 
-    def __get_hydrogen_bond_matrix_in_frame__(self, index_dictionary, frame):
+    def __get_hydrogen_bond_matrix_in_frame__(self, index_dictionary_donor_atoms, index_dictionary_acceptors, frame):
         # REMARK: the matrix in frame methods supports onlt atoms which have a max 256 donor or acceptor slots.
         # From a scientific point of view, that should be more than enough!
 
-        self.ensure_data_type.ensure_dict(parameter=index_dictionary, parameter_name='index_dictionary')
+        # TODO: add type unit tests
+        self.ensure_data_type.ensure_dict(parameter=index_dictionary_donor_atoms,
+                                          parameter_name='index_dictionary_donor_atoms')
+        self.ensure_data_type.ensure_dict(parameter=index_dictionary_acceptors,
+                                          parameter_name='index_dictionary_acceptors')
         self.ensure_data_type.ensure_integer(parameter=frame, parameter_name='frame')
 
-        matrix_dim = len(index_dictionary.keys())
-        hydrogen_bond_matrix = np.zeros((matrix_dim, matrix_dim), dtype=np.int8)
+        hydrogen_bond_matrix = np.zeros((len(index_dictionary_acceptors.keys()), len(index_dictionary_donor_atoms.keys())), dtype=np.int8)
 
         for acceptor in self.acceptors:
             hydrogen_bond_partners = acceptor.hydrogen_bond_partners[self._system_name][frame]
 
             if len(hydrogen_bond_partners) > 0:
-                acceptor_index = index_dictionary[acceptor.structure_file_index]
+                acceptor_index = index_dictionary_acceptors[acceptor.structure_file_index]
 
                 for hydrogen_bond_partner in hydrogen_bond_partners:
-                    hydrogen_bond_partner_index = index_dictionary[hydrogen_bond_partner.structure_file_index]
+                    hydrogen_bond_partner_index = index_dictionary_donor_atoms[
+                        hydrogen_bond_partner.structure_file_index]
 
                     hydrogen_bond_matrix[acceptor_index][hydrogen_bond_partner_index] += 1
-                    hydrogen_bond_matrix[hydrogen_bond_partner_index][acceptor_index] += 1
 
             if np.any(hydrogen_bond_matrix > 1):
                 raise HydrogenBondsException(
@@ -287,13 +290,18 @@ class HydrogenBonds(object):
         # TODO: make use multi thread
         # TODO: use only donor atoms and acceptors for matrix
 
-        index_dictionary = {}
-        for index, atom in enumerate(iter(self.donor_atoms + self.acceptors)):
-            index_dictionary[atom.structure_file_index] = index
+        index_dictionary_donor_atoms = {}
+        for index, atom in enumerate(self.donor_atoms):
+            index_dictionary_donor_atoms[atom.structure_file_index] = index
+
+        index_dictionary_acceptors = {}
+        for index, atom in enumerate(self.acceptors):
+            index_dictionary_acceptors[atom.structure_file_index] = index
 
         pool = ThreadPool(processes=self.core_units)
         matrices = pool.starmap(self.__get_hydrogen_bond_matrix_in_frame__,
-                                zip(itertools.repeat(index_dictionary, times=self.number_of_frames),
+                                zip(itertools.repeat(index_dictionary_donor_atoms, times=self.number_of_frames),
+                                    itertools.repeat(index_dictionary_acceptors, times=self.number_of_frames),
                                     iter(range(self.number_of_frames))))
         pool.close()
 
