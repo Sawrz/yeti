@@ -19,7 +19,7 @@ idna==2.7
 importlib-metadata==0.18
 importlib-resources==1.0.2
 invoke==0.11.1
-mdtraj==1.9.3
+#mdtraj==1.9.3
 more-itertools==4.2.0
 ndebug==0.1.0
 nodeenv==1.3.3

@@ -70,6 +70,31 @@ class TwoAtomsMolecule(object):
 
         return tuple(atoms)
 
+    def __get_atom_id__(self, name, residue_id):
+        self.ensure_data_type.ensure_string(parameter=name, parameter_name='name')
+        self.ensure_data_type.ensure_integer(parameter=residue_id, parameter_name='residue_id')
+
+        atom_index = np.where(np.array(self.residues[residue_id].sequence) == name)[0]
+
+        if len(atom_index) == 0:
+            raise BioMoleculeException('Atom does not exist in this residue.')
+        elif len(atom_index) > 1:
+            raise BioMoleculeException(
+                'Atom names are not distinguishable. Check your naming or contact the developer.')
+        else:
+            return residue_id, atom_index[0]
+
+    def __get_atom_ids__(self, atom_names, residue_ids):
+        self.ensure_data_type.ensure_tuple(parameter=atom_names, parameter_name='atom_names')
+        self.ensure_data_type.ensure_tuple(parameter=residue_ids, parameter_name='residue_ids')
+
+        atom_list = []
+
+        for atom_name, residue_id in zip(atom_names, residue_ids):
+            atom_list.append(self.__get_atom_id__(name=atom_name, residue_id=residue_id))
+
+        return tuple(atom_list)
+
     def get_distance(self, atom_01_pos, atom_02_pos, store_result=True, opt=True):
         # TODO: ensure it's a tuple of integers
         self.ensure_data_type.ensure_tuple(parameter=atom_01_pos, parameter_name='atom_01_pos')
@@ -112,6 +137,7 @@ class ThreeAtomsMolecule(TwoAtomsMolecule):
             return angles
 
 
+# TODO: find a more representative name
 class FourAtomsPlusMolecule(ThreeAtomsMolecule):
     def __init__(self, *args, **kwargs):
         super(FourAtomsPlusMolecule, self).__init__(*args, **kwargs)
@@ -188,33 +214,9 @@ class FourAtomsPlusMolecule(ThreeAtomsMolecule):
             raise MoleculeException('Unknown representation style!')
 
 
+# TODO: really necessary?
 class BioMolecule(FourAtomsPlusMolecule):
     def __init__(self, *args, **kwargs):
         super(BioMolecule, self).__init__(*args, **kwargs)
         self.ensure_data_type.exception_class = MoleculeException
         self.dictionary = None
-
-    def __get_atom_id__(self, name, residue_id):
-        self.ensure_data_type.ensure_string(parameter=name, parameter_name='name')
-        self.ensure_data_type.ensure_integer(parameter=residue_id, parameter_name='residue_id')
-
-        atom_index = np.where(np.array(self.residues[residue_id].sequence) == name)[0]
-
-        if len(atom_index) == 0:
-            raise BioMoleculeException('Atom does not exist in this residue.')
-        elif len(atom_index) > 1:
-            raise BioMoleculeException(
-                'Atom names are not distinguishable. Check your naming or contact the developer.')
-        else:
-            return residue_id, atom_index[0]
-
-    def __get_atom_ids__(self, atom_names, residue_ids):
-        self.ensure_data_type.ensure_tuple(parameter=atom_names, parameter_name='atom_names')
-        self.ensure_data_type.ensure_tuple(parameter=residue_ids, parameter_name='residue_ids')
-
-        atom_list = []
-
-        for atom_name, residue_id in zip(atom_names, residue_ids):
-            atom_list.append(self.__get_atom_id__(name=atom_name, residue_id=residue_id))
-
-        return tuple(atom_list)
