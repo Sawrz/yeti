@@ -55,6 +55,7 @@ class Angle(Metric):
         if legacy:
             return np.arccos((u * v).sum(-1), out=out)
         else:
+            # TODO: check if another norm necessary
             cos_angles = (u[:, :] * v[:, :]).sum(axis=2) / (np.linalg.norm(u, axis=2) * np.linalg.norm(v, axis=2))
             cos_angles = np.round(cos_angles, decimals=6)
 

@@ -26,15 +26,16 @@ class WaterTestCase(BlueprintTestCase):
 
         # create box information dictionary
         box_information = dict(unit_cell_angles=np.array([[90, 90, 90], [90, 90, 90]], dtype=np.float32),
-                               unit_cell_vectors=np.array(
-                                   [[[1, 0, 0], [0, 1, 0], [0, 0, 1]], [[1, 0, 0], [0, 1, 0], [0, 0, 1]]],
-                                   dtype=np.float32))
+                                    unit_cell_vectors=np.array(
+                                        [[[1, 0, 0], [0, 1, 0], [0, 0, 1]], [[1, 0, 0], [0, 1, 0], [0, 0, 1]]],
+                                        dtype=np.float32))
 
         self.water = Water(residue=self.residue, periodic=True, box_information=box_information)
 
 
 class TestWaterStandardMethods(WaterTestCase):
     def test_init(self):
+        # TODO: check for other parameters based on inheritance
         self.assertTrue(self.water.residue, self.residue)
         self.assertEqual(self.water._internal_id, 0)
         self.assertEqual(self.water._structure_file_id, 1)
