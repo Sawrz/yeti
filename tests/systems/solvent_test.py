@@ -49,8 +49,10 @@ class SolventTestCase(BlueprintTestCase):
                                    dtype=np.float32))
 
         self.residues = (residue_01, residue_02)
-        self.water_01 = Water(residue=residue_01, periodic=True, box_information=box_information)
-        self.water_02 = Water(residue=residue_02, periodic=True, box_information=box_information)
+        self.water_01 = Water(residue=residue_01, molecule_name=residue_01.name, periodic=True,
+                              box_information=box_information)
+        self.water_02 = Water(residue=residue_02, molecule_name=residue_02.name, periodic=True,
+                              box_information=box_information)
 
         self.solvent = Solvent(solvent_molecules=(self.water_01, self.water_02), solvent_name='H2O',
                                periodic=True, box_information=box_information)

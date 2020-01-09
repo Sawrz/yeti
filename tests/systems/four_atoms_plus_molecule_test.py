@@ -17,12 +17,18 @@ class FourAtomsPlusMoleculeTestCase(TwoAtomsMoleculeTestCase):
 
         self.simulation_information = dict(number_of_frames=3)
 
-        self.additional_atom = Atom(structure_file_index=5, subsystem_index=3, name='D',
-                                    xyz_trajectory=np.array([[0.2, 0.4, 0.8], [0.3, 0.7, 0.5], [0.4, 0.7, 0.3]]))
-        self.additional_atom.set_residue(residue=self.residue_02)
+        self.additional_atom_01 = Atom(structure_file_index=5, subsystem_index=3, name='D',
+                                       xyz_trajectory=np.array([[0.2, 0.4, 0.8], [0.3, 0.7, 0.5], [0.4, 0.7, 0.3]]))
+        self.additional_atom_01.set_residue(residue=self.residue_02)
+
+        self.additional_atom_02 = Atom(structure_file_index=5, subsystem_index=3, name='Z',
+                                       xyz_trajectory=np.array([[0.9, 0.9, 0.9], [0.9, 0.9, 0.9], [0.9, 0.9, 0.9]]))
+        self.additional_atom_02.set_residue(residue=self.residue_02)
+        self.additional_atom_02.update_acceptor_state(is_acceptor=True, acceptor_slots=1)
 
         self.residue_02.definalize()
-        self.residue_02.add_atom(atom=self.additional_atom)
+        self.residue_02.add_atom(atom=self.additional_atom_01)
+        self.residue_02.add_atom(atom=self.additional_atom_02)
         self.residue_02.finalize()
 
         self.molecule = FourAtomsPlusMolecule(residues=self.residues, molecule_name=self.molecule_name,
@@ -73,11 +79,13 @@ class TestCalculateHydrogenBondMethods(FourAtomsPlusMoleculeTestCase):
         self.molecule.calculate_hydrogen_bonds(distance_cutoff=0.25, angle_cutoff=2.0)
 
         self.assertIsNone(self.donor.hydrogen_bond_partners)
-        self.assertIsNone(self.additional_atom.hydrogen_bond_partners)
+        self.assertIsNone(self.additional_atom_01.hydrogen_bond_partners)
         self.assertDictEqual({self.molecule_name: [[self.acceptor], [], []], 'test_system': [[], [], []]},
                              self.donor_atom.hydrogen_bond_partners)
         self.assertDictEqual({self.molecule_name: [[self.donor_atom], [], []], 'test_system': [[], [], []]},
                              self.acceptor.hydrogen_bond_partners)
+        self.assertDictEqual({self.molecule_name: [[], [], []]},
+                             self.additional_atom_02.hydrogen_bond_partners)
 
 
 class TestHydrogenBondMethodsCalculated(FourAtomsPlusMoleculeTestCase):
@@ -116,9 +124,8 @@ class TestHydrogenBondMethodsCalculated(FourAtomsPlusMoleculeTestCase):
 
     def test_get_hydrogen_bonds_matrix(self):
         res = self.molecule.get_hydrogen_bonds(representation_style='matrix')
-        exp_first_frame = np.zeros((4, 4))
-        exp_first_frame[1, 2] = 1
-        exp_first_frame[2, 1] = 1
+        exp_first_frame = np.zeros((2, 1))
+        exp_first_frame[0, 0] = 1
 
         npt.assert_array_equal(
             np.array([exp_first_frame, np.zeros_like(exp_first_frame), np.zeros_like(exp_first_frame)]), res)

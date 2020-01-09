@@ -26,11 +26,12 @@ class WaterTestCase(BlueprintTestCase):
 
         # create box information dictionary
         box_information = dict(unit_cell_angles=np.array([[90, 90, 90], [90, 90, 90]], dtype=np.float32),
-                                    unit_cell_vectors=np.array(
-                                        [[[1, 0, 0], [0, 1, 0], [0, 0, 1]], [[1, 0, 0], [0, 1, 0], [0, 0, 1]]],
-                                        dtype=np.float32))
+                               unit_cell_vectors=np.array(
+                                   [[[1, 0, 0], [0, 1, 0], [0, 0, 1]], [[1, 0, 0], [0, 1, 0], [0, 0, 1]]],
+                                   dtype=np.float32))
 
-        self.water = Water(residue=self.residue, periodic=True, box_information=box_information)
+        self.water = Water(residue=self.residue, molecule_name=self.residue.name, periodic=True,
+                           box_information=box_information)
 
 
 class TestWaterStandardMethods(WaterTestCase):
@@ -68,7 +69,30 @@ class WaterExceptionsTestCase(TwoAtomsMoleculeExceptionsTestCase):
 class TestWaterStandardMethodsExceptions(WaterExceptionsTestCase):
     def test_init_residue_wrong_data_type(self):
         with self.assertRaises(self.exception) as context:
-            self.molecule(residue=4.2)
+            self.molecule(residue=4.2, molecule_name='Bob', periodic=True, box_information=self.box_information)
 
         desired_msg = self.create_data_type_exception_messages(parameter_name='residue', data_type_name='Residue')
+        self.assertEqual(desired_msg, str(context.exception))
+
+    def test_init_molecule_name_wrong_data_type(self):
+        with self.assertRaises(self.exception) as context:
+            self.molecule(residue=self.residue_01, molecule_name=42, periodic=True,
+                          box_information=self.box_information)
+
+        desired_msg = self.create_data_type_exception_messages(parameter_name='molecule_name', data_type_name='str')
+        self.assertEqual(desired_msg, str(context.exception))
+
+    def test_init_box_information_wrong_data_type(self):
+        with self.assertRaises(self.exception) as context:
+            self.molecule(residue=self.residue_01, molecule_name=self.molecule_name, box_information=[], periodic=True)
+
+        desired_msg = self.create_data_type_exception_messages(parameter_name='box_information', data_type_name='dict')
+        self.assertEqual(desired_msg, str(context.exception))
+
+    def test_init_periodic_wrong_data_type(self):
+        with self.assertRaises(self.exception) as context:
+            self.molecule(residue=self.residue_01, molecule_name=self.molecule_name,
+                          box_information=self.box_information, periodic='No')
+
+        desired_msg = self.create_data_type_exception_messages(parameter_name='periodic', data_type_name='bool')
         self.assertEqual(desired_msg, str(context.exception))

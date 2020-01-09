@@ -525,16 +525,30 @@ class TestHydrogenBondRepresentationMethodExceptions(HydrogenBondExceptionsTestC
 
         self.index_dictionary = {atom.structure_file_index: atom.subsystem_index for atom in self.atoms}
 
-    def test_get_hydrogen_bond_matrix_in_frame_index_dictionary_wrong_data_type(self):
+    def test_get_hydrogen_bond_matrix_in_frame_index_dictionary_acceptors_wrong_data_type(self):
         with self.assertRaises(self.exception) as context:
-            self.hydrogen_bonds.__get_hydrogen_bond_matrix_in_frame__(index_dictionary=[], frame=0)
+            self.hydrogen_bonds.__get_hydrogen_bond_matrix_in_frame__(index_dictionary_acceptors=[],
+                                                                      index_dictionary_donor_atoms=self.index_dictionary,
+                                                                      frame=0)
 
-        desired_msg = self.create_data_type_exception_messages(parameter_name='index_dictionary', data_type_name='dict')
+        desired_msg = self.create_data_type_exception_messages(parameter_name='index_dictionary_acceptors',
+                                                               data_type_name='dict')
+        self.assertEqual(desired_msg, str(context.exception))
+
+    def test_get_hydrogen_bond_matrix_in_frame_index_dictionary_donor_atoms_wrong_data_type(self):
+        with self.assertRaises(self.exception) as context:
+            self.hydrogen_bonds.__get_hydrogen_bond_matrix_in_frame__(index_dictionary_acceptors=self.index_dictionary,
+                                                                      index_dictionary_donor_atoms=[], frame=0)
+
+        desired_msg = self.create_data_type_exception_messages(parameter_name='index_dictionary_donor_atoms',
+                                                               data_type_name='dict')
         self.assertEqual(desired_msg, str(context.exception))
 
     def test_get_hydrogen_bond_matrix_in_frame_frame_wrong_data_type(self):
         with self.assertRaises(self.exception) as context:
-            self.hydrogen_bonds.__get_hydrogen_bond_matrix_in_frame__(index_dictionary=self.index_dictionary, frame=0.)
+            self.hydrogen_bonds.__get_hydrogen_bond_matrix_in_frame__(index_dictionary_acceptors=self.index_dictionary,
+                                                                      index_dictionary_donor_atoms=self.index_dictionary,
+                                                                      frame=0.)
 
         desired_msg = self.create_data_type_exception_messages(parameter_name='frame', data_type_name='int')
         self.assertEqual(desired_msg, str(context.exception))
