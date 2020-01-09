@@ -1,8 +1,8 @@
 class Water(object):
     def __init__(self):
-        self.covalent_bonds = (('OW', 'HW1'), ('OW', 'HW2'))
+        self.covalent_bonds = (('O', 'H1'), ('O', 'H2'))
 
-        self.donors_dictionary = {'HW1': 1,
-                                  'HW2': 1}
+        self.donors_dictionary = {'H1': 1,
+                                  'H2': 1}
 
-        self.acceptors_dictionary = {'OW': 1}
+        self.acceptors_dictionary = {'O': 2}
