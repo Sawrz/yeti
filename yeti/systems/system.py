@@ -1,11 +1,14 @@
+import gc
 from types import GeneratorType
 
 import mdtraj as md
 import numpy as np
 
 from yeti.dictionaries.molecules.biomolecules import RNA as RNADict
+from yeti.dictionaries.molecules.solvents import Water as WaterDict
 from yeti.systems.building_blocks import Atom, Residue
 from yeti.systems.molecules.nucleic_acids import RNA
+from yeti.systems.molecules.solvents import Water
 
 
 class System(object):
@@ -209,6 +212,7 @@ class System(object):
             return self.__select_residues_simple__(residue_ids=residue_ids)
 
     def select_rna(self, residue_ids, name):
+        # TODO: add multi thread
         rna_dict = RNADict()
         residues = self.__select_residues__(residue_ids=residue_ids)
 
@@ -249,3 +253,33 @@ class System(object):
         self.molecules[name] = RNA(residues=residues, molecule_name=name, periodic=self.periodic,
                                    box_information=dict(unit_cell_angles=self.unitcell_angles,
                                                         unit_cell_vectors=self.unitcell_vectors))
+
+    def select_water(self, residue_ids):
+        # TODO: add multi thread
+        water_dict = WaterDict()
+        residues = self.__select_residues__(residue_ids=residue_ids)
+
+        for residue_id, residue in enumerate(residues):
+            self.__create_inner_covalent_bonds__(residue=residue, bond_dict=water_dict.covalent_bonds)
+            self.__update_electronic_state__(residue=residue, electron_dict=water_dict.acceptors_dictionary,
+                                             is_acceptor=True)
+            self.__update_electronic_state__(residue=residue, electron_dict=water_dict.donors_dictionary, is_donor=True)
+
+            name = 'H2O_{water_id:06d}'.format(water_id=residue_id)
+
+            self.molecules[name] = Water(residue=residue, molecule_name=name, periodic=self.periodic,
+                                         box_information=dict(unit_cell_angles=self.unitcell_angles,
+                                                              unit_cell_vectors=self.unitcell_vectors))
+
+    def purge_molecule(self, name):
+        self.molecules.pop(name)
+        gc.collect()
+
+    def purge_all_water(self):
+        # TODO: add multi thread
+
+        keys_for_deletion = [key for key in self.molecules.keys() if
+                             'H2O' in key and type(self.molecules[key]) is Water]
+
+        for key in keys_for_deletion:
+            self.purge_molecule(name=key)

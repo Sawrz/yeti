@@ -11,7 +11,6 @@ from tests.blueprints_test import BlueprintTestCase
 class SystemTestCase(BlueprintTestCase):
     def setUp(self) -> None:
         from yeti.systems.system import System
-        from yeti.dictionaries.molecules.biomolecules import RNA
 
         test_data_path = os.path.dirname(os.path.abspath(__file__))
         test_data_path = os.path.split(test_data_path)[0]
@@ -22,7 +21,6 @@ class SystemTestCase(BlueprintTestCase):
 
         self.reference_trajectory = md.load(filename_or_filenames=self.xtc_file_path, top=self.gro_file_path)
         self.system = System(name='My System')
-        self.molecule_dict = RNA()
 
 
 class TestStandardMethods(SystemTestCase):
@@ -171,6 +169,8 @@ class TestCreateBuildingBlockMethodsSimpleLoad(SimpleTrajectoryLoadTestCase):
 
 class TestCreateBondsSimpleLoad(SimpleTrajectoryLoadTestCase):
     def setUp(self) -> None:
+        from yeti.dictionaries.molecules.biomolecules import RNA
+
         super(TestCreateBondsSimpleLoad, self).setUp()
 
         self.residue_01 = self.system.__create_residue__(
@@ -179,6 +179,8 @@ class TestCreateBondsSimpleLoad(SimpleTrajectoryLoadTestCase):
         self.residue_02 = self.system.__create_residue__(
             reference_residue=self.reference_trajectory.topology.residue(1), subsystem_index=1,
             atom_shifting_index=31)
+
+        self.molecule_dict = RNA()
 
     def test_create_inner_covalent_bonds(self):
         self.system.__create_inner_covalent_bonds__(residue=self.residue_02,
@@ -220,8 +222,11 @@ class TestCreateBondsSimpleLoad(SimpleTrajectoryLoadTestCase):
 
 class TestElectronicStatesSimpleLoad(SimpleTrajectoryLoadTestCase):
     def setUp(self) -> None:
+        from yeti.dictionaries.molecules.biomolecules import RNA
+
         super(TestElectronicStatesSimpleLoad, self).setUp()
 
+        self.molecule_dict = RNA()
         self.residue = self.system.__create_residue__(reference_residue=self.reference_trajectory.topology.residue(0),
                                                       subsystem_index=0, atom_shifting_index=0)
 
@@ -358,6 +363,9 @@ class TestSelectRnaSimpleLoad(SimpleTrajectoryLoadTestCase):
         self.atoms_res_00 = self.system.molecules['some_virus_rna'].residues[0].atoms
         self.atoms_res_01 = self.system.molecules['some_virus_rna'].residues[1].atoms
         self.atoms_res_02 = self.system.molecules['some_virus_rna'].residues[2].atoms
+
+    def test_keys(self):
+        self.assertTupleEqual(tuple(self.system.molecules.keys()), ('some_virus_rna',))
 
     def test_covalent_bonds(self):
         # adenine residue 00
@@ -771,8 +779,116 @@ class TestSelectRnaSimpleLoad(SimpleTrajectoryLoadTestCase):
     def test_rna_object(self):
         from yeti.systems.molecules.nucleic_acids import RNA
 
-        self.assertListEqual(list(self.system.molecules.keys()), ['some_virus_rna'])
         self.assertEqual(type(self.system.molecules['some_virus_rna']), RNA)
+
+
+class TestSelectWaterSimpleLoad(SimpleTrajectoryLoadTestCase):
+    def setUp(self) -> None:
+        super(TestSelectWaterSimpleLoad, self).setUp()
+
+        self.system.select_water(residue_ids=(10, 11, 12))
+
+        self.atoms_res_00 = self.system.molecules['H2O_000000'].residue.atoms
+        self.atoms_res_01 = self.system.molecules['H2O_000001'].residue.atoms
+        self.atoms_res_02 = self.system.molecules['H2O_000002'].residue.atoms
+
+    def test_keys(self):
+        self.assertTupleEqual(tuple(self.system.molecules.keys()), ('H2O_000000', 'H2O_000001', 'H2O_000002'))
+
+    def test_covalent_bonds(self):
+        # first H2O
+        self.assertTupleEqual(self.atoms_res_00[0].covalent_bond_partners, (self.atoms_res_00[1], self.atoms_res_00[2]))
+        self.assertTupleEqual(self.atoms_res_00[1].covalent_bond_partners, (self.atoms_res_00[0],))
+        self.assertTupleEqual(self.atoms_res_00[2].covalent_bond_partners, (self.atoms_res_00[0],))
+
+        # second H2O
+        self.assertTupleEqual(self.atoms_res_01[0].covalent_bond_partners, (self.atoms_res_01[1], self.atoms_res_01[2]))
+        self.assertTupleEqual(self.atoms_res_01[1].covalent_bond_partners, (self.atoms_res_01[0],))
+        self.assertTupleEqual(self.atoms_res_01[2].covalent_bond_partners, (self.atoms_res_01[0],))
+
+        # third H2O
+        self.assertTupleEqual(self.atoms_res_02[0].covalent_bond_partners, (self.atoms_res_02[1], self.atoms_res_02[2]))
+        self.assertTupleEqual(self.atoms_res_02[1].covalent_bond_partners, (self.atoms_res_02[0],))
+        self.assertTupleEqual(self.atoms_res_02[2].covalent_bond_partners, (self.atoms_res_02[0],))
+
+    def test_electronic_states(self):
+        # first H2O
+        # acceptors
+        self.assertTrue(self.atoms_res_00[0].is_acceptor)
+        self.assertEqual(self.atoms_res_00[0].acceptor_slots, 2)
+        self.assertFalse(self.atoms_res_00[0].is_donor_atom)
+        self.assertEqual(self.atoms_res_00[0].donor_slots, 0)
+
+        # donors
+        self.assertTrue(self.atoms_res_00[1].is_donor_atom)
+        self.assertEqual(self.atoms_res_00[1].donor_slots, 1)
+        self.assertFalse(self.atoms_res_00[1].is_acceptor)
+        self.assertEqual(self.atoms_res_00[1].acceptor_slots, 0)
+
+        self.assertTrue(self.atoms_res_00[2].is_donor_atom)
+        self.assertEqual(self.atoms_res_00[2].donor_slots, 1)
+        self.assertFalse(self.atoms_res_00[2].is_acceptor)
+        self.assertEqual(self.atoms_res_00[2].acceptor_slots, 0)
+
+        # second H2O
+        # acceptors
+        self.assertTrue(self.atoms_res_01[0].is_acceptor)
+        self.assertEqual(self.atoms_res_01[0].acceptor_slots, 2)
+        self.assertFalse(self.atoms_res_01[0].is_donor_atom)
+        self.assertEqual(self.atoms_res_01[0].donor_slots, 0)
+
+        # donors
+        self.assertTrue(self.atoms_res_01[1].is_donor_atom)
+        self.assertEqual(self.atoms_res_01[1].donor_slots, 1)
+        self.assertFalse(self.atoms_res_01[1].is_acceptor)
+        self.assertEqual(self.atoms_res_01[1].acceptor_slots, 0)
+
+        self.assertTrue(self.atoms_res_01[2].is_donor_atom)
+        self.assertEqual(self.atoms_res_01[2].donor_slots, 1)
+        self.assertFalse(self.atoms_res_01[2].is_acceptor)
+        self.assertEqual(self.atoms_res_01[2].acceptor_slots, 0)
+
+        # third H2O
+        # acceptors
+        self.assertTrue(self.atoms_res_02[0].is_acceptor)
+        self.assertEqual(self.atoms_res_02[0].acceptor_slots, 2)
+        self.assertFalse(self.atoms_res_02[0].is_donor_atom)
+        self.assertEqual(self.atoms_res_02[0].donor_slots, 0)
+
+        # donors
+        self.assertTrue(self.atoms_res_02[1].is_donor_atom)
+        self.assertEqual(self.atoms_res_02[1].donor_slots, 1)
+        self.assertFalse(self.atoms_res_02[1].is_acceptor)
+        self.assertEqual(self.atoms_res_02[1].acceptor_slots, 0)
+
+        self.assertTrue(self.atoms_res_02[2].is_donor_atom)
+        self.assertEqual(self.atoms_res_02[2].donor_slots, 1)
+        self.assertFalse(self.atoms_res_02[2].is_acceptor)
+        self.assertEqual(self.atoms_res_02[2].acceptor_slots, 0)
+
+    def test_water_object(self):
+        from yeti.systems.molecules.solvents import Water
+
+        for key in self.system.molecules.keys():
+            self.assertEqual(type(self.system.molecules[key]), Water)
+
+
+class TestPurgeMethods(SimpleTrajectoryLoadTestCase):
+    def setUp(self) -> None:
+        super(TestPurgeMethods, self).setUp()
+
+        self.system.select_rna(residue_ids=(0, 1, 4), name='some_virus_rna')
+        self.system.select_water(residue_ids=(10, 11, 12))
+
+    def test_purge_molecule(self):
+        self.system.purge_molecule(name='some_virus_rna')
+
+        self.assertTupleEqual(tuple(self.system.molecules.keys()), ('H2O_000000', 'H2O_000001', 'H2O_000002'))
+
+    def test_purge_all_water(self):
+        self.system.purge_all_water()
+
+        self.assertTupleEqual(tuple(self.system.molecules.keys()), ('some_virus_rna',))
 
 
 class TestMemoryEfficiencySimpleLoad(SimpleTrajectoryLoadTestCase):
@@ -807,14 +923,14 @@ class TestMemoryEfficiencySimpleLoad(SimpleTrajectoryLoadTestCase):
         # acceptor: A0 05'
         # donor atom: A0 H61
 
-        triplet = self.rna._hbonds.__build_triplet__(donor_atom=self.rna.residues[0].atoms[17], acceptor=self.rna.residues[0].atoms[0])
+        triplet = self.rna._hbonds.__build_triplet__(donor_atom=self.rna.residues[0].atoms[17],
+                                                     acceptor=self.rna.residues[0].atoms[0])
 
         self.assertTrue(self.rna.residues[0].atoms[0] is triplet.acceptor)
         self.assertTrue(self.rna.residues[0].atoms[17] is triplet.donor_atom)
 
         self.assertTrue(self.rna.residues[0].atoms[0].xyz_trajectory is triplet.acceptor.xyz_trajectory)
         self.assertTrue(self.rna.residues[0].atoms[17].xyz_trajectory is triplet.donor_atom.xyz_trajectory)
-
 
     def test_atoms_in_build_triplets(self):
         triplets = self.rna._hbonds.__build_triplets__(distance_cutoff=0.1, angle_cutoff=1.2)
@@ -839,6 +955,10 @@ class TestSelectorsIterLoad(IterTrajectoryLoadTestCase, TestSelectorsSimpleLoad)
 
 
 class TestSelectRnaIterLoad(IterTrajectoryLoadTestCase, TestSelectRnaSimpleLoad):
+    pass
+
+
+class TestSelectWaterIterLoad(IterTrajectoryLoadTestCase, TestSelectWaterSimpleLoad):
     pass
 
 
