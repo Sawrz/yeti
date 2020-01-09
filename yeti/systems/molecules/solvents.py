@@ -1,22 +1,19 @@
-import yeti.dictionaries.molecules.solvents as solvent_dictionaries
 from .molecules import ThreeAtomsMolecule, MoleculeException, FourAtomsPlusMolecule
 from ..building_blocks import EnsureDataTypes
 
 
 class Water(ThreeAtomsMolecule):
     # TODO: Get rid off residues or residue parameter
-    def __init__(self, residue, *args, **kwargs):
+    def __init__(self, residue, molecule_name, *args, **kwargs):
         # TODO: add right exception class
         self.ensure_data_type = EnsureDataTypes(exception_class=MoleculeException)
         self.ensure_data_type.ensure_residue(parameter=residue, parameter_name='residue')
 
-        super(Water, self).__init__(residues=(residue,), molecule_name=residue.name, *args, **kwargs)
+        super(Water, self).__init__(residues=(residue,), molecule_name=molecule_name, *args, **kwargs)
 
         self.residue = residue
         self._internal_id = self.residue.subsystem_index
         self._structure_file_id = self.residue.structure_file_index
-
-        self.dictionary = solvent_dictionaries.Water()
 
     def get_distance(self):
         atom_positions = self.__get_atom_ids__(atom_names=('HW1', 'HW2'),
@@ -30,6 +27,7 @@ class Water(ThreeAtomsMolecule):
 
 
 # TODO: Avoid inheritage of FourAtomsPlusMolecule class
+# TODO: think if class really necessary (maybe the methods are more useful in System class)
 class Solvent(FourAtomsPlusMolecule):
     def __init__(self, solvent_molecules, solvent_name, *args, **kwargs):
         self.molecules = solvent_molecules
