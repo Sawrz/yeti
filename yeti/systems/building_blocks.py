@@ -191,7 +191,7 @@ class Atom(object):
         self.acceptor_slots = acceptor_slots
         self.__reset_hydrogen_bond_partners__(is_hydrogen_bond_active=is_acceptor)
 
-    def __update_hydrogen_bond_partner__(self, atom, frame, system_name):
+    def __update_hydrogen_bond_partner__(self, atom, frame, system_name, add):
         # TODO: merge __update_hydrogen_bond_partner__ and __update_covalent_bond__ into one method
 
         if type(atom) is not Atom:
@@ -199,6 +199,7 @@ class Atom(object):
 
         self.ensure_data_type.ensure_integer(frame, 'frame')
         self.ensure_data_type.ensure_string(system_name, 'system_name')
+        self.ensure_data_type.ensure_boolean(add, 'add')
 
         if frame < 0:
             raise AtomException('Frame has to be a positive integer.')
@@ -206,13 +207,17 @@ class Atom(object):
         if system_name not in self.hydrogen_bond_partners.keys():
             raise AtomException('Subsystem does not exist. Create it first!')
 
-        if atom.structure_file_index == self.structure_file_index:
-            raise AtomException('Atom can not have a covalent bond with itself.')
+        if add:
+            if atom.structure_file_index == self.structure_file_index:
+                raise AtomException('Atom can not have a covalent bond with itself.')
 
-        if atom in self.hydrogen_bond_partners[system_name][frame]:
-            raise AtomWarning('Hydrogen bond already exists. Skipping...')
+            if atom in self.hydrogen_bond_partners[system_name][frame]:
+                raise AtomWarning('Hydrogen bond already exists. Skipping...')
 
-        self.hydrogen_bond_partners[system_name][frame].append(atom)
+            self.hydrogen_bond_partners[system_name][frame].append(atom)
+        else:
+            index = np.where(np.array(self.hydrogen_bond_partners[system_name][frame]) == atom)[0][0]
+            del self.hydrogen_bond_partners[system_name][frame][index]
 
     def add_hydrogen_bond_partner(self, frame, atom, system_name):
         if self.hydrogen_bond_partners is None:
@@ -220,8 +225,15 @@ class Atom(object):
         elif atom.hydrogen_bond_partners is None:
             raise AtomException('Parameter atom is neither acceptor nor a donor atom. Update its state first!')
         else:
-            self.__update_hydrogen_bond_partner__(atom=atom, frame=frame, system_name=system_name)
-            atom.__update_hydrogen_bond_partner__(atom=self, frame=frame, system_name=system_name)
+            self.__update_hydrogen_bond_partner__(atom=atom, frame=frame, system_name=system_name, add=True)
+            atom.__update_hydrogen_bond_partner__(atom=self, frame=frame, system_name=system_name, add=True)
+
+    def remove_hydrogen_bond_partner(self, frame, atom, system_name):
+        if self.hydrogen_bond_partners is None:
+            raise AtomException('This atom is neither acceptor nor a donor atom. Update its state first!')
+
+        self.__update_hydrogen_bond_partner__(frame=frame, atom=atom, system_name=system_name, add=False)
+        atom.__update_hydrogen_bond_partner__(frame=frame, atom=self, system_name=system_name, add=False)
 
     def purge_hydrogen_bond_partner_history(self, system_name):
         self.ensure_data_type.ensure_string(system_name, 'system_name')

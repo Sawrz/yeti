@@ -143,30 +143,44 @@ class TestHydrogenBondMethods(AtomTestCase):
         self.assertListEqual(self.atom_01.hydrogen_bond_partners['subsystem'], [[], []])
 
     def test_update_hydrogen_bond_partner_donor(self):
-        self.atom_01.__update_hydrogen_bond_partner__(atom=self.atom_02, frame=1, system_name='subsystem')
+        self.atom_01.__update_hydrogen_bond_partner__(atom=self.atom_02, frame=1, system_name='subsystem', add=True)
 
         self.assertDictEqual(self.atom_01.hydrogen_bond_partners, dict(subsystem=[[], [self.atom_02]]))
 
     def test_update_hydrogen_bond_partner_acceptor(self):
-        self.atom_02.__update_hydrogen_bond_partner__(atom=self.atom_01, frame=1, system_name='subsystem')
+        self.atom_02.__update_hydrogen_bond_partner__(atom=self.atom_01, frame=1, system_name='subsystem', add=True)
 
         self.assertDictEqual(self.atom_02.hydrogen_bond_partners, dict(subsystem=[[], [self.atom_01]]))
 
     def test_update_hydrogen_bond_partner_more_atoms(self):
         self.atom_03.add_system(system_name='subsystem')
 
-        self.atom_03.__update_hydrogen_bond_partner__(atom=self.atom_01, frame=1, system_name='subsystem')
-        self.atom_03.__update_hydrogen_bond_partner__(atom=self.atom_02, frame=1, system_name='subsystem')
+        self.atom_03.__update_hydrogen_bond_partner__(atom=self.atom_01, frame=1, system_name='subsystem', add=True)
+        self.atom_03.__update_hydrogen_bond_partner__(atom=self.atom_02, frame=1, system_name='subsystem', add=True)
 
         self.assertDictEqual(self.atom_01.hydrogen_bond_partners, dict(subsystem=[[], []]))
         self.assertDictEqual(self.atom_02.hydrogen_bond_partners, dict(subsystem=[[], []]))
         self.assertDictEqual(self.atom_03.hydrogen_bond_partners, dict(subsystem=[[], [self.atom_01, self.atom_02]]))
+
+    def test_update_hydrogen_bond_partner_remove(self):
+        self.atom_01.add_hydrogen_bond_partner(frame=0, atom=self.atom_02, system_name='subsystem')
+        self.atom_01.__update_hydrogen_bond_partner__(atom=self.atom_02, frame=0, system_name='subsystem', add=False)
+
+        self.assertDictEqual(self.atom_01.hydrogen_bond_partners, dict(subsystem=[[], []]))
+        self.assertDictEqual(self.atom_02.hydrogen_bond_partners, dict(subsystem=[[self.atom_01], []]))
 
     def test_add_hydrogen_bond_partner(self):
         self.atom_01.add_hydrogen_bond_partner(frame=0, atom=self.atom_02, system_name='subsystem')
 
         self.assertDictEqual(self.atom_01.hydrogen_bond_partners, dict(subsystem=[[self.atom_02], []]))
         self.assertDictEqual(self.atom_02.hydrogen_bond_partners, dict(subsystem=[[self.atom_01], []]))
+
+    def test_remove_hydrogen_bond_partner(self):
+        self.atom_01.add_hydrogen_bond_partner(frame=0, atom=self.atom_02, system_name='subsystem')
+        self.atom_01.remove_hydrogen_bond_partner(frame=0, atom=self.atom_02, system_name='subsystem')
+
+        self.assertDictEqual(self.atom_01.hydrogen_bond_partners, dict(subsystem=[[], []]))
+        self.assertDictEqual(self.atom_02.hydrogen_bond_partners, dict(subsystem=[[], []]))
 
     def test_purge_hydrogen_bond_partner_history_donor(self):
         self.atom_01.hydrogen_bond_partners['subsystem'][1].append(5)
@@ -415,44 +429,51 @@ class TestHydrogenBondMethodExceptions(AtomExceptionsTestCase):
 
     def test_update_hydrogen_bond_partner_atom_wrong_data_type(self):
         with self.assertRaises(self.exception) as context:
-            self.atom_01.__update_hydrogen_bond_partner__(atom=5, frame=1, system_name='subsystem')
+            self.atom_01.__update_hydrogen_bond_partner__(atom=5, frame=1, system_name='subsystem', add=True)
 
         desired_msg = self.create_data_type_exception_messages(parameter_name='atom', data_type_name='atom')
         self.assertEqual(desired_msg, str(context.exception))
 
     def test_update_hydrogen_bond_partner_frame_wrong_data_type(self):
         with self.assertRaises(self.exception) as context:
-            self.atom_01.__update_hydrogen_bond_partner__(atom=self.atom_02, frame='1', system_name='subsystem')
+            self.atom_01.__update_hydrogen_bond_partner__(atom=self.atom_02, frame='1', system_name='subsystem', add=True)
 
         desired_msg = self.create_data_type_exception_messages(parameter_name='frame', data_type_name='int')
         self.assertEqual(desired_msg, str(context.exception))
 
     def test_update_hydrogen_bond_partner_frame_negative(self):
         with self.assertRaises(self.exception) as context:
-            self.atom_01.__update_hydrogen_bond_partner__(atom=self.atom_02, frame=-1, system_name='subsystem')
+            self.atom_01.__update_hydrogen_bond_partner__(atom=self.atom_02, frame=-1, system_name='subsystem', add=True)
 
         desired_msg = 'Frame has to be a positive integer.'
         self.assertEqual(desired_msg, str(context.exception))
 
     def test_update_hydrogen_bond_partner_system_wrong_data_type(self):
         with self.assertRaises(self.exception) as context:
-            self.atom_01.__update_hydrogen_bond_partner__(atom=self.atom_02, frame=1, system_name=6.8)
+            self.atom_01.__update_hydrogen_bond_partner__(atom=self.atom_02, frame=1, system_name=6.8, add=True)
 
         desired_msg = self.create_data_type_exception_messages(parameter_name='system_name', data_type_name='str')
         self.assertEqual(desired_msg, str(context.exception))
 
     def test_update_hydrogen_bond_partner_system_not_exist(self):
         with self.assertRaises(self.exception) as context:
-            self.atom_01.__update_hydrogen_bond_partner__(atom=self.atom_02, frame=1, system_name='wrong')
+            self.atom_01.__update_hydrogen_bond_partner__(atom=self.atom_02, frame=1, system_name='wrong', add=True)
 
         desired_msg = 'Subsystem does not exist. Create it first!'
         self.assertEqual(desired_msg, str(context.exception))
 
+    def test_update_hydrogen_bond_partner_add_wrong_data_type(self):
+        with self.assertRaises(self.exception) as context:
+            self.atom_01.__update_hydrogen_bond_partner__(atom=self.atom_02, frame=1, system_name='subsystem', add=42)
+
+        desired_msg = self.create_data_type_exception_messages(parameter_name='add', data_type_name='bool')
+        self.assertEqual(desired_msg, str(context.exception))
+
     def test_update_hydrogen_bond_partner_bond_already_exists(self):
-        self.atom_01.__update_hydrogen_bond_partner__(atom=self.atom_02, frame=1, system_name='subsystem')
+        self.atom_01.__update_hydrogen_bond_partner__(atom=self.atom_02, frame=1, system_name='subsystem', add=True)
 
         with self.assertRaises(self.warning) as context:
-            self.atom_01.__update_hydrogen_bond_partner__(atom=self.atom_02, frame=1, system_name='subsystem')
+            self.atom_01.__update_hydrogen_bond_partner__(atom=self.atom_02, frame=1, system_name='subsystem', add=True)
 
         desired_msg = 'Hydrogen bond already exists. Skipping...'
         self.assertEqual(desired_msg, str(context.exception))
