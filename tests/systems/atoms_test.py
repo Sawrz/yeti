@@ -197,12 +197,12 @@ class TestHydrogenBondMethods(AtomTestCase):
 
 class AtomExceptionsTestCase(AtomTestCase, BlueprintExceptionsTestCase):
     def setUp(self) -> None:
-        from yeti.systems.building_blocks import AtomException, AtomWarning
+        from yeti.systems.building_blocks import AtomException
 
         super(AtomExceptionsTestCase, self).setUp()
 
         self.exception = AtomException
-        self.warning = AtomWarning
+        self.warning = Warning
 
 
 class TestStandardMethodExceptions(AtomExceptionsTestCase):
@@ -270,11 +270,11 @@ class TestIntraModuleConnectionMethodExceptions(AtomExceptionsTestCase):
         residue = Residue(subsystem_index=0, structure_file_index=1, name='RES')
         self.atom_01.set_residue(residue=residue)
 
-        with self.assertRaises(self.warning) as context:
+        with self.assertWarns(self.warning) as context:
             self.atom_01.set_residue(residue=residue)
 
         desired_msg = 'This atom belongs already to a residue. Changing relationship...'
-        self.assertEqual(desired_msg, str(context.exception))
+        self.assertEqual(desired_msg, str(context.warning))
 
     def test_add_system_wrong_data_type(self):
         with self.assertRaises(self.exception) as context:
@@ -302,11 +302,11 @@ class TestCovalentbondMethodsExceptions(AtomExceptionsTestCase):
     def test_update_covalent_bond_exists_already(self):
         self.atom_01.__update_covalent_bond__(atom=self.atom_02)
 
-        with self.assertRaises(self.warning) as context:
+        with self.assertWarns(self.warning) as context:
             self.atom_01.__update_covalent_bond__(atom=self.atom_02)
 
         desired_msg = 'Covalent bond already exists. Skipping...'
-        self.assertEqual(desired_msg, str(context.exception))
+        self.assertEqual(desired_msg, str(context.warning))
 
     def test_update_covalent_bond_with_itself(self):
         with self.assertRaises(self.exception) as context:
@@ -416,7 +416,7 @@ class TestHydrogenBondMethodExceptions(AtomExceptionsTestCase):
         self.atom_01.update_donor_state(is_donor_atom=True, donor_slots=1)
         self.atom_01.add_system(system_name='subsystem')
 
-        self.atom_02.update_acceptor_state(is_acceptor=True, acceptor_slots=2)
+        self.atom_02.update_acceptor_state(is_acceptor=True, acceptor_slots=1)
         self.atom_02.add_system(system_name='subsystem')
 
     def test_update_hydrogen_bond_partners_wrong_data_type(self):
@@ -436,14 +436,16 @@ class TestHydrogenBondMethodExceptions(AtomExceptionsTestCase):
 
     def test_update_hydrogen_bond_partner_frame_wrong_data_type(self):
         with self.assertRaises(self.exception) as context:
-            self.atom_01.__update_hydrogen_bond_partner__(atom=self.atom_02, frame='1', system_name='subsystem', add=True)
+            self.atom_01.__update_hydrogen_bond_partner__(atom=self.atom_02, frame='1', system_name='subsystem',
+                                                          add=True)
 
         desired_msg = self.create_data_type_exception_messages(parameter_name='frame', data_type_name='int')
         self.assertEqual(desired_msg, str(context.exception))
 
     def test_update_hydrogen_bond_partner_frame_negative(self):
         with self.assertRaises(self.exception) as context:
-            self.atom_01.__update_hydrogen_bond_partner__(atom=self.atom_02, frame=-1, system_name='subsystem', add=True)
+            self.atom_01.__update_hydrogen_bond_partner__(atom=self.atom_02, frame=-1, system_name='subsystem',
+                                                          add=True)
 
         desired_msg = 'Frame has to be a positive integer.'
         self.assertEqual(desired_msg, str(context.exception))
@@ -472,11 +474,18 @@ class TestHydrogenBondMethodExceptions(AtomExceptionsTestCase):
     def test_update_hydrogen_bond_partner_bond_already_exists(self):
         self.atom_01.__update_hydrogen_bond_partner__(atom=self.atom_02, frame=1, system_name='subsystem', add=True)
 
-        with self.assertRaises(self.warning) as context:
+        with self.assertWarns(self.warning) as context:
             self.atom_01.__update_hydrogen_bond_partner__(atom=self.atom_02, frame=1, system_name='subsystem', add=True)
 
         desired_msg = 'Hydrogen bond already exists. Skipping...'
-        self.assertEqual(desired_msg, str(context.exception))
+        self.assertEqual(desired_msg, str(context.warning))
+
+    def test_update_hydrogen_bond_partner_bond_already_deleted(self):
+        with self.assertWarns(self.warning) as context:
+            self.atom_01.__update_hydrogen_bond_partner__(atom=self.atom_02, frame=1, system_name='subsystem', add=False)
+
+        desired_msg = 'Atom not found. Skipping deletion...'
+        self.assertEqual(desired_msg, str(context.warning))
 
     def test_add_hydrogen_bond_partner_is_None(self):
         self.atom_01.update_donor_state(is_donor_atom=False, donor_slots=0)
@@ -495,6 +504,47 @@ class TestHydrogenBondMethodExceptions(AtomExceptionsTestCase):
 
         desired_msg = 'Parameter atom is neither acceptor nor a donor atom. Update its state first!'
         self.assertEqual(desired_msg, str(context.exception))
+
+    def test_add_hydrogen_bond_partner_donor_atom_has_already_max_bonds(self):
+        self.atom_01.add_hydrogen_bond_partner(frame=0, atom=self.atom_02, system_name='subsystem')
+        self.atom_03.update_acceptor_state(is_acceptor=True, acceptor_slots=1)
+        self.atom_03.add_system(system_name='subsystem')
+
+        with self.assertRaises(self.exception) as context:
+            self.atom_01.add_hydrogen_bond_partner(frame=0, atom=self.atom_03, system_name='subsystem')
+
+        desired_msg = 'This atom has already the maximum amount of hydrogen bond partners. You need to remove one first!'
+        self.assertEqual(desired_msg, str(context.exception))
+
+    def test_add_hydrogen_bond_partner_acceptor_has_already_max_bonds(self):
+        self.atom_01.add_hydrogen_bond_partner(frame=0, atom=self.atom_02, system_name='subsystem')
+        self.atom_03.update_donor_state(is_donor_atom=True, donor_slots=1)
+        self.atom_03.add_system(system_name='subsystem')
+
+        with self.assertRaises(self.exception) as context:
+            self.atom_02.add_hydrogen_bond_partner(frame=0, atom=self.atom_03, system_name='subsystem')
+
+        desired_msg = 'This atom has already the maximum amount of hydrogen bond partners. You need to remove one first!'
+        self.assertEqual(desired_msg, str(context.exception))
+
+    def test_remove_hydrogen_bond_partner_is_None(self):
+        self.atom_01.update_donor_state(is_donor_atom=False, donor_slots=0)
+
+        with self.assertRaises(self.exception) as context:
+            self.atom_01.remove_hydrogen_bond_partner(frame=0, atom=self.atom_02, system_name='subsystem')
+
+        desired_msg = 'This atom is neither acceptor nor a donor atom. Update its state first!'
+        self.assertEqual(desired_msg, str(context.exception))
+
+    def test_remove_hydrogen_bond_partner_atom_is_None(self):
+        self.atom_02.update_acceptor_state(is_acceptor=False, acceptor_slots=0)
+
+        with self.assertRaises(self.exception) as context:
+            self.atom_01.remove_hydrogen_bond_partner(frame=0, atom=self.atom_02, system_name='subsystem')
+
+        desired_msg = 'Parameter atom is neither acceptor nor a donor atom. Update its state first!'
+        self.assertEqual(desired_msg, str(context.exception))
+
 
     def test_purge_hydrogen_bond_partner_history_subsystem_wrong_data_type(self):
         with self.assertRaises(self.exception) as context:
