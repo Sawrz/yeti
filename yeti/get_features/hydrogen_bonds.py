@@ -66,11 +66,6 @@ class Triplet(object):
         # angles should not be negative but for safety and mathematical correctness
         self.mask = np.logical_and(distances < distance_cutoff, np.pi - np.abs(angles) < angle_cutoff)
 
-    # def next_mask_frame(self):
-    #    self.mask_frame += 1
-
-    #    return next(self.mask)
-
 
 class HydrogenBonds(object):
     def __init__(self, atoms, periodic, unit_cell_angles, unit_cell_vectors, system_name, number_of_frames,
@@ -140,29 +135,6 @@ class HydrogenBonds(object):
 
         # initialize triplets
         donor_acceptor_combinations = itertools.product(*[self.donor_atoms, self.acceptors])
-        triplet_amount = len(self.donor_atoms) * len(self.acceptors)
-
-        # pool = ThreadPool()
-        # triplets = pool.starmap(self.__build_triplet__, donor_acceptor_combinations)
-        # pool.close()
-
-        # queue = JoinableQueue(maxsize=0)
-        # workers = []
-        # for i in range(self.core_units):
-        #   worker = Thread(target=self.__exceute_queue__,
-        #                   kwargs=dict(queue=queue, distance_cutoff=distance_cutoff, angle_cutoff=angle_cutoff))
-        #   worker.setDaemon(True)
-        #   worker.start()
-        #   workers.append()
-
-        # for triplet in triplets:
-        #   queue.put(triplet)
-
-        # queue.join()
-
-        # queue = JoinableQueue(maxsize=0)
-        # for triplet in triplets:
-        #    queue.put(triplet)
 
         self.angle_cutoff = angle_cutoff
         self.distance_cutoff = distance_cutoff
@@ -171,30 +143,6 @@ class HydrogenBonds(object):
         triplets = pool.starmap(self.__build_triplet__, donor_acceptor_combinations)
         # triplets = triplets.get()
         pool.close()
-
-        # queue.join()
-
-        # threads = []
-        # for triplet in triplets:
-        #   process = Thread(target=triplet.create_mask,
-        #                    kwargs=dict(distance_cutoff=distance_cutoff, angle_cutoff=angle_cutoff))
-        #   process.start()
-        #   threads.append(process)
-
-        # for process in threads:
-        #    process.join()
-
-        # queue = Queue(maxsize=0)
-        # for triplet in triplets:
-        #   queue.put(triplet)
-
-        # for triplet in triplets:
-        #    while active_count() > self.core_units:
-        #        tmp = active_count()
-        #        time.sleep(0.05)
-
-        #    self.__thread_queue__(triplet_slice=triplet_slice, distance_cutoff=distance_cutoff,
-        #                          angle_cutoff=angle_cutoff)
 
         return tuple(triplets)
 
@@ -266,7 +214,8 @@ class HydrogenBonds(object):
                                           parameter_name='index_dictionary_acceptors')
         self.ensure_data_type.ensure_integer(parameter=frame, parameter_name='frame')
 
-        hydrogen_bond_matrix = np.zeros((len(index_dictionary_acceptors.keys()), len(index_dictionary_donor_atoms.keys())), dtype=np.int8)
+        hydrogen_bond_matrix = np.zeros(
+            (len(index_dictionary_acceptors.keys()), len(index_dictionary_donor_atoms.keys())), dtype=np.int8)
 
         for acceptor in self.acceptors:
             hydrogen_bond_partners = acceptor.hydrogen_bond_partners[self._system_name][frame]
@@ -346,5 +295,114 @@ class HydrogenBondsFirstComesFirstServes(HydrogenBonds):
             if not donor_slot_free or not acceptor_slot_free:
                 continue
 
-            triplet.donor_atom.hydrogen_bond_partners[self._system_name][frame].append(triplet.acceptor)
-            triplet.acceptor.hydrogen_bond_partners[self._system_name][frame].append(triplet.donor_atom)
+            triplet.acceptor.add_hydrogen_bond_partner(frame=frame, atom=triplet.donor_atom,
+                                                       system_name=self._system_name)
+
+
+class HydrogenBondsDistanceCriterion(HydrogenBonds):
+    @staticmethod
+    def __get_sorted_distances__(xyz_triplet, hydrogen_bond_partners, frame):
+        distances = []
+
+        for partner in hydrogen_bond_partners:
+            distances.append(
+                np.linalg.norm(xyz_triplet - partner.xyz_trajectory[frame]))
+
+        if len(distances) > 1:
+            sorted_args = np.argsort(distances)
+        else:
+            sorted_args = np.array([0])
+
+        return np.round(distances, 5), sorted_args
+
+    @staticmethod
+    def __check__(sorted_args, distances, triplet, frame):
+        # calculate new triplet distance
+        triplet_distance = np.linalg.norm(triplet.donor.xyz_trajectory[frame] - triplet.acceptor.xyz_trajectory[frame])
+        triplet_distance = np.round(triplet_distance, 5)
+
+        # Compare to biggest old distance of possible new bond partner.
+        arg = sorted_args[-1]
+        distance = distances[arg]
+
+        # If the biggest distance is still smaller than the new one, else the new distance wins.
+        if distance <= triplet_distance:
+            return None
+        else:
+            return arg
+
+    def __replace__(self, triplet_atom, new_atom, old_atom, frame):
+        triplet_atom.remove_hydrogen_bond_partner(frame=frame, atom=old_atom,
+                                                  system_name=self._system_name)
+        triplet_atom.add_hydrogen_bond_partner(frame=frame, atom=new_atom,
+                                               system_name=self._system_name)
+
+    def __get_index__(self, triplet, frame, free_slot_is_donor):
+        if free_slot_is_donor:
+            hydrogen_bond_partners = triplet.acceptor.hydrogen_bond_partners[self._system_name][frame]
+            distances, sorted_args = self.__get_sorted_distances__(
+                xyz_triplet=triplet.acceptor.xyz_trajectory[frame],
+                hydrogen_bond_partners=[donor_atom.covalent_bond_partners[0] for donor_atom in hydrogen_bond_partners],
+                frame=frame)
+
+        else:
+            hydrogen_bond_partners = triplet.donor_atom.hydrogen_bond_partners[self._system_name][frame]
+            distances, sorted_args = self.__get_sorted_distances__(xyz_triplet=triplet.donor.xyz_trajectory[frame],
+                                                                   hydrogen_bond_partners=hydrogen_bond_partners,
+                                                                   frame=frame)
+
+        return self.__check__(sorted_args=sorted_args, distances=distances, triplet=triplet, frame=frame)
+
+    # TODO: think about sanity checks (e.g. donor_atom looses  partner because of last triplet while rejecting others before)
+    def __get_hydrogen_bonds_in_frame__(self, triplets, frame):
+        self.ensure_data_type.ensure_tuple(parameter=triplets, parameter_name='triplets')
+        self.ensure_data_type.ensure_integer(parameter=frame, parameter_name='frame')
+
+        for triplet in triplets:
+            if not triplet.mask[frame]:
+                continue
+
+            donor_slot_free = len(
+                triplet.donor_atom.hydrogen_bond_partners[self._system_name][frame]) < triplet.donor_atom.donor_slots
+            acceptor_slot_free = len(
+                triplet.acceptor.hydrogen_bond_partners[self._system_name][frame]) < triplet.acceptor.acceptor_slots
+
+            if not donor_slot_free and not acceptor_slot_free:
+
+                # get index where distances are smaller than assigned
+                donor_index = self.__get_index__(triplet=triplet, frame=frame, free_slot_is_donor=False)
+                acceptor_index = self.__get_index__(triplet=triplet, frame=frame, free_slot_is_donor=True)
+
+                if donor_index is not None and acceptor_index is not None:
+                    triplet.donor_atom.remove_hydrogen_bond_partner(frame=frame,
+                                                                    atom=triplet.donor_atom.hydrogen_bond_partners[
+                                                                        self._system_name][frame][donor_index],
+                                                                    system_name=self._system_name)
+                    triplet.acceptor.remove_hydrogen_bond_partner(frame=frame,
+                                                                  atom=triplet.acceptor.hydrogen_bond_partners[
+                                                                      self._system_name][frame][acceptor_index],
+                                                                  system_name=self._system_name)
+
+                    triplet.acceptor.add_hydrogen_bond_partner(frame=frame, atom=triplet.donor_atom,
+                                                               system_name=self._system_name)
+
+            elif not donor_slot_free and acceptor_slot_free:
+                index = self.__get_index__(triplet=triplet, frame=frame, free_slot_is_donor=False)
+
+                if index is not None:
+                    self.__replace__(triplet_atom=triplet.donor_atom,
+                                     old_atom=triplet.donor_atom.hydrogen_bond_partners[self._system_name][frame][
+                                         index],
+                                     new_atom=triplet.acceptor, frame=frame)
+
+            elif not acceptor_slot_free and donor_slot_free:
+                index = self.__get_index__(triplet=triplet, frame=frame, free_slot_is_donor=True)
+
+                if index is not None:
+                    self.__replace__(triplet_atom=triplet.acceptor,
+                                     old_atom=triplet.acceptor.hydrogen_bond_partners[self._system_name][frame][index],
+                                     new_atom=triplet.donor_atom, frame=frame)
+
+            else:
+                triplet.acceptor.add_hydrogen_bond_partner(frame=frame, atom=triplet.donor_atom,
+                                                           system_name=self._system_name)
