@@ -12,16 +12,16 @@ class StaticHelperMethodsTestCase(BlueprintTestCase):
         from yeti.systems.building_blocks import Atom
         from yeti.get_features.hydrogen_bonds import HydrogenBondsDistanceCriterion
 
-        self.donor = Atom(structure_file_index=8, subsystem_index=10, name='G',
+        self.donor = Atom(structure_file_index=8, subsystem_index=10, name='A',
                           xyz_trajectory=np.array([[0.1, 0.4, 0.3], [0.1, 0.4, 0.3], [0.1, 0.4, 0.3]]))
-        self.donor_atom = Atom(structure_file_index=9, subsystem_index=11, name='H',
+        self.donor_atom = Atom(structure_file_index=9, subsystem_index=11, name='B',
                                xyz_trajectory=np.array([[0.1, 0.5, 0.2], [0.1, 0.5, 0.2], [0.5, 0.5, 0.2]]))
-        self.acceptor = Atom(structure_file_index=10, subsystem_index=11, name='I',
+        self.acceptor = Atom(structure_file_index=10, subsystem_index=11, name='C',
                              xyz_trajectory=np.array([[0.1, 0.6, 0.4], [0.1, 0.7, 0.4], [0.1, 0.6, 0.4]]))
 
         self.donor.add_covalent_bond(atom=self.donor_atom)
         self.donor_atom.update_donor_state(is_donor_atom=True, donor_slots=1)
-        self.acceptor.update_acceptor_state(is_acceptor=True, acceptor_slots=2)
+        self.acceptor.update_acceptor_state(is_acceptor=True, acceptor_slots=1)
 
         frames = len(self.donor.xyz_trajectory)
         unit_cell_angles = np.array([[90, 90, 90]], dtype=np.float32)
@@ -32,17 +32,6 @@ class StaticHelperMethodsTestCase(BlueprintTestCase):
 
         self.frame = 0
         self.hydrogen_bonds = HydrogenBondsDistanceCriterion
-
-
-class HelperMethodsTestCase(StaticHelperMethodsTestCase):
-    def setUp(self) -> None:
-        super(HelperMethodsTestCase, self).setUp()
-
-        self.hydrogen_bonds = self.hydrogen_bonds(atoms=(self.donor, self.donor_atom, self.acceptor),
-                                                  periodic=True, unit_cell_angles=self.unit_cell_angles,
-                                                  unit_cell_vectors=self.unit_cell_vectors,
-                                                  system_name='test',
-                                                  number_of_frames=len(self.unit_cell_angles))
 
 
 class TestSortDistances(StaticHelperMethodsTestCase):
@@ -104,11 +93,67 @@ class TestCheck(StaticHelperMethodsTestCase):
         self.assertEqual(1, res_index)
 
 
+class HelperMethodsTestCase(StaticHelperMethodsTestCase):
+    def setUpAtoms(self) -> tuple:
+        from yeti.systems.building_blocks import Atom
+
+        self.new_acceptor = Atom(structure_file_index=11, subsystem_index=12, name='D',
+                                 xyz_trajectory=np.array([[0.1, 0.5, 0.3], [0.1, 0.7, 0.4], [0.1, 0.6, 0.4]]))
+        self.new_acceptor.update_acceptor_state(is_acceptor=True, acceptor_slots=1)
+
+        self.new_donor = Atom(structure_file_index=12, subsystem_index=13, name='E',
+                              xyz_trajectory=np.array([[0.1, 0.6, 0.3], [0.1, 0.4, 0.3], [0.1, 0.4, 0.3]]))
+        self.new_donor_atom = Atom(structure_file_index=13, subsystem_index=14, name='F',
+                                   xyz_trajectory=np.array([[0.1, 0.6, 0.3], [0.1, 0.5, 0.2], [0.5, 0.5, 0.2]]))
+        self.new_donor.add_covalent_bond(atom=self.new_donor_atom)
+        self.new_donor_atom.update_donor_state(is_donor_atom=True, donor_slots=1)
+
+        return self.donor, self.donor_atom, self.acceptor, self.new_acceptor, self.new_donor, self.new_donor_atom
+
+    def setUp(self) -> None:
+        super(HelperMethodsTestCase, self).setUp()
+
+        self.system_name = 'test'
+
+        self.hydrogen_bonds = self.hydrogen_bonds(atoms=self.setUpAtoms(),
+                                                  periodic=True, unit_cell_angles=self.unit_cell_angles,
+                                                  unit_cell_vectors=self.unit_cell_vectors,
+                                                  system_name='test',
+                                                  number_of_frames=len(self.unit_cell_angles))
+
+        self.donor_atom.add_hydrogen_bond_partner(frame=self.frame, atom=self.acceptor, system_name=self.system_name)
+
+
 class TestReplace(HelperMethodsTestCase):
-    pass
+
+    def test_replace(self):
+        self.hydrogen_bonds.__replace__(triplet_atom=self.donor_atom, new_atom=self.new_acceptor,
+                                        old_atom=self.acceptor, frame=self.frame)
+
+        self.assertListEqual([[self.new_acceptor], [], []],
+                             self.donor_atom.hydrogen_bond_partners[self.system_name])
 
 
+class TestGetIndex(HelperMethodsTestCase):
+    def setUp(self) -> None:
+        from yeti.get_features.hydrogen_bonds import Triplet
 
+        super(TestGetIndex, self).setUp()
+        self.triplet = Triplet
+
+    def test_free_acceptor(self):
+        triplet = self.triplet(donor_atom=self.donor_atom, acceptor=self.new_acceptor, periodic=True,
+                               unit_cell_angles=self.unit_cell_angles, unit_cell_vectors=self.unit_cell_vectors)
+        res_index = self.hydrogen_bonds.__get_index__(triplet=triplet, frame=self.frame, donor_free_slot=False)
+
+        self.assertEqual(0, res_index)
+
+    def test_free_donor(self):
+        triplet = self.triplet(donor_atom=self.new_donor_atom, acceptor=self.acceptor, periodic=True,
+                               unit_cell_angles=self.unit_cell_angles, unit_cell_vectors=self.unit_cell_vectors)
+        res_index = self.hydrogen_bonds.__get_index__(triplet=triplet, frame=self.frame, donor_free_slot=True)
+
+        self.assertEqual(0, res_index)
 
 
 class HydrogenBondDistanceTestCase(HydrogenBondTestCase):

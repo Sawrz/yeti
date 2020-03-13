@@ -337,8 +337,8 @@ class HydrogenBondsDistanceCriterion(HydrogenBonds):
         triplet_atom.add_hydrogen_bond_partner(frame=frame, atom=new_atom,
                                                system_name=self._system_name)
 
-    def __get_index__(self, triplet, frame, free_slot_is_donor):
-        if free_slot_is_donor:
+    def __get_index__(self, triplet, frame, donor_free_slot):
+        if donor_free_slot:
             hydrogen_bond_partners = triplet.acceptor.hydrogen_bond_partners[self._system_name][frame]
             distances, sorted_args = self.__get_sorted_distances__(
                 xyz_triplet=triplet.acceptor.xyz_trajectory[frame],
@@ -353,7 +353,7 @@ class HydrogenBondsDistanceCriterion(HydrogenBonds):
 
         return self.__check__(sorted_args=sorted_args, distances=distances, triplet=triplet, frame=frame)
 
-    # TODO: think about sanity checks (e.g. donor_atom looses  partner because of last triplet while rejecting others before)
+    # TODO: think about sanity checks (e.g. donor_atom looses partner because of last triplet while rejecting others before)
     def __get_hydrogen_bonds_in_frame__(self, triplets, frame):
         self.ensure_data_type.ensure_tuple(parameter=triplets, parameter_name='triplets')
         self.ensure_data_type.ensure_integer(parameter=frame, parameter_name='frame')
@@ -370,8 +370,8 @@ class HydrogenBondsDistanceCriterion(HydrogenBonds):
             if not donor_slot_free and not acceptor_slot_free:
 
                 # get index where distances are smaller than assigned
-                donor_index = self.__get_index__(triplet=triplet, frame=frame, free_slot_is_donor=False)
-                acceptor_index = self.__get_index__(triplet=triplet, frame=frame, free_slot_is_donor=True)
+                donor_index = self.__get_index__(triplet=triplet, frame=frame, donor_free_slot=False)
+                acceptor_index = self.__get_index__(triplet=triplet, frame=frame, donor_free_slot=True)
 
                 if donor_index is not None and acceptor_index is not None:
                     triplet.donor_atom.remove_hydrogen_bond_partner(frame=frame,
@@ -387,7 +387,7 @@ class HydrogenBondsDistanceCriterion(HydrogenBonds):
                                                                system_name=self._system_name)
 
             elif not donor_slot_free and acceptor_slot_free:
-                index = self.__get_index__(triplet=triplet, frame=frame, free_slot_is_donor=False)
+                index = self.__get_index__(triplet=triplet, frame=frame, donor_free_slot=False)
 
                 if index is not None:
                     self.__replace__(triplet_atom=triplet.donor_atom,
@@ -396,7 +396,7 @@ class HydrogenBondsDistanceCriterion(HydrogenBonds):
                                      new_atom=triplet.acceptor, frame=frame)
 
             elif not acceptor_slot_free and donor_slot_free:
-                index = self.__get_index__(triplet=triplet, frame=frame, free_slot_is_donor=True)
+                index = self.__get_index__(triplet=triplet, frame=frame, donor_free_slot=True)
 
                 if index is not None:
                     self.__replace__(triplet_atom=triplet.acceptor,
