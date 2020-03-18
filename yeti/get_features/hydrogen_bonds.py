@@ -353,6 +353,10 @@ class HydrogenBondsDistanceCriterion(HydrogenBonds):
 
         return self.__check__(sorted_args=sorted_args, distances=distances, triplet=triplet, frame=frame)
 
+    def __create_triplet__(self, donor_atom, acceptor):
+        return Triplet(donor_atom=donor_atom, acceptor=acceptor, periodic=self.periodic,
+                       unit_cell_vectors=self.unit_cell_vectors, unit_cell_angles=self.unit_cell_angles)
+
     # TODO: think about sanity checks (e.g. donor_atom looses partner because of last triplet while rejecting others before)
     def __get_hydrogen_bonds_in_frame__(self, triplets, frame):
         self.ensure_data_type.ensure_tuple(parameter=triplets, parameter_name='triplets')
@@ -386,6 +390,7 @@ class HydrogenBondsDistanceCriterion(HydrogenBonds):
                     triplet.acceptor.add_hydrogen_bond_partner(frame=frame, atom=triplet.donor_atom,
                                                                system_name=self._system_name)
 
+
             elif not donor_slot_free and acceptor_slot_free:
                 index = self.__get_index__(triplet=triplet, frame=frame, donor_free_slot=False)
 
@@ -406,3 +411,26 @@ class HydrogenBondsDistanceCriterion(HydrogenBonds):
             else:
                 triplet.acceptor.add_hydrogen_bond_partner(frame=frame, atom=triplet.donor_atom,
                                                            system_name=self._system_name)
+
+    def calculate_hydrogen_bonds(self, distance_cutoff, angle_cutoff, iterations=5):
+        threads = []
+        for donor_atom in self.donor_atoms:
+            process = Thread(target=donor_atom.purge_hydrogen_bond_partner_history,
+                             kwargs=dict(system_name=self._system_name))
+            process.start()
+            threads.append(process)
+        for acceptor_atom in self.acceptors:
+            process = Thread(target=acceptor_atom.purge_hydrogen_bond_partner_history,
+                             kwargs=dict(system_name=self._system_name))
+            process.start()
+            threads.append(process)
+
+        for process in threads:
+            process.join()
+
+        print('Building Triplets...')
+        triplets = self.__build_triplets__(distance_cutoff=distance_cutoff, angle_cutoff=angle_cutoff)
+        print('Getting Hydrogen Bonds...')
+        for i in range(iterations):
+            print(f'Iteration number {i:02d}:')
+            self.__get_hydrogen_bonds__(triplets=triplets)

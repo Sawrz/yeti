@@ -283,6 +283,95 @@ class TestHydrogenBondRepresentationMethodsTooManyAcceptorsAndDonors(HydrogenBon
         self.assertListEqual([[self.acceptor_04], [], []], self.hydrogen_bonds.atoms[9].hydrogen_bond_partners['test'])
 
 
+class TestHydrogenBondCalculationMethods(HydrogenBondDistanceTestCase):
+    def setUpAtoms(self) -> None:
+        self.atoms = (self.acceptor_01, self.acceptor_02,
+                      self.donor_01, self.donor_atom_01,
+                      self.donor_02, self.donor_atom_02,
+                      self.donor_03, self.donor_atom_03)
+
+    def setUp(self) -> None:
+        from yeti.systems.building_blocks import Atom
+        from yeti.get_features.hydrogen_bonds import HydrogenBondsDistanceCriterion
+
+        super(HydrogenBondDistanceTestCase, self).setUp()
+
+        # create new atoms
+        self.acceptor_01 = Atom(structure_file_index=0, subsystem_index=0, name='A',
+                                xyz_trajectory=np.array([[0, 0.5, 0], [0.5, 0.5, 0.5], [0.5, 0.5, 0.5]]))
+        self.acceptor_01.update_acceptor_state(is_acceptor=True, acceptor_slots=2)
+
+        self.acceptor_02 = Atom(structure_file_index=1, subsystem_index=1, name='B',
+                                xyz_trajectory=np.array([[0.25, 0.9, 0.25], [0.5, 0.5, 0.5], [0.5, 0.5, 0.5]]))
+        self.acceptor_02.update_acceptor_state(is_acceptor=True, acceptor_slots=1)
+
+        self.donor_01 = Atom(structure_file_index=2, subsystem_index=2, name='C',
+                             xyz_trajectory=np.array([[0, 0.7, 0], [0, 0, 0], [0, 0, 0]]))
+        self.donor_atom_01 = Atom(structure_file_index=3, subsystem_index=3, name='D',
+                                  xyz_trajectory=np.array([[0.1, 0.7, 0.1], [0, 0, 0], [0, 0, 0]]))
+        self.donor_01.add_covalent_bond(atom=self.donor_atom_01)
+        self.donor_atom_01.update_donor_state(is_donor_atom=True, donor_slots=1)
+
+        self.donor_02 = Atom(structure_file_index=4, subsystem_index=4, name='E',
+                             xyz_trajectory=np.array([[0, 0.8, 0], [0, 0, 0], [0, 0, 0]]))
+        self.donor_atom_02 = Atom(structure_file_index=5, subsystem_index=5, name='F',
+                                  xyz_trajectory=np.array([[0.1, 0.8, 0.1], [0, 0, 0], [0, 0, 0]]))
+        self.donor_02.add_covalent_bond(atom=self.donor_atom_02)
+        self.donor_atom_02.update_donor_state(is_donor_atom=True, donor_slots=1)
+
+        self.donor_03 = Atom(structure_file_index=6, subsystem_index=6, name='G',
+                             xyz_trajectory=np.array([[0, 0.4, 0], [0, 0, 0], [0, 0, 0]]))
+        self.donor_atom_03 = Atom(structure_file_index=7, subsystem_index=7, name='H',
+                                  xyz_trajectory=np.array([[0.1, 0.4, 0.1], [0, 0, 0], [0, 0, 0]]))
+        self.donor_03.add_covalent_bond(atom=self.donor_atom_03)
+        self.donor_atom_03.update_donor_state(is_donor_atom=True, donor_slots=1)
+
+        self.setUpAtoms()
+        self.hydrogen_bonds = HydrogenBondsDistanceCriterion(atoms=self.atoms, periodic=True,
+                                                             unit_cell_angles=self.unit_cell_angles,
+                                                             unit_cell_vectors=self.unit_cell_vectors,
+                                                             system_name='test',
+                                                             number_of_frames=self.number_of_frames)
+
+    def test_calculate_hydrogen_bonds_one_iteration(self):
+        self.hydrogen_bonds.calculate_hydrogen_bonds(distance_cutoff=0.4, angle_cutoff=np.pi, iterations=1)
+
+        # Donors
+        self.assertIsNone(self.donor_01.hydrogen_bond_partners)
+        self.assertIsNone(self.donor_02.hydrogen_bond_partners)
+        self.assertIsNone(self.donor_03.hydrogen_bond_partners)
+
+        # Acceptors
+        self.assertListEqual([[self.donor_atom_01, self.donor_atom_03], [], []],
+                             self.acceptor_01.hydrogen_bond_partners['test'])
+        self.assertListEqual([[], [], []],
+                             self.acceptor_02.hydrogen_bond_partners['test'])
+
+        # Donor Atoms
+        self.assertListEqual([[self.acceptor_01], [], []], self.donor_atom_01.hydrogen_bond_partners['test'])
+        self.assertListEqual([[], [], []], self.donor_atom_02.hydrogen_bond_partners['test'])
+        self.assertListEqual([[self.acceptor_01], [], []], self.donor_atom_03.hydrogen_bond_partners['test'])
+
+    def test_calculate_hydrogen_bonds_multi_iterations(self):
+        self.hydrogen_bonds.calculate_hydrogen_bonds(distance_cutoff=0.4, angle_cutoff=np.pi, iterations=3)
+
+        # Donors
+        self.assertIsNone(self.donor_01.hydrogen_bond_partners)
+        self.assertIsNone(self.donor_02.hydrogen_bond_partners)
+        self.assertIsNone(self.donor_03.hydrogen_bond_partners)
+
+        # Acceptors
+        self.assertListEqual([[self.donor_atom_01, self.donor_atom_03], [], []],
+                             self.acceptor_01.hydrogen_bond_partners['test'])
+        self.assertListEqual([[self.donor_atom_02], [], []],
+                             self.acceptor_02.hydrogen_bond_partners['test'])
+
+        # Donor Atoms
+        self.assertListEqual([[self.acceptor_01], [], []], self.donor_atom_01.hydrogen_bond_partners['test'])
+        self.assertListEqual([[self.acceptor_02], [], []], self.donor_atom_02.hydrogen_bond_partners['test'])
+        self.assertListEqual([[self.acceptor_01], [], []], self.donor_atom_03.hydrogen_bond_partners['test'])
+
+
 class HydrogenBondExceptionsDistanceTestCase(HydrogenBondDistanceTestCase, BlueprintExceptionsTestCase):
     def setUp(self) -> None:
         from yeti.get_features.hydrogen_bonds import HydrogenBondsException

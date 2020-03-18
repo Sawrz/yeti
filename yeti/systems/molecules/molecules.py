@@ -4,7 +4,7 @@ import numpy as np
 
 from yeti.get_features.angles import Angle, Dihedral
 from yeti.get_features.distances import Distance
-from yeti.get_features.hydrogen_bonds import HydrogenBondsFirstComesFirstServes
+from yeti.get_features.hydrogen_bonds import HydrogenBondsFirstComesFirstServes, HydrogenBondsDistanceCriterion
 from yeti.systems.building_blocks import EnsureDataTypes
 
 
@@ -167,7 +167,7 @@ class FourAtomsPlusMolecule(ThreeAtomsMolecule):
         else:
             return dihedral_angles
 
-    def calculate_hydrogen_bonds(self, distance_cutoff, angle_cutoff):
+    def calculate_hydrogen_bonds(self, distance_cutoff, angle_cutoff, calc_method='distance'):
         self.distance_cutoff = distance_cutoff
         self.angle_cutoff = angle_cutoff
 
@@ -178,9 +178,17 @@ class FourAtomsPlusMolecule(ThreeAtomsMolecule):
         atoms = tuple(itertools.chain.from_iterable(residue.atoms for residue in self.residues))
 
         # TODO: Think of passing residues instead of atoms (reason againt it: inter system hbonds, but can extract atoms from residues)
-        self._hbonds = HydrogenBondsFirstComesFirstServes(atoms=atoms, periodic=self.periodic,
+        if calc_method == 'distance':
+            self._hbonds = HydrogenBondsDistanceCriterion(atoms=atoms, periodic=self.periodic,
                                                           number_of_frames=number_of_frames,
                                                           system_name=self.molecule_name, **self.box_information)
+        elif calc_method == 'fifo':
+            self._hbonds = HydrogenBondsFirstComesFirstServes(atoms=atoms, periodic=self.periodic,
+                                                              number_of_frames=number_of_frames,
+                                                              system_name=self.molecule_name, **self.box_information)
+        else:
+            raise MoleculeException('Please choose a valid calculation method!')
+
         self._hbonds.calculate_hydrogen_bonds(distance_cutoff=self.distance_cutoff, angle_cutoff=self.angle_cutoff)
 
     def purge_hydrogen_bonds(self):
