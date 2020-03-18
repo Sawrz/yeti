@@ -74,7 +74,10 @@ class NucleicAcid(BioMolecule):
 
                     self.get_dihedral(dihedral_name=dihedral_name, residue_id=residue.subsystem_index)
                 except BioMoleculeException as e:
-                    if e.args[0] == 'Atom does not exist in this residue.':
+                    no_atom_exist = e.args[0] == 'Atom does not exist in this residue.'
+                    residue_id_too_high = e.args[0] == 'Atom requested residue id is higher than available residues.'
+
+                    if no_atom_exist or residue_id_too_high:
                         msg = '{dihedral_name}_{residue_id:03d} not found'.format(dihedral_name=key,
                                                                                   residue_id=residue.subsystem_index)
                         print(msg)

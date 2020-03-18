@@ -74,6 +74,9 @@ class TwoAtomsMolecule(object):
         self.ensure_data_type.ensure_string(parameter=name, parameter_name='name')
         self.ensure_data_type.ensure_integer(parameter=residue_id, parameter_name='residue_id')
 
+        if residue_id > len(self.residues) - 1:
+            raise BioMoleculeException('Atom requested residue id is higher than available residues.')
+
         atom_index = np.where(np.array(self.residues[residue_id].sequence) == name)[0]
 
         if len(atom_index) == 0:
