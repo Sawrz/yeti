@@ -98,6 +98,17 @@ class TwoAtomsMolecule(object):
 
         return tuple(atom_list)
 
+    def get_xyz(self):
+        names = []
+        xyz = []
+        
+        for residue in self.residues:
+            for atom in residue.atoms:
+                names.append(f'{residue.name}{residue.structure_file_index}_{atom.name}')
+                xyz.append(atom.xyz_trajectory)
+                
+        return np.hstack(xyz), names
+    
     def get_distance(self, atom_01_pos, atom_02_pos, store_result=True, opt=True):
         # TODO: ensure it's a tuple of integers
         self.ensure_data_type.ensure_tuple(parameter=atom_01_pos, parameter_name='atom_01_pos')

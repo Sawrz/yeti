@@ -85,7 +85,20 @@ class TestAtomMethods(TwoAtomsMoleculeTestCase):
         res = self.molecule.__get_atoms__(atom_positions=((0, 0), (1, 0)))
         self.assertEqual((self.donor, self.acceptor), res)
 
+        
+class TestXyzMethods(TwoAtomsMoleculeTestCase):
+    def test_get(self):
+        res_xyz, res_names = self.molecule.get_xyz()
+        
+        exp_xyz = np.array([[0.1, 0.4, 0.3, 0.1, 0.5, 0.2, 0.1, 0.6, 0.4],
+                            [0.1, 0.4, 0.3, 0.1, 0.5, 0.2, 0.1, 0.7, 0.4],
+                            [0.1, 0.4, 0.3, 0.5, 0.5, 0.2, 0.1, 0.6, 0.4]
+                           ])
+        
+        self.assertListEqual(['RESA4_A', 'RESA4_B', 'RESB5_C'], res_names)
+        npt.assert_array_equal(res_xyz, exp_xyz)
 
+        
 class TestDistanceMethods(TwoAtomsMoleculeTestCase):
     def test_store(self):
         self.molecule.get_distance(atom_01_pos=(0, 0), atom_02_pos=(1, 0), store_result=True, opt=True)
