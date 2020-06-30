@@ -105,9 +105,9 @@ class TestXyzMethods(TwoAtomsMoleculeTestCase):
         self.residue_01.finalize()
 
         # Add additional frame
-        self.donor.add_frame([0.2, 0.4, 0.8])
-        self.donor_atom.add_frame([0.3, 0.9, 0.1])
-        self.acceptor.add_frame([0.4, 0.8, 0.2])
+        self.donor.delete_frame(2)
+        self.donor_atom.delete_frame(2)
+        self.acceptor.delete_frame(2)
 
         # initialize object
         self.atoms = (self.donor, self.donor_atom, self.acceptor, atom)
@@ -117,14 +117,10 @@ class TestXyzMethods(TwoAtomsMoleculeTestCase):
     def test_get(self):
         res_xyz, res_names = self.molecule.get_xyz()
 
-        exp_xyz = np.array([[0.1, 0.4, 0.3, 0.1, 0.5, 0.2, 0.1, 0.6, 0.4],
-                            [0.1, 0.4, 0.3, 0.1, 0.5, 0.2, 0.1, 0.7, 0.4],
-                            [0.1, 0.4, 0.3, 0.5, 0.5, 0.2, 0.1, 0.6, 0.4]
-                            ])
+        exp_xyz = np.array([[[0.1, 0.4, 0.3], [0.1, 0.5, 0.2], [0.6, 0.3, 0.8], [0.1, 0.6, 0.4]],
+                            [[0.1, 0.4, 0.3], [0.1, 0.5, 0.2], [0.2, 0.9, 0.6], [0.1, 0.7, 0.4]]])
 
-        exp_xyz = np.array()
-
-        self.assertListEqual(['RESA4_A', 'RESA4_B', 'RESB5_C'], res_names)
+        self.assertListEqual(['RESA4_A', 'RESA4_B', 'RESA4_P', 'RESB5_C'], res_names)
         npt.assert_array_equal(res_xyz, exp_xyz)
 
 

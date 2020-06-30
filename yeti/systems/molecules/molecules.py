@@ -105,8 +105,8 @@ class TwoAtomsMolecule(object):
         for residue in self.residues:
             for atom in residue.atoms:
                 names.append(f'{residue.name}{residue.structure_file_index}_{atom.name}')
-                xyz.append([atom.xyz_trajectory])
-                
+                xyz.append(atom.xyz_trajectory.reshape(atom.xyz_trajectory.shape[0], 1, 3))
+
         return np.hstack(xyz), names
     
     def get_distance(self, atom_01_pos, atom_02_pos, store_result=True, opt=True):
