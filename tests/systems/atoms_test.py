@@ -22,7 +22,7 @@ class TestStandardMethods(BlueprintTestCase):
     def setUp(self) -> None:
         from yeti.systems.building_blocks import Atom
 
-        xyz_trajectory = np.arange(6).reshape((2, 3))
+        xyz_trajectory = np.arange(6).reshape((3, 2))
 
         self.atom = Atom(name='test', subsystem_index=16, structure_file_index=42, xyz_trajectory=xyz_trajectory)
 
@@ -48,7 +48,14 @@ class TestStandardMethods(BlueprintTestCase):
         self.assertEqual(str(self.atom), self.atom.name)
 
 
-class TestIntraMolduleConnectionMethods(AtomTestCase):
+class TestAtomManipulationMethods(AtomTestCase):
+    def test_add_frame(self):
+        self.atom_03.add_frame(frame=[42, 43, 44])
+
+        npt.assert_array_equal(self.atom_03.xyz_trajectory, np.array([[12, 13, 14], [15, 16, 17], [42, 43, 44]]))
+
+
+class TestIntraMoleculeConnectionMethods(AtomTestCase):
     def test_set_residue(self):
         from yeti.systems.building_blocks import Residue
 
@@ -256,7 +263,7 @@ class TestStandardMethodExceptions(AtomExceptionsTestCase):
         self.assertEqual(desired_msg, str(context.exception))
 
 
-class TestIntraModuleConnectionMethodExceptions(AtomExceptionsTestCase):
+class TestIntraMoleculeConnectionMethodExceptions(AtomExceptionsTestCase):
     def test_set_residue_wrong_data_type(self):
         with self.assertRaises(self.exception) as context:
             self.atom_01.set_residue(residue=24)
@@ -482,7 +489,8 @@ class TestHydrogenBondMethodExceptions(AtomExceptionsTestCase):
 
     def test_update_hydrogen_bond_partner_bond_already_deleted(self):
         with self.assertWarns(self.warning) as context:
-            self.atom_01.__update_hydrogen_bond_partner__(atom=self.atom_02, frame=1, system_name='subsystem', add=False)
+            self.atom_01.__update_hydrogen_bond_partner__(atom=self.atom_02, frame=1, system_name='subsystem',
+                                                          add=False)
 
         desired_msg = 'Atom not found. Skipping deletion...'
         self.assertEqual(desired_msg, str(context.warning))
@@ -544,7 +552,6 @@ class TestHydrogenBondMethodExceptions(AtomExceptionsTestCase):
 
         desired_msg = 'Parameter atom is neither acceptor nor a donor atom. Update its state first!'
         self.assertEqual(desired_msg, str(context.exception))
-
 
     def test_purge_hydrogen_bond_partner_history_subsystem_wrong_data_type(self):
         with self.assertRaises(self.exception) as context:

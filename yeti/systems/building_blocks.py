@@ -255,6 +255,9 @@ class Atom(object):
         else:
             raise AtomException('The given atom is neither donor nor acceptor. Purging does not make sense!')
 
+    def add_frame(self, frame):
+        self.xyz_trajectory = np.append(self.xyz_trajectory, [frame], axis=0)
+
     def __str__(self):
         return self.name
 
