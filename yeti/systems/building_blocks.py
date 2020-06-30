@@ -258,6 +258,9 @@ class Atom(object):
     def add_frame(self, frame):
         self.xyz_trajectory = np.append(self.xyz_trajectory, [frame], axis=0)
 
+    def delete_frame(self, frame_index):
+        self.xyz_trajectory = np.delete(self.xyz_trajectory, frame_index, axis=0)
+
     def __str__(self):
         return self.name
 

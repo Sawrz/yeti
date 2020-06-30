@@ -105,7 +105,7 @@ class TwoAtomsMolecule(object):
         for residue in self.residues:
             for atom in residue.atoms:
                 names.append(f'{residue.name}{residue.structure_file_index}_{atom.name}')
-                xyz.append(atom.xyz_trajectory)
+                xyz.append([atom.xyz_trajectory])
                 
         return np.hstack(xyz), names
     

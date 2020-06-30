@@ -54,6 +54,11 @@ class TestAtomManipulationMethods(AtomTestCase):
 
         npt.assert_array_equal(self.atom_03.xyz_trajectory, np.array([[12, 13, 14], [15, 16, 17], [42, 43, 44]]))
 
+    def test_delete_frame(self):
+        self.atom_03.delete_frame(frame_index=1)
+
+        npt.assert_array_equal(self.atom_03.xyz_trajectory, np.array([[12, 13, 14]]))
+
 
 class TestIntraMoleculeConnectionMethods(AtomTestCase):
     def test_set_residue(self):

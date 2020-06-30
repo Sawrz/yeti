@@ -85,20 +85,49 @@ class TestAtomMethods(TwoAtomsMoleculeTestCase):
         res = self.molecule.__get_atoms__(atom_positions=((0, 0), (1, 0)))
         self.assertEqual((self.donor, self.acceptor), res)
 
-        
+
 class TestXyzMethods(TwoAtomsMoleculeTestCase):
+    def setUp(self) -> None:
+        from yeti.systems.molecules.molecules import TwoAtomsMolecule
+        from yeti.systems.building_blocks import Atom
+
+        super(TestXyzMethods, self).setUp()
+
+        # Extend Residue
+        self.residue_01.definalize()
+
+        atom = Atom(structure_file_index=42, subsystem_index=18, name='P',
+                    xyz_trajectory=np.array([[0.6, 0.3, 0.8], [0.2, 0.9, 0.6]]))
+
+        self.residue_01.add_atom(atom=atom)
+        atom.set_residue(residue=self.residue_01)
+
+        self.residue_01.finalize()
+
+        # Add additional frame
+        self.donor.add_frame([0.2, 0.4, 0.8])
+        self.donor_atom.add_frame([0.3, 0.9, 0.1])
+        self.acceptor.add_frame([0.4, 0.8, 0.2])
+
+        # initialize object
+        self.atoms = (self.donor, self.donor_atom, self.acceptor, atom)
+        self.molecule = TwoAtomsMolecule(residues=self.residues, molecule_name=self.molecule_name,
+                                         box_information=self.box_information, periodic=True)
+
     def test_get(self):
         res_xyz, res_names = self.molecule.get_xyz()
-        
+
         exp_xyz = np.array([[0.1, 0.4, 0.3, 0.1, 0.5, 0.2, 0.1, 0.6, 0.4],
                             [0.1, 0.4, 0.3, 0.1, 0.5, 0.2, 0.1, 0.7, 0.4],
                             [0.1, 0.4, 0.3, 0.5, 0.5, 0.2, 0.1, 0.6, 0.4]
-                           ])
-        
+                            ])
+
+        exp_xyz = np.array()
+
         self.assertListEqual(['RESA4_A', 'RESA4_B', 'RESB5_C'], res_names)
         npt.assert_array_equal(res_xyz, exp_xyz)
 
-        
+
 class TestDistanceMethods(TwoAtomsMoleculeTestCase):
     def test_store(self):
         self.molecule.get_distance(atom_01_pos=(0, 0), atom_02_pos=(1, 0), store_result=True, opt=True)
@@ -221,8 +250,6 @@ class TestDistanceMethodExceptions(TwoAtomsMoleculeExceptionsTestCase):
 
         desired_msg = self.create_data_type_exception_messages(parameter_name='opt', data_type_name='bool')
         self.assertEqual(desired_msg, str(context.exception))
-
-
 
 
 if __name__ == '__main__':
