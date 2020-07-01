@@ -101,7 +101,7 @@ class TwoAtomsMolecule(object):
     def get_xyz(self):
         names = []
         xyz = []
-        
+
         for residue in self.residues:
             for atom in residue.atoms:
                 names.append(f'{residue.name}{residue.structure_file_index}_{atom.name}')
@@ -110,9 +110,9 @@ class TwoAtomsMolecule(object):
         return np.hstack(xyz), names
 
     def _align_frames(self, xyz_reference, xyz_to_align):
-       # Get Rotation Matrix and rotate
-        V, S, Wt = np.linalg.svd(np.dot(xyz_to_align.T, xyz_reference))
-        rotation_matrix = np.round(np.dot(V, Wt), decimals=6)
+        # Get Rotation Matrix and rotate
+        u, s, vh = np.linalg.svd(np.dot(xyz_to_align.T, xyz_reference))
+        rotation_matrix = np.round(np.dot(u, vh), decimals=6)
 
         xyz_to_align = np.dot(xyz_to_align, rotation_matrix)
 
@@ -137,10 +137,8 @@ class TwoAtomsMolecule(object):
             else:
                 xyz_aligned[frame] += self._align_frames(xyz_reference=xyz[reference_frame], xyz_to_align=xyz[frame])
 
-
-
         return xyz_aligned
-    
+
     def get_distance(self, atom_01_pos, atom_02_pos, store_result=True, opt=True):
         # TODO: ensure it's a tuple of integers
         self.ensure_data_type.ensure_tuple(parameter=atom_01_pos, parameter_name='atom_01_pos')

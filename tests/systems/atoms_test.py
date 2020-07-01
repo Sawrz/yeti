@@ -50,12 +50,12 @@ class TestStandardMethods(BlueprintTestCase):
 
 class TestAtomManipulationMethods(AtomTestCase):
     def test_add_frame(self):
-        self.atom_03.add_frame(frame=[42, 43, 44])
+        self.atom_03._add_frame(frame=[42, 43, 44])
 
         npt.assert_array_equal(self.atom_03.xyz_trajectory, np.array([[12, 13, 14], [15, 16, 17], [42, 43, 44]]))
 
     def test_delete_frame(self):
-        self.atom_03.delete_frame(frame_index=1)
+        self.atom_03._delete_frame(frame_index=1)
 
         npt.assert_array_equal(self.atom_03.xyz_trajectory, np.array([[12, 13, 14]]))
 
