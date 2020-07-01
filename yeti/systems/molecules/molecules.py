@@ -108,6 +108,38 @@ class TwoAtomsMolecule(object):
                 xyz.append(atom.xyz_trajectory.reshape(atom.xyz_trajectory.shape[0], 1, 3))
 
         return np.hstack(xyz), names
+
+    def _align_frames(self, xyz_reference, xyz_to_align):
+       # Get Rotation Matrix and rotate
+        V, S, Wt = np.linalg.svd(np.dot(xyz_to_align.T, xyz_reference))
+        rotation_matrix = np.round(np.dot(V, Wt), decimals=6)
+
+        xyz_to_align = np.dot(xyz_to_align, rotation_matrix)
+
+        # Get Translational Vector and translate
+        translation_vector = xyz_reference - xyz_to_align
+        translation_vector = np.round(translation_vector, decimals=6)
+
+        xyz_to_align += translation_vector
+        xyz_to_align = np.round(xyz_to_align, decimals=6)
+
+        return xyz_to_align
+
+    def get_aligned_xyz(self, reference_frame):
+        xyz = self.get_xyz()[0]
+
+        xyz_aligned = np.zeros_like(xyz)
+        frames_to_align = np.arange(xyz.shape[0])
+
+        for frame in frames_to_align:
+            if frame == reference_frame:
+                xyz_aligned[reference_frame] = xyz[reference_frame]
+            else:
+                xyz_aligned[frame] += self._align_frames(xyz_reference=xyz[reference_frame], xyz_to_align=xyz[frame])
+
+
+
+        return xyz_aligned
     
     def get_distance(self, atom_01_pos, atom_02_pos, store_result=True, opt=True):
         # TODO: ensure it's a tuple of integers

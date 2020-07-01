@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 import numpy.testing as npt
 
-from tests.blueprints_test import BlueprintExceptionsTestCase
+from tests.blueprints_test import BlueprintExceptionsTestCase, BlueprintTestCase
 from tests.get_features.triplet_test import TripletTestCase
 
 
@@ -86,43 +86,181 @@ class TestAtomMethods(TwoAtomsMoleculeTestCase):
         self.assertEqual((self.donor, self.acceptor), res)
 
 
-class TestXyzMethods(TwoAtomsMoleculeTestCase):
+class TestXyzMethods(BlueprintTestCase):
     def setUp(self) -> None:
-        from yeti.systems.molecules.molecules import TwoAtomsMolecule
         from yeti.systems.building_blocks import Atom
+        from yeti.systems.building_blocks import Residue
+        from yeti.systems.molecules.molecules import TwoAtomsMolecule
 
         super(TestXyzMethods, self).setUp()
 
-        # Extend Residue
-        self.residue_01.definalize()
+        # CREATE ATOMS
+        self.atom_01 = Atom(structure_file_index=2, subsystem_index=0, name='A',
+                            xyz_trajectory=np.array([[0.1, 0.4, 0.3]]))
+        self.atom_02 = Atom(structure_file_index=3, subsystem_index=1, name='B',
+                            xyz_trajectory=np.array([[0.1, 0.5, 0.2]]))
+        self.atom_03 = Atom(structure_file_index=4, subsystem_index=2, name='C',
+                            xyz_trajectory=np.array([[0.1, 0.6, 0.4]]))
+        self.atom_04 = Atom(structure_file_index=5, subsystem_index=3, name='D',
+                            xyz_trajectory=np.array([[0.1, 0.7, 0.7]]))
 
-        atom = Atom(structure_file_index=42, subsystem_index=18, name='P',
-                    xyz_trajectory=np.array([[0.6, 0.3, 0.8], [0.2, 0.9, 0.6]]))
+        # create residues
+        self.residue_01 = Residue(subsystem_index=0, structure_file_index=4, name='RESA')
+        self.residue_02 = Residue(subsystem_index=1, structure_file_index=5, name='RESB')
 
-        self.residue_01.add_atom(atom=atom)
-        atom.set_residue(residue=self.residue_01)
+        self.residue_01.add_atom(atom=self.atom_01)
+        self.atom_01.set_residue(residue=self.residue_01)
+
+        self.residue_01.add_atom(atom=self.atom_02)
+        self.atom_02.set_residue(residue=self.residue_01)
+
+        self.residue_02.add_atom(atom=self.atom_03)
+        self.atom_03.set_residue(residue=self.residue_02)
+
+        self.residue_02.add_atom(atom=self.atom_04)
+        self.atom_04.set_residue(residue=self.residue_02)
 
         self.residue_01.finalize()
+        self.residue_02.finalize()
 
-        # Add additional frame
-        self.donor.delete_frame(2)
-        self.donor_atom.delete_frame(2)
-        self.acceptor.delete_frame(2)
+        self.residues = (self.residue_01, self.residue_02)
+
+        self.molecule_name = 'test'
+
+        # CREATE UNIT CELL PROPERTIES
+        self.unit_cell_angles = np.array([[90, 90, 90], [90, 90, 90], [90, 90, 90]], dtype=np.float32)
+        self.unit_cell_vectors = np.array(
+            [[[1, 0, 0], [0, 1, 0], [0, 0, 1]], [[1, 0, 0], [0, 1, 0], [0, 0, 1]], [[1, 0, 0], [0, 1, 0], [0, 0, 1]]],
+            dtype=np.float32)
+
+        self.box_information = dict(unit_cell_angles=self.unit_cell_angles, unit_cell_vectors=self.unit_cell_vectors)
 
         # initialize object
-        self.atoms = (self.donor, self.donor_atom, self.acceptor, atom)
+        self.atoms = (self.atom_01, self.atom_02, self.atom_03, self.atom_04)
         self.molecule = TwoAtomsMolecule(residues=self.residues, molecule_name=self.molecule_name,
                                          box_information=self.box_information, periodic=True)
 
-    def test_get(self):
+        # Expected solutions
+        self.exp_xyz = np.array([[[0.1, 0.4, 0.3], [0.1, 0.5, 0.2], [0.1, 0.6, 0.4], [0.1, 0.7, 0.7]],
+                                 [[0.1, 0.4, 0.3], [0.1, 0.5, 0.2], [0.1, 0.6, 0.4], [0.1, 0.7, 0.7]]])
+
+    def add_new_frame(self, shift):
+        for atom in self.atoms:
+            atom.add_frame(frame=np.round(atom.xyz_trajectory[0] + shift, decimals=5))
+
+    def test_get_xyz_one_frame(self):
         res_xyz, res_names = self.molecule.get_xyz()
 
-        exp_xyz = np.array([[[0.1, 0.4, 0.3], [0.1, 0.5, 0.2], [0.6, 0.3, 0.8], [0.1, 0.6, 0.4]],
-                            [[0.1, 0.4, 0.3], [0.1, 0.5, 0.2], [0.2, 0.9, 0.6], [0.1, 0.7, 0.4]]])
+        exp_xyz = np.array([[[0.1, 0.4, 0.3], [0.1, 0.5, 0.2], [0.1, 0.6, 0.4], [0.1, 0.7, 0.7]]])
 
-        self.assertListEqual(['RESA4_A', 'RESA4_B', 'RESA4_P', 'RESB5_C'], res_names)
+        self.assertListEqual(['RESA4_A', 'RESA4_B', 'RESB5_C', 'RESB5_D'], res_names)
         npt.assert_array_equal(res_xyz, exp_xyz)
 
+    def test_get_xyz_multi_frames(self):
+        self.add_new_frame(shift=np.array([0.1, 0.2, -0.1]))
+
+        res_xyz, res_names = self.molecule.get_xyz()
+
+        exp_xyz = np.array([[[0.1, 0.4, 0.3], [0.1, 0.5, 0.2], [0.1, 0.6, 0.4], [0.1, 0.7, 0.7]],
+                            [[0.2, 0.6, 0.2], [0.2, 0.7, 0.1], [0.2, 0.8, 0.3], [0.2, 0.9, 0.6]]])
+
+        self.assertListEqual(['RESA4_A', 'RESA4_B', 'RESB5_C', 'RESB5_D'], res_names)
+        npt.assert_array_equal(res_xyz, exp_xyz)
+
+    def test_get_xyz_aligned_non_periodic_x_ref_frame_0(self):
+        self.add_new_frame(shift=np.array([0.1, 0, 0]))
+
+        res_xyz = self.molecule.get_aligned_xyz(reference_frame=0)
+
+        npt.assert_array_equal(res_xyz, self.exp_xyz)
+
+    def test_get_xyz_aligned_non_periodic_y_ref_frame_0(self):
+        self.add_new_frame(shift=np.array([0, 0.1, 0]))
+
+        res_xyz = self.molecule.get_aligned_xyz(reference_frame=0)
+
+        npt.assert_array_equal(res_xyz, self.exp_xyz)
+
+    def test_get_xyz_aligned_non_periodic_z_ref_frame_0(self):
+        self.add_new_frame(shift=np.array([0, 0, 0.1]))
+
+        res_xyz = self.molecule.get_aligned_xyz(reference_frame=0)
+
+        npt.assert_array_equal(res_xyz, self.exp_xyz)
+
+    def test_get_xyz_aligned_non_periodic_x_ref_frame_1(self):
+        self.add_new_frame(shift=np.array([0.1, 0, 0]))
+
+        res_xyz = self.molecule.get_aligned_xyz(reference_frame=1)
+
+        exp_xyz = np.array([[[0.2, 0.4, 0.3], [0.2, 0.5, 0.2], [0.2, 0.6, 0.4], [0.2, 0.7, 0.7]],
+                            [[0.2, 0.4, 0.3], [0.2, 0.5, 0.2], [0.2, 0.6, 0.4], [0.2, 0.7, 0.7]]])
+
+        npt.assert_array_equal(res_xyz, exp_xyz)
+
+    def test_get_xyz_aligned_non_periodic_y_ref_frame_1(self):
+        self.add_new_frame(shift=np.array([0, 0.1, 0]))
+
+        res_xyz = self.molecule.get_aligned_xyz(reference_frame=1)
+
+        exp_xyz = np.array([[[0.1, 0.5, 0.3], [0.1, 0.6, 0.2], [0.1, 0.7, 0.4], [0.1, 0.8, 0.7]],
+                            [[0.1, 0.5, 0.3], [0.1, 0.6, 0.2], [0.1, 0.7, 0.4], [0.1, 0.8, 0.7]]])
+
+        npt.assert_array_equal(res_xyz, exp_xyz)
+
+    def test_get_xyz_aligned_non_periodic_z_ref_frame_1(self):
+        self.add_new_frame(shift=np.array([0, 0, 0.1]))
+
+        res_xyz = self.molecule.get_aligned_xyz(reference_frame=1)
+
+        exp_xyz = np.array([[[0.1, 0.4, 0.4], [0.1, 0.5, 0.3], [0.1, 0.6, 0.5], [0.1, 0.7, 0.8]],
+                            [[0.1, 0.4, 0.4], [0.1, 0.5, 0.3], [0.1, 0.6, 0.5], [0.1, 0.7, 0.8]]])
+
+        npt.assert_array_equal(res_xyz, exp_xyz)
+
+    def test_get_xyz_aligned_non_periodic_xyz_equal_shift(self):
+        self.add_new_frame(shift=np.array([0.1, 0.1, 0.1]))
+
+        res_xyz = self.molecule.get_aligned_xyz(reference_frame=0)
+
+        npt.assert_array_equal(res_xyz, self.exp_xyz)
+
+    def test_get_xyz_aligned_non_periodic_xyz_unequal_shift(self):
+        self.add_new_frame(shift=np.array([0.5, 0.1, -0.2]))
+
+        res_xyz = self.molecule.get_aligned_xyz(reference_frame=0)
+
+        npt.assert_array_equal(res_xyz, self.exp_xyz)
+
+    def test_get_xyz_aligned_non_periodic_xyz_rotated(self):
+        self.atom_01.add_frame(frame=np.array([0.30198, 0.44656, 0.16514]))
+        self.atom_02.add_frame(frame=np.array([0.30018, 0.53183, 0.12487]))
+        self.atom_03.add_frame(frame=np.array([0.41968, 0.62204, 0.22082]))
+        self.atom_04.add_frame(frame=np.array([0.5796, 0.71391, 0.36219]))
+
+        res_xyz = self.molecule.get_aligned_xyz(reference_frame=0)
+
+        npt.assert_array_equal(res_xyz, self.exp_xyz)
+
+    def test_get_xyz_aligned_non_periodic_xyz_rotated_and_translated(self):
+        self.atom_01.add_frame(frame=np.array([0.56344, 0.2833, 0.51386]))
+        self.atom_02.add_frame(frame=np.array([0.70793, 0.47808, 0.6454]))
+        self.atom_03.add_frame(frame=np.array([0.68114, 0.45878, 0.56954]))
+        self.atom_04.add_frame(frame=np.array([0.84106, 0.55065, 0.71091]))
+
+        res_xyz = self.molecule.get_aligned_xyz(reference_frame=0)
+
+        npt.assert_array_equal(res_xyz, self.exp_xyz)
+
+    def test_get_xyz_aligned_non_periodic_xyz_translated_and_rotated(self):
+        self.atom_01.add_frame(frame=np.array([0.42266, 0.64481, 0.27589]))
+        self.atom_02.add_frame(frame=np.array([0.42086, 0.73007, 0.23563]))
+        self.atom_03.add_frame(frame=np.array([0.54036, 0.82029, 0.33158]))
+        self.atom_04.add_frame(frame=np.array([0.70028, 0.91216, 0.47294]))
+
+        res_xyz = self.molecule.get_aligned_xyz(reference_frame=0)
+
+        npt.assert_array_equal(res_xyz, self.exp_xyz)
 
 class TestDistanceMethods(TwoAtomsMoleculeTestCase):
     def test_store(self):
