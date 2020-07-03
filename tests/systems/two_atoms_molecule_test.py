@@ -98,11 +98,17 @@ class TestXyzMethods(BlueprintTestCase):
         self.atom_01 = Atom(structure_file_index=2, subsystem_index=0, name='A',
                             xyz_trajectory=np.array([[0.1, 0.4, 0.3]]))
         self.atom_02 = Atom(structure_file_index=3, subsystem_index=1, name='B',
-                            xyz_trajectory=np.array([[0.1, 0.5, 0.2]]))
+                            xyz_trajectory=np.array([[0.2, 0.5, 0.2]]))
         self.atom_03 = Atom(structure_file_index=4, subsystem_index=2, name='C',
-                            xyz_trajectory=np.array([[0.1, 0.6, 0.4]]))
+                            xyz_trajectory=np.array([[0.3, 0.6, 0.4]]))
         self.atom_04 = Atom(structure_file_index=5, subsystem_index=3, name='D',
                             xyz_trajectory=np.array([[0.1, 0.7, 0.7]]))
+
+        # create covalent bonds
+        self.atom_01.add_covalent_bond(self.atom_02)
+        self.atom_01.add_covalent_bond(self.atom_03)
+        self.atom_02.add_covalent_bond(self.atom_03)
+        self.atom_03.add_covalent_bond(self.atom_04)
 
         # create residues
         self.residue_01 = Residue(subsystem_index=0, structure_file_index=4, name='RESA')
@@ -141,129 +147,325 @@ class TestXyzMethods(BlueprintTestCase):
                                          box_information=self.box_information, periodic=True)
 
         # Expected solutions
-        self.exp_xyz = np.array([[[0.1, 0.4, 0.3], [0.1, 0.5, 0.2], [0.1, 0.6, 0.4], [0.1, 0.7, 0.7]],
-                                 [[0.1, 0.4, 0.3], [0.1, 0.5, 0.2], [0.1, 0.6, 0.4], [0.1, 0.7, 0.7]]])
+        self.exp_xyz = np.array([[[0.425, 0.35, 0.4], [0.525, 0.45, 0.3], [0.625, 0.55, 0.5], [0.425, 0.65, 0.8]],
+                                 [[0.425, 0.35, 0.4], [0.525, 0.45, 0.3], [0.625, 0.55, 0.5], [0.425, 0.65, 0.8]]])
+        self.exp_names = np.array(['RESA4_A', 'RESA4_B', 'RESB5_C', 'RESB5_D'])
 
-    def add_new_frame(self, shift):
+    def add_second_frame(self, shift, rotation_matrix=np.diag([1, 1, 1])):
         for atom in self.atoms:
-            new_xyz = np.round(atom.xyz_trajectory[0] + shift, decimals=5)
+            new_xyz = np.round(np.dot(atom.xyz_trajectory[0] + shift, rotation_matrix), decimals=5)
+
+            if np.any(new_xyz > 1):
+                new_xyz[np.where(new_xyz > 1)[0]] -= 1
+            if np.any(new_xyz < 0):
+                new_xyz[np.where(new_xyz < 0)[0]] += 1
 
             atom._add_frame(frame=new_xyz)
 
-    def test_get_xyz_one_frame(self):
-        res_xyz, res_names = self.molecule.get_xyz()
+    def convert_to_radian(self, angle):
+        return angle * np.pi / 180.
 
-        exp_xyz = np.array([[[0.1, 0.4, 0.3], [0.1, 0.5, 0.2], [0.1, 0.6, 0.4], [0.1, 0.7, 0.7]]])
+    def get_rotation_matrix(self, x_angle=0, y_angle=0, z_angle=0):
+        x_angle = self.convert_to_radian(angle=x_angle)
+        y_angle = self.convert_to_radian(angle=y_angle)
+        z_angle = self.convert_to_radian(angle=z_angle)
 
-        self.assertListEqual(['RESA4_A', 'RESA4_B', 'RESB5_C', 'RESB5_D'], res_names)
+        rotation_x = np.array([[1, 0, 0],
+                               [0, np.cos(x_angle), -np.sin(x_angle)],
+                               [0, np.sin(x_angle), np.cos(x_angle)]], dtype=np.float)
+
+        rotation_y = np.array([[np.cos(y_angle), 0, np.sin(y_angle)],
+                              [0, 1, 0],
+                              [-np.sin(y_angle), 0, np.cos(y_angle)]], dtype=np.float)
+
+        rotation_z = np.array([[np.cos(z_angle), -np.sin(z_angle), 0],
+                              [np.sin(z_angle), np.cos(z_angle), 0],
+                              [0, 0, 1]])
+
+        return np.round(np.dot(np.dot(rotation_x, rotation_y), rotation_z), decimals=6)
+
+    def test_get_xyz_one_frame_non_periodic(self):
+        res_xyz, res_names = self.molecule.get_xyz(eliminate_periodicity=False)
+
+        exp_xyz = np.array([[[0.1, 0.4, 0.3], [0.2, 0.5, 0.2], [0.3, 0.6, 0.4], [0.1, 0.7, 0.7]]])
+
+        npt.assert_array_equal(self.exp_names, res_names)
         npt.assert_array_equal(res_xyz, exp_xyz)
 
-    def test_get_xyz_multi_frames(self):
-        self.add_new_frame(shift=np.array([0.1, 0.2, -0.1]))
+    def test_get_xyz_multi_frames_non_periodic(self):
+        self.add_second_frame(shift=np.array([0.1, 0.2, -0.1]))
 
-        res_xyz, res_names = self.molecule.get_xyz()
+        res_xyz, res_names = self.molecule.get_xyz(eliminate_periodicity=False)
 
-        exp_xyz = np.array([[[0.1, 0.4, 0.3], [0.1, 0.5, 0.2], [0.1, 0.6, 0.4], [0.1, 0.7, 0.7]],
-                            [[0.2, 0.6, 0.2], [0.2, 0.7, 0.1], [0.2, 0.8, 0.3], [0.2, 0.9, 0.6]]])
+        exp_xyz = np.array([[[0.1, 0.4, 0.3], [0.2, 0.5, 0.2], [0.3, 0.6, 0.4], [0.1, 0.7, 0.7]],
+                            [[0.2, 0.6, 0.2], [0.3, 0.7, 0.1], [0.4, 0.8, 0.3], [0.2, 0.9, 0.6]]])
 
-        self.assertListEqual(['RESA4_A', 'RESA4_B', 'RESB5_C', 'RESB5_D'], res_names)
+        npt.assert_array_equal(self.exp_names, res_names)
         npt.assert_array_equal(res_xyz, exp_xyz)
 
-    def test_get_xyz_aligned_non_periodic_x_ref_frame_0(self):
-        self.add_new_frame(shift=np.array([0.1, 0, 0]))
+    def test_eliminate_periodicity_upper_adjustment(self):
+        self.add_second_frame(shift=np.array([-0.2, 0, 0]))
 
-        res_xyz = self.molecule.get_aligned_xyz(reference_frame=0)
+        res_xyz = self.molecule._eliminate_periodicity(atom=self.atom_01, cov_atom=self.atom_02)
 
-        npt.assert_array_equal(res_xyz, self.exp_xyz)
+        exp_xyz = np.array([[0.2, 0.5, 0.2], [1, 0.5, 0.2]])
 
-    def test_get_xyz_aligned_non_periodic_y_ref_frame_0(self):
-        self.add_new_frame(shift=np.array([0, 0.1, 0]))
+        npt.assert_array_almost_equal(res_xyz, exp_xyz, decimal=5)
 
-        res_xyz = self.molecule.get_aligned_xyz(reference_frame=0)
+    def test_eliminate_periodicity_lower_adjustment(self):
+        self.add_second_frame(shift=np.array([0, 0, -0.3]))
 
-        npt.assert_array_equal(res_xyz, self.exp_xyz)
+        res_xyz = self.molecule._eliminate_periodicity(atom=self.atom_01, cov_atom=self.atom_02)
 
-    def test_get_xyz_aligned_non_periodic_z_ref_frame_0(self):
-        self.add_new_frame(shift=np.array([0, 0, 0.1]))
+        exp_xyz = np.array([[0.2, 0.5, 0.2], [0.2, 0.5, -0.1]])
 
-        res_xyz = self.molecule.get_aligned_xyz(reference_frame=0)
+        npt.assert_array_almost_equal(res_xyz, exp_xyz, decimal=5)
 
-        npt.assert_array_equal(res_xyz, self.exp_xyz)
+    def test_eliminate_periodicity_no_adjustment(self):
+        self.add_second_frame(shift=np.array([0, 0, 0]))
 
-    def test_get_xyz_aligned_non_periodic_x_ref_frame_1(self):
-        self.add_new_frame(shift=np.array([0.1, 0, 0]))
+        res_xyz = self.molecule._eliminate_periodicity(atom=self.atom_01, cov_atom=self.atom_02)
 
-        res_xyz = self.molecule.get_aligned_xyz(reference_frame=1)
+        exp_xyz = np.array([[0.2, 0.5, 0.2], [0.2, 0.5, 0.2]])
 
-        exp_xyz = np.array([[[0.2, 0.4, 0.3], [0.2, 0.5, 0.2], [0.2, 0.6, 0.4], [0.2, 0.7, 0.7]],
-                            [[0.2, 0.4, 0.3], [0.2, 0.5, 0.2], [0.2, 0.6, 0.4], [0.2, 0.7, 0.7]]])
+        npt.assert_array_almost_equal(res_xyz, exp_xyz, decimal=5)
 
+    def test_get_xyz_periodic_shift_x(self):
+        self.add_second_frame(shift=np.array([-0.2, 0, 0]))
+
+        res_xyz, res_names = self.molecule.get_xyz(eliminate_periodicity=True)
+
+        exp_xyz = np.array([[[0.1, 0.4, 0.3], [0.2, 0.5, 0.2], [0.3, 0.6, 0.4], [0.1, 0.7, 0.7]],
+                            [[0.9, 0.4, 0.3], [1, 0.5, 0.2], [1.1, 0.6, 0.4], [0.9, 0.7, 0.7]]])
+
+        npt.assert_array_equal(self.exp_names, res_names)
         npt.assert_array_equal(res_xyz, exp_xyz)
 
-    def test_get_xyz_aligned_non_periodic_y_ref_frame_1(self):
-        self.add_new_frame(shift=np.array([0, 0.1, 0]))
+    def test_get_xyz_periodic_shift_y(self):
+        self.add_second_frame(shift=np.array([0, 0.4, 0]))
 
-        res_xyz = self.molecule.get_aligned_xyz(reference_frame=1)
+        res_xyz, res_names = self.molecule.get_xyz(eliminate_periodicity=True)
 
-        exp_xyz = np.array([[[0.1, 0.5, 0.3], [0.1, 0.6, 0.2], [0.1, 0.7, 0.4], [0.1, 0.8, 0.7]],
-                            [[0.1, 0.5, 0.3], [0.1, 0.6, 0.2], [0.1, 0.7, 0.4], [0.1, 0.8, 0.7]]])
+        exp_xyz = np.array([[[0.1, 0.4, 0.3], [0.2, 0.5, 0.2], [0.3, 0.6, 0.4], [0.1, 0.7, 0.7]],
+                            [[0.1, 0.8, 0.3], [0.2, 0.9, 0.2], [0.3, 1.0, 0.4], [0.1, 1.1, 0.7]]])
 
+        npt.assert_array_equal(self.exp_names, res_names)
         npt.assert_array_equal(res_xyz, exp_xyz)
 
-    def test_get_xyz_aligned_non_periodic_z_ref_frame_1(self):
-        self.add_new_frame(shift=np.array([0, 0, 0.1]))
+    def test_get_xyz_periodic_shift_z(self):
+        self.add_second_frame(shift=np.array([0, 0, -0.4]))
 
-        res_xyz = self.molecule.get_aligned_xyz(reference_frame=1)
+        res_xyz, res_names = self.molecule.get_xyz(eliminate_periodicity=True)
 
-        exp_xyz = np.array([[[0.1, 0.4, 0.4], [0.1, 0.5, 0.3], [0.1, 0.6, 0.5], [0.1, 0.7, 0.8]],
-                            [[0.1, 0.4, 0.4], [0.1, 0.5, 0.3], [0.1, 0.6, 0.5], [0.1, 0.7, 0.8]]])
+        exp_xyz = np.array([[[0.1, 0.4, 0.3], [0.2, 0.5, 0.2], [0.3, 0.6, 0.4], [0.1, 0.7, 0.7]],
+                            [[0.1, 0.4, 0.9], [0.2, 0.5, 0.8], [0.3, 0.6, 1.0], [0.1, 0.7, 1.3]]])
 
+        npt.assert_array_equal(self.exp_names, res_names)
         npt.assert_array_equal(res_xyz, exp_xyz)
 
-    def test_get_xyz_aligned_non_periodic_xyz_equal_shift(self):
-        self.add_new_frame(shift=np.array([0.1, 0.1, 0.1]))
+    def test_get_xyz_periodic_shift_xyz(self):
+        self.add_second_frame(shift=np.array([-0.2, 0.4, -0.4]))
 
-        res_xyz = self.molecule.get_aligned_xyz(reference_frame=0)
+        res_xyz, res_names = self.molecule.get_xyz(eliminate_periodicity=True)
 
-        npt.assert_array_equal(res_xyz, self.exp_xyz)
+        exp_xyz = np.array([[[0.1, 0.4, 0.3], [0.2, 0.5, 0.2], [0.3, 0.6, 0.4], [0.1, 0.7, 0.7]],
+                            [[0.9, 0.8, 0.9], [1.0, 0.9, 0.8], [1.1, 1.0, 1.0], [0.9, 1.1, 1.3]]])
 
-    def test_get_xyz_aligned_non_periodic_xyz_unequal_shift(self):
-        self.add_new_frame(shift=np.array([0.5, 0.1, -0.2]))
+        npt.assert_array_equal(self.exp_names, res_names)
+        npt.assert_array_equal(res_xyz, exp_xyz)
 
-        res_xyz = self.molecule.get_aligned_xyz(reference_frame=0)
+    def test_get_geometric_center(self):
+        xyz = self.molecule.get_xyz()[0][0]
 
-        npt.assert_array_equal(res_xyz, self.exp_xyz)
+        res_gc = self.molecule._get_geometric_center(xyz=xyz)
 
-    def test_get_xyz_aligned_non_periodic_xyz_rotated(self):
-        self.atom_01._add_frame(frame=np.array([0.30198, 0.44656, 0.16514]))
-        self.atom_02._add_frame(frame=np.array([0.30018, 0.53183, 0.12487]))
-        self.atom_03._add_frame(frame=np.array([0.41968, 0.62204, 0.22082]))
-        self.atom_04._add_frame(frame=np.array([0.5796, 0.71391, 0.36219]))
+        npt.assert_array_almost_equal(res_gc, np.array([0.175, 0.55, 0.4]))
 
-        res_xyz = self.molecule.get_aligned_xyz(reference_frame=0)
+    def test_get_aligned_xyz_non_periodic_shift_x_ref_frame_0(self):
+        self.add_second_frame(shift=np.array([0.1, 0, 0]))
 
-        npt.assert_array_equal(res_xyz, self.exp_xyz)
+        res_xyz = self.molecule.get_aligned_xyz(reference_frame=0, periodic=False)
 
-    def test_get_xyz_aligned_non_periodic_xyz_rotated_and_translated(self):
-        self.atom_01._add_frame(frame=np.array([0.56344, 0.2833, 0.51386]))
-        self.atom_02._add_frame(frame=np.array([0.70793, 0.47808, 0.6454]))
-        self.atom_03._add_frame(frame=np.array([0.68114, 0.45878, 0.56954]))
-        self.atom_04._add_frame(frame=np.array([0.84106, 0.55065, 0.71091]))
+        npt.assert_array_almost_equal(res_xyz, self.exp_xyz, decimal=5)
 
-        res_xyz = self.molecule.get_aligned_xyz(reference_frame=0)
+    def test_get_aligned_xyz_non_periodic_shift_y_ref_frame_0(self):
+        self.add_second_frame(shift=np.array([0, 0.1, 0]))
 
-        npt.assert_array_equal(res_xyz, self.exp_xyz)
+        res_xyz = self.molecule.get_aligned_xyz(reference_frame=0, periodic=False)
 
-    def test_get_xyz_aligned_non_periodic_xyz_translated_and_rotated(self):
-        self.atom_01._add_frame(frame=np.array([0.42266, 0.64481, 0.27589]))
-        self.atom_02._add_frame(frame=np.array([0.42086, 0.73007, 0.23563]))
-        self.atom_03._add_frame(frame=np.array([0.54036, 0.82029, 0.33158]))
-        self.atom_04._add_frame(frame=np.array([0.70028, 0.91216, 0.47294]))
+        npt.assert_array_almost_equal(res_xyz, self.exp_xyz, decimal=5)
 
-        res_xyz = self.molecule.get_aligned_xyz(reference_frame=0)
+    def test_get_aligned_xyz_non_periodic_shift_z_ref_frame_0(self):
+        self.add_second_frame(shift=np.array([0, 0, 0.1]))
 
-        npt.assert_array_equal(res_xyz, self.exp_xyz)
+        res_xyz = self.molecule.get_aligned_xyz(reference_frame=0, periodic=False)
 
+        npt.assert_array_almost_equal(res_xyz, self.exp_xyz, decimal=5)
+
+    def test_get_aligned_xyz_non_periodic_shift_x_ref_frame_1(self):
+        self.add_second_frame(shift=np.array([0.1, 0, 0]))
+
+        res_xyz = self.molecule.get_aligned_xyz(reference_frame=1, periodic=False)
+
+        npt.assert_array_almost_equal(res_xyz, self.exp_xyz, decimal=5)
+
+    def test_get_aligned_xyz_non_periodic_shift_y_ref_frame_1(self):
+        self.add_second_frame(shift=np.array([0, 0.1, 0]))
+
+        res_xyz = self.molecule.get_aligned_xyz(reference_frame=1, periodic=False)
+
+        npt.assert_array_almost_equal(res_xyz, self.exp_xyz, decimal=5)
+
+    def test_get_aligned_xyz_non_periodic_shift_z_ref_frame_1(self):
+        self.add_second_frame(shift=np.array([0, 0, 0.1]))
+
+        res_xyz = self.molecule.get_aligned_xyz(reference_frame=1, periodic=False)
+
+        npt.assert_array_almost_equal(res_xyz, self.exp_xyz, decimal=5)
+
+    def test_get_aligned_xyz_non_periodic_equal_shift_xyz(self):
+        self.add_second_frame(shift=np.array([0.1, 0.1, 0.1]))
+
+        res_xyz = self.molecule.get_aligned_xyz(reference_frame=0, periodic=False)
+
+        npt.assert_array_almost_equal(res_xyz, self.exp_xyz, decimal=5)
+
+    def test_get_aligned_xyz_non_periodic_unequal_shift_xyz(self):
+        self.add_second_frame(shift=np.array([0.5, 0.1, -0.2]))
+
+        res_xyz = self.molecule.get_aligned_xyz(reference_frame=0, periodic=False)
+
+        npt.assert_array_almost_equal(res_xyz, self.exp_xyz, decimal=5)
+
+    def test_get_aligned_xyz_non_periodic_rotated_x(self):
+        rotation_matrix = self.get_rotation_matrix(x_angle=90)
+
+        self.atom_01._add_frame(frame=np.dot(self.atom_01.xyz_trajectory[0], rotation_matrix))
+        self.atom_02._add_frame(frame=np.dot(self.atom_02.xyz_trajectory[0], rotation_matrix))
+        self.atom_03._add_frame(frame=np.dot(self.atom_03.xyz_trajectory[0], rotation_matrix))
+        self.atom_04._add_frame(frame=np.dot(self.atom_04.xyz_trajectory[0], rotation_matrix))
+
+        res_xyz = self.molecule.get_aligned_xyz(reference_frame=0, periodic=False)
+
+        npt.assert_array_almost_equal(res_xyz, self.exp_xyz, decimal=5)
+
+    def test_get_aligned_xyz_non_periodic_rotated_y(self):
+        rotation_matrix = self.get_rotation_matrix(y_angle=45)
+
+        self.atom_01._add_frame(frame=np.dot(self.atom_01.xyz_trajectory[0], rotation_matrix))
+        self.atom_02._add_frame(frame=np.dot(self.atom_02.xyz_trajectory[0], rotation_matrix))
+        self.atom_03._add_frame(frame=np.dot(self.atom_03.xyz_trajectory[0], rotation_matrix))
+        self.atom_04._add_frame(frame=np.dot(self.atom_04.xyz_trajectory[0], rotation_matrix))
+
+        res_xyz = self.molecule.get_aligned_xyz(reference_frame=0, periodic=False)
+
+        npt.assert_array_almost_equal(res_xyz, self.exp_xyz, decimal=5)
+
+    def test_get_aligned_xyz_non_periodic_rotated_z(self):
+        rotation_matrix = self.get_rotation_matrix(z_angle=192)
+
+        self.atom_01._add_frame(frame=np.dot(self.atom_01.xyz_trajectory[0], rotation_matrix))
+        self.atom_02._add_frame(frame=np.dot(self.atom_02.xyz_trajectory[0], rotation_matrix))
+        self.atom_03._add_frame(frame=np.dot(self.atom_03.xyz_trajectory[0], rotation_matrix))
+        self.atom_04._add_frame(frame=np.dot(self.atom_04.xyz_trajectory[0], rotation_matrix))
+
+        res_xyz = self.molecule.get_aligned_xyz(reference_frame=0, periodic=False)
+
+        npt.assert_array_almost_equal(res_xyz, self.exp_xyz, decimal=5)
+
+    def test_get_aligned_xyz_non_periodic_rotated_xyz(self):
+        rotation_matrix = self.get_rotation_matrix(x_angle=23, y_angle=42, z_angle=178)
+
+        self.atom_01._add_frame(frame=np.dot(self.atom_01.xyz_trajectory[0], rotation_matrix))
+        self.atom_02._add_frame(frame=np.dot(self.atom_02.xyz_trajectory[0], rotation_matrix))
+        self.atom_03._add_frame(frame=np.dot(self.atom_03.xyz_trajectory[0], rotation_matrix))
+        self.atom_04._add_frame(frame=np.dot(self.atom_04.xyz_trajectory[0], rotation_matrix))
+
+        res_xyz = self.molecule.get_aligned_xyz(reference_frame=0, periodic=False)
+
+        npt.assert_array_almost_equal(res_xyz, self.exp_xyz, decimal=5)
+
+    def test_get_aligned_xyz_non_periodic_rotated_xyz_and_translated_xyz(self):
+        rotation_matrix = self.get_rotation_matrix(x_angle=85, y_angle=45, z_angle=82)
+        translation_vector = np.array([0.1, -0.1, 0.1])
+
+        self.atom_01._add_frame(frame=np.dot(self.atom_01.xyz_trajectory[0], rotation_matrix) + translation_vector)
+        self.atom_02._add_frame(frame=np.dot(self.atom_02.xyz_trajectory[0], rotation_matrix) + translation_vector)
+        self.atom_03._add_frame(frame=np.dot(self.atom_03.xyz_trajectory[0], rotation_matrix) + translation_vector)
+        self.atom_04._add_frame(frame=np.dot(self.atom_04.xyz_trajectory[0], rotation_matrix) + translation_vector)
+
+        res_xyz = self.molecule.get_aligned_xyz(reference_frame=0, periodic=False)
+
+        npt.assert_array_almost_equal(res_xyz, self.exp_xyz, decimal=5)
+
+    def test_get_aligned_xyz_non_periodic_translated_xyz_and_rotated_xyz(self):
+        rotation_matrix = self.get_rotation_matrix(x_angle=85, y_angle=45, z_angle=82)
+        translation_vector = np.array([0.1, -0.1, 0.1])
+
+        self.atom_01._add_frame(frame=np.dot(self.atom_01.xyz_trajectory[0] + translation_vector, rotation_matrix))
+        self.atom_02._add_frame(frame=np.dot(self.atom_02.xyz_trajectory[0] + translation_vector, rotation_matrix))
+        self.atom_03._add_frame(frame=np.dot(self.atom_03.xyz_trajectory[0] + translation_vector, rotation_matrix))
+        self.atom_04._add_frame(frame=np.dot(self.atom_04.xyz_trajectory[0] + translation_vector, rotation_matrix))
+
+        res_xyz = self.molecule.get_aligned_xyz(reference_frame=0, periodic=False)
+
+        npt.assert_array_almost_equal(res_xyz, self.exp_xyz, decimal=5)
+
+    def test_get_aligned_xyz_periodic_shift_x(self):
+        self.add_second_frame(shift=np.array([-0.2, 0, 0]))
+
+        res_xyz = self.molecule.get_aligned_xyz(reference_frame=0, periodic=True)
+
+        npt.assert_array_almost_equal(res_xyz, self.exp_xyz, decimal=5)
+
+    def test_get_aligned_xyz_periodic_shift_y(self):
+        self.add_second_frame(shift=np.array([0, 0.4, 0]))
+
+        res_xyz = self.molecule.get_aligned_xyz(reference_frame=0, periodic=True)
+
+        npt.assert_array_almost_equal(res_xyz, self.exp_xyz, decimal=5)
+
+    def test_get_aligned_xyz_periodic_shift_z(self):
+        self.add_second_frame(shift=np.array([0, 0, -0.4]))
+
+        res_xyz = self.molecule.get_aligned_xyz(reference_frame=0, periodic=True)
+
+        npt.assert_array_almost_equal(res_xyz, self.exp_xyz, decimal=5)
+
+    def test_get_aligned_xyz_periodic_shift_xyz(self):
+        self.add_second_frame(shift=np.array([-0.2, 0.4, -0.4]))
+
+        res_xyz = self.molecule.get_aligned_xyz(reference_frame=0, periodic=True)
+
+        npt.assert_array_almost_equal(res_xyz, self.exp_xyz, decimal=5)
+
+    def test_get_aligned_xyz_periodic_rotated_x(self):
+        self.add_second_frame(shift=np.array([-0.2, 0, 0]), rotation_matrix=self.get_rotation_matrix(x_angle=12.6))
+
+        res_xyz = self.molecule.get_aligned_xyz(reference_frame=0, periodic=True)
+
+        npt.assert_array_almost_equal(res_xyz, self.exp_xyz, decimal=5)
+
+    def test_get_aligned_xyz_periodic_rotated_y(self):
+        self.add_second_frame(shift=np.array([0, 0.4, 0]), rotation_matrix=self.get_rotation_matrix(x_angle=29))
+
+        res_xyz = self.molecule.get_aligned_xyz(reference_frame=0, periodic=True)
+
+        npt.assert_array_almost_equal(res_xyz, self.exp_xyz, decimal=5)
+
+    def test_get_aligned_xyz_periodic_rotated_z(self):
+        self.add_second_frame(shift=np.array([0, 0, -0.4]), rotation_matrix=self.get_rotation_matrix(x_angle=280.37))
+
+        res_xyz = self.molecule.get_aligned_xyz(reference_frame=0, periodic=True)
+
+        npt.assert_array_almost_equal(res_xyz, self.exp_xyz, decimal=5)
+
+    def test_get_aligned_xyz_periodic_rotated_xyz(self):
+        self.add_second_frame(shift=np.array([-0.2, 0.4, -0.4]), rotation_matrix=self.get_rotation_matrix(x_angle=280.37, y_angle=13.18, z_angle=112.58))
+
+        res_xyz = self.molecule.get_aligned_xyz(reference_frame=0, periodic=True)
+
+        npt.assert_array_almost_equal(res_xyz, self.exp_xyz, decimal=5)
 
 class TestDistanceMethods(TwoAtomsMoleculeTestCase):
     def test_store(self):

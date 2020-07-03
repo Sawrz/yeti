@@ -98,46 +98,114 @@ class TwoAtomsMolecule(object):
 
         return tuple(atom_list)
 
-    def get_xyz(self):
-        names = []
-        xyz = []
+    def _helper(self, atom, names, xyz, atom_xyz, visited_atoms):
+        if atom in visited_atoms:
+            return None
 
-        for residue in self.residues:
-            for atom in residue.atoms:
-                names.append(f'{residue.name}{residue.structure_file_index}_{atom.name}')
-                xyz.append(atom.xyz_trajectory.reshape(atom.xyz_trajectory.shape[0], 1, 3))
+        names[atom.subsystem_index] = f'{atom.residue.name}{atom.residue.structure_file_index}_{atom.name}'
+        xyz[:, atom.subsystem_index, :] += atom_xyz.reshape(atom.xyz_trajectory.shape[0], 1, 3)[:, 0, :]
+        visited_atoms.append(atom)
 
-        return np.hstack(xyz), names
+    def _eliminate_periodicity(self, atom, cov_atom):
+        ref_xyz = atom.xyz_trajectory
+        cov_xyz = cov_atom.xyz_trajectory
+        displacement = ref_xyz - cov_xyz
 
-    def _align_frames(self, xyz_reference, xyz_to_align):
-        # Get Rotation Matrix and rotate
-        u, s, vh = np.linalg.svd(np.dot(xyz_to_align.T, xyz_reference))
-        rotation_matrix = np.round(np.dot(u, vh), decimals=6)
+        unit_cell_vectors = self.box_information["unit_cell_vectors"]
+        upper_box_boundaries = np.sum(unit_cell_vectors, axis=1)
+        geometric_center = upper_box_boundaries / 2
 
-        xyz_to_align = np.dot(xyz_to_align, rotation_matrix)
+        exceed_upper_boundary_condition = np.where(displacement > geometric_center)
+        exceed_lower_boundary_condition = np.where(displacement < -geometric_center)
 
-        # Get Translational Vector and translate
-        translation_vector = xyz_reference - xyz_to_align
-        translation_vector = np.round(translation_vector, decimals=6)
+        if len(exceed_upper_boundary_condition[0]) > 0:
+            for frame, dimension in zip(exceed_upper_boundary_condition[0], exceed_upper_boundary_condition[1]):
+                cov_xyz[frame] += unit_cell_vectors[frame, dimension]
 
+        if len(exceed_lower_boundary_condition[0]) > 0:
+            for frame, dimension in zip(exceed_lower_boundary_condition[0], exceed_lower_boundary_condition[1]):
+                cov_xyz[frame] -= unit_cell_vectors[frame, dimension]
+
+        return cov_xyz
+
+    def get_xyz(self, eliminate_periodicity=False):
+        frames = self.residues[0].atoms[0].xyz_trajectory.shape[0]
+        atoms = tuple(sum([residue.atoms for residue in self.residues], ()))
+        atoms_amount = len(atoms)
+
+        names = np.empty(atoms_amount, dtype=object)
+        xyz = np.zeros(shape=(frames, atoms_amount, 3), dtype=np.float)
+        visited_atoms = []
+
+        for atom_index, atom in enumerate(atoms):
+            if atom in visited_atoms:
+                continue
+
+            if eliminate_periodicity:
+                if atom_index == 0:
+                    atom_xyz = atom.xyz_trajectory
+                else:
+                    atom_xyz = self._eliminate_periodicity(atoms[0], atom)
+
+                self._helper(atom=atom, names=names, xyz=xyz, atom_xyz=atom_xyz, visited_atoms=visited_atoms)
+
+                for cov_atom in atom.covalent_bond_partners:
+                    if cov_atom in visited_atoms:
+                        continue
+
+                    cov_xyz = self._eliminate_periodicity(atom, cov_atom)
+                    self._helper(atom=cov_atom, names=names, xyz=xyz, atom_xyz=cov_xyz,
+                                 visited_atoms=visited_atoms)
+            else:
+                self._helper(atom=atom, names=names, xyz=xyz, atom_xyz=atom.xyz_trajectory, visited_atoms=visited_atoms)
+
+        return xyz, names
+
+    def _get_geometric_center(self, xyz):
+        return np.mean(xyz, axis=0)
+
+    def _align_frames(self, xyz_reference, xyz_to_align, iterations=1000):
+        for i in range(iterations):
+            # Get Geometric Center Translational Vector and translate
+            translation_vector = self._get_geometric_center(xyz_reference) - self._get_geometric_center(xyz_to_align)
+            xyz_to_align += translation_vector
+
+            # Get Rotation Matrix and rotate
+            u, s, vh = np.linalg.svd(np.dot(xyz_to_align.T, xyz_reference))
+            rotation_matrix = np.dot(u, vh)
+            xyz_to_align = np.dot(xyz_to_align, rotation_matrix)
+
+        translation_vector = self._get_geometric_center(xyz_reference) - self._get_geometric_center(xyz_to_align)
         xyz_to_align += translation_vector
-        xyz_to_align = np.round(xyz_to_align, decimals=6)
 
         return xyz_to_align
 
-    def get_aligned_xyz(self, reference_frame):
-        xyz = self.get_xyz()[0]
+    def get_aligned_xyz(self, reference_frame, periodic=True):
+        if not np.allclose(self.box_information["unit_cell_angles"], 90):
+            raise MoleculeException("Box is not orthogonal. This method works on orthogonal boxes only.")
 
+        xyz = self.get_xyz(eliminate_periodicity=periodic)[0]
         xyz_aligned = np.zeros_like(xyz)
         frames_to_align = np.arange(xyz.shape[0])
+        frames_to_align = np.delete(frames_to_align, reference_frame)
+
+        # Set Reference Frame
+        reference_xyz = xyz[reference_frame]
+
+        # Get Geometric Center of box
+        # TODO: check if this is true for non-cubic boxes
+        geometric_center_box = np.sum(self.box_information["unit_cell_vectors"][reference_frame], axis=1) / 2
+        geometric_center_molecule = self._get_geometric_center(reference_xyz)
+        shift = geometric_center_box - geometric_center_molecule
+
+        reference_xyz += shift
+        xyz_aligned[reference_frame] += reference_xyz
 
         for frame in frames_to_align:
-            if frame == reference_frame:
-                xyz_aligned[reference_frame] = xyz[reference_frame]
-            else:
-                xyz_aligned[frame] += self._align_frames(xyz_reference=xyz[reference_frame], xyz_to_align=xyz[frame])
+            xyz_aligned[frame] += self._align_frames(xyz_reference=xyz_aligned[reference_frame],
+                                                     xyz_to_align=xyz[frame])
 
-        return xyz_aligned
+        return np.round(xyz_aligned, decimals=6)
 
     def get_distance(self, atom_01_pos, atom_02_pos, store_result=True, opt=True):
         # TODO: ensure it's a tuple of integers
