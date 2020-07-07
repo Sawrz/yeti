@@ -1,4 +1,5 @@
 import itertools
+from multiprocessing.pool import ThreadPool
 
 import numpy as np
 
@@ -98,7 +99,7 @@ class TwoAtomsMolecule(object):
 
         return tuple(atom_list)
 
-    def _helper(self, atom, names, xyz, atom_xyz, visited_atoms):
+    def _process_atom_coordinates(self, atom, names, xyz, atom_xyz, visited_atoms):
         if atom in visited_atoms:
             return None
 
@@ -147,17 +148,17 @@ class TwoAtomsMolecule(object):
                 else:
                     atom_xyz = self._eliminate_periodicity(atoms[0], atom)
 
-                self._helper(atom=atom, names=names, xyz=xyz, atom_xyz=atom_xyz, visited_atoms=visited_atoms)
+                self._process_atom_coordinates(atom=atom, names=names, xyz=xyz, atom_xyz=atom_xyz, visited_atoms=visited_atoms)
 
                 for cov_atom in atom.covalent_bond_partners:
                     if cov_atom in visited_atoms:
                         continue
 
                     cov_xyz = self._eliminate_periodicity(atom, cov_atom)
-                    self._helper(atom=cov_atom, names=names, xyz=xyz, atom_xyz=cov_xyz,
-                                 visited_atoms=visited_atoms)
+                    self._process_atom_coordinates(atom=cov_atom, names=names, xyz=xyz, atom_xyz=cov_xyz,
+                                                   visited_atoms=visited_atoms)
             else:
-                self._helper(atom=atom, names=names, xyz=xyz, atom_xyz=atom.xyz_trajectory, visited_atoms=visited_atoms)
+                self._process_atom_coordinates(atom=atom, names=names, xyz=xyz, atom_xyz=atom.xyz_trajectory, visited_atoms=visited_atoms)
 
         return xyz, names
 
@@ -180,7 +181,7 @@ class TwoAtomsMolecule(object):
 
         return xyz_to_align
 
-    def get_aligned_xyz(self, reference_frame, periodic=True):
+    def get_aligned_xyz(self, reference_frame, periodic=True, cores=None):
         if not np.allclose(self.box_information["unit_cell_angles"], 90):
             raise MoleculeException("Box is not orthogonal. This method works on orthogonal boxes only.")
 
@@ -201,9 +202,11 @@ class TwoAtomsMolecule(object):
         reference_xyz += shift
         xyz_aligned[reference_frame] += reference_xyz
 
-        for frame in frames_to_align:
-            xyz_aligned[frame] += self._align_frames(xyz_reference=xyz_aligned[reference_frame],
-                                                     xyz_to_align=xyz[frame])
+        pool = ThreadPool(processes=cores)
+        xyz_combinations = itertools.product(xyz_aligned[reference_frame].reshape(1, xyz_aligned.shape[1], 3), xyz[frames_to_align])
+        shifted_xyz = np.array(pool.starmap(self._align_frames, xyz_combinations))
+        xyz_aligned[frames_to_align] += shifted_xyz[:]
+        pool.close()
 
         return np.round(xyz_aligned, decimals=6)
 
