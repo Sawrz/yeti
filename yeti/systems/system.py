@@ -5,9 +5,11 @@ import mdtraj as md
 import numpy as np
 
 from yeti.dictionaries.molecules.biomolecules import RNA as RNADict
+from yeti.dictionaries.molecules.biomolecules import Protein as ProteinDict
 from yeti.dictionaries.molecules.solvents import Water as WaterDict
 from yeti.systems.building_blocks import Atom, Residue
 from yeti.systems.molecules.nucleic_acids import RNA
+from yeti.systems.molecules.proteins import Protein
 from yeti.systems.molecules.solvents import Water
 
 
@@ -211,6 +213,7 @@ class System(object):
         else:
             return self.__select_residues_simple__(residue_ids=residue_ids)
 
+    # TODO: Refactor selector methods
     def select_rna(self, residue_ids, name):
         # TODO: add multi thread
         rna_dict = RNADict()
@@ -253,6 +256,44 @@ class System(object):
         self.molecules[name] = RNA(residues=residues, molecule_name=name, periodic=self.periodic,
                                    box_information=dict(unit_cell_angles=self.unitcell_angles,
                                                         unit_cell_vectors=self.unitcell_vectors))
+
+    def select_protein(self, residue_ids, name):
+        protein_dict = ProteinDict()
+        residues = self.__select_residues__(residue_ids=residue_ids)
+
+        for residue_id, residue in enumerate(residues):
+            residue_name = protein_dict.abbreviation_dictionary[residue.name]
+
+            if residue_name in protein_dict.termini_bonds_dictionary and (residue_id == 0 or residue_id == len(
+                    residues) - 1):
+                backbone_bonds_dictionary = protein_dict.termini_bonds_dictionary[residue_name]
+
+                self.__create_inner_covalent_bonds__(residue=residue, bond_dict=backbone_bonds_dictionary)
+            else:
+                backbone_bonds_dictionary = protein_dict.backbone_bonds_dictionary['residual']
+                # backbone_acceptor_dictionary = protein_dict.acceptors_dictionary['backbone']
+
+                self.__create_inner_covalent_bonds__(residue=residue, bond_dict=backbone_bonds_dictionary)
+                self.__create_inner_covalent_bonds__(residue=residue,
+                                                     bond_dict=protein_dict.side_chain_bonds_dictionary[residue_name])
+
+            # TODO: set electronic states
+            # self.__update_electronic_state__(residue=residue, is_acceptor=True,
+            #                                 electron_dict=backbone_acceptor_dictionary)
+            # self.__update_electronic_state__(residue=residue, is_donor=True,
+            #                                 electron_dict=rna_dict.donors_dictionary['backbone'])
+            # self.__update_electronic_state__(residue=residue, is_acceptor=True,
+            #                                 electron_dict=rna_dict.acceptors_dictionary[residue_name])
+            # self.__update_electronic_state__(residue=residue, is_donor=True,
+            #                                 electron_dict=rna_dict.donors_dictionary[residue_name])
+
+            if residue_id < len(residues) - 1:
+                self.__create_inter_covalent_bonds__(residue_01=residue, residue_02=residues[residue_id + 1],
+                                                     molecule_dict=protein_dict)
+
+        self.molecules[name] = Protein(residues=residues, molecule_name=name, periodic=self.periodic,
+                                       box_information=dict(unit_cell_angles=self.unitcell_angles,
+                                                            unit_cell_vectors=self.unitcell_vectors))
 
     def select_water(self, residue_ids):
         # TODO: add multi thread

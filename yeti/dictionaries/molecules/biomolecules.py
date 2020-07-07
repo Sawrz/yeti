@@ -564,28 +564,28 @@ class Protein(Biomolecule):
         super(Protein, self).__init__()
 
         # ABBREVIATION
-        abbreviations = {"glycine": "Gly",
-                         "alanine": "Ala",
-                         "valine": "Val",
-                         "leucine": "Leu",
-                         "isoleucine": "Ile",
-                         "serine": "Ser",
-                         "threonine": "Thr",
-                         "proline": "Pro",
-                         "aspartic acid": "Asp",
-                         "glutamic acid": "Glu",
-                         "asparagine": "Asn",
-                         "glutamine": "Gln",
-                         "methionine": "Met",
-                         "cysteine": "Cys",
-                         "lysine": "Lys",
-                         "arginine": "Arg",
-                         "histidine": "His",
-                         "phenylalanine": "Phe",
-                         "tyrosine": "Tyr",
-                         "tryptophan": "Trp",
-                         "acetyl group": "Ace",
-                         "methylamine": "Nme"}
+        abbreviations = {"GLY": "glycine",
+                         "ALA": "alanine",
+                         "VAL": "valine",
+                         "LEU": "leucine",
+                         "ILE": "isoleucine",
+                         "SER": "serine",
+                         "THR": "threonine",
+                         "PRO": "proline",
+                         "ASP": "aspartic acid",
+                         "GLU": "glutamic acid",
+                         "ASN": "asparagine",
+                         "GLN": "glutamine",
+                         "MET": "methionine",
+                         "CYS": "cysteine",
+                         "LYS": "lysine",
+                         "ARG": "arginine",
+                         "HIS": "histidine",
+                         "PHE": "phenylalanine",
+                         "TYR": "tyrosine",
+                         "TRP": "tryptophan",
+                         "ACE": "acetyl group",
+                         "NME": "methylamine"}
 
         self.update_abbreviation_dictionary(abbreviations=abbreviations)
 
@@ -610,13 +610,13 @@ class Protein(Biomolecule):
         # Backbone Bonds
         self.set_bonds_between_residues("C", "N")
 
-        backbone_bonds = {"residual": (("N", "H"), ("N", "CA"), ("CA", "HA1"), ("CA", "C"), ("C", "O"))}
+        backbone_bonds = {"residual": (("N", "H"), ("N", "CA"), ("CA", "HA"), ("CA", "C"), ("C", "O"))}
 
         self.update_backbone_bonds_dictionary(backbone_bonds=backbone_bonds)
 
         # Termini Bonds
-        termini_bonds = {"acetyl group": (("C", "O"), ("C", "CH3"), ("CH3", "HH31"), ("CH3", "HH32"), ("CH3", "HH33")),
-                         "methylamine": (("N", "H"), ("N", "CH3"), ("CH3", "HH31"), ("CH3", "HH32"), ("CH3", "HH33"))}
+        termini_bonds = {"acetyl group": (("C", "O"), ("C", "CH3"), ("CH3", "H1"), ("CH3", "H2"), ("CH3", "H3")),
+                         "methylamine": (("N", "H"), ("N", "C"), ("C", "H1"), ("C", "H2"), ("C", "H3"))}
 
         self.update_termini_bonds_dictionary(termini_bonds=termini_bonds)
 
