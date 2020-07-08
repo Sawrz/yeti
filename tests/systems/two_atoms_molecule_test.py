@@ -86,13 +86,13 @@ class TestAtomMethods(TwoAtomsMoleculeTestCase):
         self.assertEqual((self.donor, self.acceptor), res)
 
 
-class XyzMethodsTestCase(BlueprintTestCase):
+class XyzMethodsTestCaseTwoFrames(BlueprintTestCase):
     def setUp(self) -> None:
         from yeti.systems.building_blocks import Atom
         from yeti.systems.building_blocks import Residue
         from yeti.systems.molecules.molecules import TwoAtomsMolecule
 
-        super(XyzMethodsTestCase, self).setUp()
+        super(XyzMethodsTestCaseTwoFrames, self).setUp()
 
         # CREATE ATOMS
         self.atom_01 = Atom(structure_file_index=2, subsystem_index=0, name='A',
@@ -185,7 +185,33 @@ class XyzMethodsTestCase(BlueprintTestCase):
         return np.round(np.dot(np.dot(rotation_x, rotation_y), rotation_z), decimals=6)
 
 
-class TestXyzMethodsTwoFrames(XyzMethodsTestCase):
+class XyzMethodsTestCaseThreeFrames(XyzMethodsTestCaseTwoFrames):
+    def setUp(self) -> None:
+        from yeti.systems.molecules.molecules import TwoAtomsMolecule
+
+        super(XyzMethodsTestCaseThreeFrames, self).setUp()
+
+        self.add_additional_frame(shift=[0.2, 0.3, 0.1])
+
+        # CREATE UNIT CELL PROPERTIES (both have one frame more than xyz coordinates because frames will be added)
+        self.unit_cell_angles = np.array([[90, 90, 90], [90, 90, 90], [90, 90, 90]], dtype=np.float32)
+        self.unit_cell_vectors = np.array(
+            [[[1, 0, 0], [0, 1, 0], [0, 0, 1]], [[1, 0, 0], [0, 1, 0], [0, 0, 1]], [[1, 0, 0], [0, 1, 0], [0, 0, 1]]],
+            dtype=np.float32)
+
+        self.box_information = dict(unit_cell_angles=self.unit_cell_angles, unit_cell_vectors=self.unit_cell_vectors)
+
+        # initialize object
+        self.molecule = TwoAtomsMolecule(residues=self.residues, molecule_name=self.molecule_name,
+                                         box_information=self.box_information, periodic=True)
+
+        # Expected solutions
+        self.exp_xyz = np.array([[[0.425, 0.35, 0.4], [0.525, 0.45, 0.3], [0.625, 0.55, 0.5], [0.425, 0.65, 0.8]],
+                                 [[0.425, 0.35, 0.4], [0.525, 0.45, 0.3], [0.625, 0.55, 0.5], [0.425, 0.65, 0.8]],
+                                 [[0.425, 0.35, 0.4], [0.525, 0.45, 0.3], [0.625, 0.55, 0.5], [0.425, 0.65, 0.8]]])
+
+
+class TestXyzMethodsNoAlignmentTwoFrames(XyzMethodsTestCaseTwoFrames):
     def test_get_xyz_one_frame_non_periodic(self):
         res_xyz, res_names = self.molecule.get_xyz(eliminate_periodicity=False)
 
@@ -276,12 +302,12 @@ class TestXyzMethodsTwoFrames(XyzMethodsTestCase):
         npt.assert_array_equal(self.exp_names, res_names)
         npt.assert_array_equal(res_xyz, exp_xyz)
 
-    def test_get_geometric_center(self):
-        xyz = self.molecule.get_xyz()[0][0]
 
-        res_gc = self.molecule._get_geometric_center(xyz=xyz)
+class TestXyzMethodsTwoFramesCPU(XyzMethodsTestCaseTwoFrames):
+    def setUp(self) -> None:
+        super(TestXyzMethodsTwoFramesCPU, self).setUp()
 
-        npt.assert_array_almost_equal(res_gc, np.array([0.175, 0.55, 0.4]))
+        self.gpu = False
 
     def test_get_aligned_xyz_non_periodic_shift_x_ref_frame_0(self):
         self.add_additional_frame(shift=np.array([0.1, 0, 0]))
@@ -473,31 +499,7 @@ class TestXyzMethodsTwoFrames(XyzMethodsTestCase):
         npt.assert_array_almost_equal(res_xyz, self.exp_xyz, decimal=5)
 
 
-class TestXyzMethodsThreeFrames(XyzMethodsTestCase):
-    def setUp(self) -> None:
-        from yeti.systems.molecules.molecules import TwoAtomsMolecule
-
-        super(TestXyzMethodsThreeFrames, self).setUp()
-
-        self.add_additional_frame(shift=[0.2, 0.3, 0.1])
-
-        # CREATE UNIT CELL PROPERTIES (both have one frame more than xyz coordinates because frames will be added)
-        self.unit_cell_angles = np.array([[90, 90, 90], [90, 90, 90], [90, 90, 90]], dtype=np.float32)
-        self.unit_cell_vectors = np.array(
-            [[[1, 0, 0], [0, 1, 0], [0, 0, 1]], [[1, 0, 0], [0, 1, 0], [0, 0, 1]], [[1, 0, 0], [0, 1, 0], [0, 0, 1]]],
-            dtype=np.float32)
-
-        self.box_information = dict(unit_cell_angles=self.unit_cell_angles, unit_cell_vectors=self.unit_cell_vectors)
-
-        # initialize object
-        self.molecule = TwoAtomsMolecule(residues=self.residues, molecule_name=self.molecule_name,
-                                         box_information=self.box_information, periodic=True)
-
-        # Expected solutions
-        self.exp_xyz = np.array([[[0.425, 0.35, 0.4], [0.525, 0.45, 0.3], [0.625, 0.55, 0.5], [0.425, 0.65, 0.8]],
-                                 [[0.425, 0.35, 0.4], [0.525, 0.45, 0.3], [0.625, 0.55, 0.5], [0.425, 0.65, 0.8]],
-                                 [[0.425, 0.35, 0.4], [0.525, 0.45, 0.3], [0.625, 0.55, 0.5], [0.425, 0.65, 0.8]]])
-
+class TestXyzMethodsNoAlignmentThreeFrames(XyzMethodsTestCaseThreeFrames):
     def test_get_xyz_multi_frames_non_periodic(self):
         self.add_additional_frame(shift=np.array([0.1, 0.2, -0.1]))
 
@@ -585,13 +587,8 @@ class TestXyzMethodsThreeFrames(XyzMethodsTestCase):
         npt.assert_array_equal(self.exp_names, res_names)
         npt.assert_array_equal(res_xyz, exp_xyz)
 
-    def test_get_geometric_center(self):
-        xyz = self.molecule.get_xyz()[0][0]
 
-        res_gc = self.molecule._get_geometric_center(xyz=xyz)
-
-        npt.assert_array_almost_equal(res_gc, np.array([0.175, 0.55, 0.4]))
-
+class TestXyzMethodsThreeFramesT(XyzMethodsTestCaseThreeFrames):
     def test_get_aligned_xyz_non_periodic_shift_x_ref_frame_0(self):
         self.add_additional_frame(shift=np.array([0.1, 0, 0]))
 
@@ -778,6 +775,49 @@ class TestXyzMethodsThreeFrames(XyzMethodsTestCase):
                                                                            z_angle=112.58))
 
         res_xyz = self.molecule.get_aligned_xyz(reference_frame=0, periodic=True)
+
+        npt.assert_array_almost_equal(res_xyz, self.exp_xyz, decimal=5)
+
+
+class TestXyzMethodsManyFrames(XyzMethodsTestCaseTwoFrames):
+    def setUp(self) -> None:
+        from yeti.systems.molecules.molecules import TwoAtomsMolecule
+
+        super(TestXyzMethodsManyFrames, self).setUp()
+
+        self.frames = 1000
+
+        for frame in range(1, self.frames):
+            self.add_additional_frame(shift=[0, 0, 0])
+
+        # CREATE UNIT CELL PROPERTIES (both have one frame more than xyz coordinates because frames will be added)
+        self.unit_cell_angles = np.repeat(np.array([[90, 90, 90]], dtype=np.float32), self.frames, axis=0)
+
+        self.unit_cell_vectors = np.repeat(np.array([[[1, 0, 0], [0, 1, 0], [0, 0, 1]]], dtype=np.float32), self.frames,
+                                           axis=0)
+
+        self.box_information = dict(unit_cell_angles=self.unit_cell_angles, unit_cell_vectors=self.unit_cell_vectors)
+
+        # initialize object
+        self.molecule = TwoAtomsMolecule(residues=self.residues, molecule_name=self.molecule_name,
+                                         box_information=self.box_information, periodic=True)
+
+        # Expected solutions
+        self.exp_xyz = np.repeat(
+            np.array([[[0.425, 0.35, 0.4], [0.525, 0.45, 0.3], [0.625, 0.55, 0.5], [0.425, 0.65, 0.8]]]), self.frames,
+            axis=0)
+
+    def test_get_xyz_multi_frames(self):
+        res_xyz, res_names = self.molecule.get_xyz(eliminate_periodicity=False)
+
+        exp_xyz = np.repeat(np.array([[[0.1, 0.4, 0.3], [0.2, 0.5, 0.2], [0.3, 0.6, 0.4], [0.1, 0.7, 0.7]]]),
+                            self.frames, axis=0)
+
+        npt.assert_array_equal(self.exp_names, res_names)
+        npt.assert_array_equal(res_xyz, exp_xyz)
+
+    def test_get_aligned_xyz(self):
+        res_xyz = self.molecule.get_aligned_xyz(reference_frame=0, periodic=False)
 
         npt.assert_array_almost_equal(res_xyz, self.exp_xyz, decimal=5)
 

@@ -1,7 +1,9 @@
+import gc
 import itertools
 from multiprocessing.pool import ThreadPool
 
 import numpy as np
+import cupy as cp
 
 from yeti.get_features.angles import Angle, Dihedral
 from yeti.get_features.distances import Distance
@@ -148,7 +150,8 @@ class TwoAtomsMolecule(object):
                 else:
                     atom_xyz = self._eliminate_periodicity(atoms[0], atom)
 
-                self._process_atom_coordinates(atom=atom, names=names, xyz=xyz, atom_xyz=atom_xyz, visited_atoms=visited_atoms)
+                self._process_atom_coordinates(atom=atom, names=names, xyz=xyz, atom_xyz=atom_xyz,
+                                               visited_atoms=visited_atoms)
 
                 for cov_atom in atom.covalent_bond_partners:
                     if cov_atom in visited_atoms:
@@ -158,55 +161,57 @@ class TwoAtomsMolecule(object):
                     self._process_atom_coordinates(atom=cov_atom, names=names, xyz=xyz, atom_xyz=cov_xyz,
                                                    visited_atoms=visited_atoms)
             else:
-                self._process_atom_coordinates(atom=atom, names=names, xyz=xyz, atom_xyz=atom.xyz_trajectory, visited_atoms=visited_atoms)
+                self._process_atom_coordinates(atom=atom, names=names, xyz=xyz, atom_xyz=atom.xyz_trajectory,
+                                               visited_atoms=visited_atoms)
 
         return xyz, names
 
-    def _get_geometric_center(self, xyz):
-        return np.mean(xyz, axis=0)
+    def _align_frames(self, xyz, xyz_aligned, reference_frame):
+        frames_to_align = np.delete(np.arange(xyz.shape[0]), reference_frame)
 
-    def _align_frames(self, xyz_reference, xyz_to_align, iterations=1000):
-        for i in range(iterations):
-            # Get Geometric Center Translational Vector and translate
-            translation_vector = self._get_geometric_center(xyz_reference) - self._get_geometric_center(xyz_to_align)
-            xyz_to_align += translation_vector
+        # TODO: check if this is true for non-cubic boxes
+        # Get Geometric Center of box
+        geometric_center_box = np.sum(self.box_information["unit_cell_vectors"][reference_frame], axis=1) / 2
+        geometric_center_molecule = np.mean(xyz_aligned[reference_frame], axis=0)
+
+        # Shift reference frame
+        xyz_aligned[reference_frame] += geometric_center_box - geometric_center_molecule
+        geometric_center_molecule = np.mean(xyz_aligned[reference_frame], axis=0).reshape(1, 3)
+
+        # Iterate to find best possible alignment
+        for i in range(1000):
+            # Get Translational Vector and translate
+            translation_vector = geometric_center_molecule - np.mean(xyz[frames_to_align], axis=1)
+            xyz[frames_to_align] += translation_vector.reshape(frames_to_align.shape[0], 1, 3)
 
             # Get Rotation Matrix and rotate
-            u, s, vh = np.linalg.svd(np.dot(xyz_to_align.T, xyz_reference))
-            rotation_matrix = np.dot(u, vh)
-            xyz_to_align = np.dot(xyz_to_align, rotation_matrix)
+            u, s, vh = np.linalg.svd(np.einsum('ijk, ijl->ikl', xyz[frames_to_align],
+                                               xyz_aligned[reference_frame].reshape(1, xyz_aligned.shape[1], 3)))
+            rotation_matrix = np.einsum('ijk, ikl->ijl', u, vh)
 
-        translation_vector = self._get_geometric_center(xyz_reference) - self._get_geometric_center(xyz_to_align)
-        xyz_to_align += translation_vector
+            xyz[frames_to_align] = np.einsum('ijk, ikl->ijl', xyz[frames_to_align], rotation_matrix)
 
-        return xyz_to_align
+        # Get Translational Vector and translate
+        translation_vector = geometric_center_molecule - np.mean(xyz[frames_to_align], axis=1)
+        xyz[frames_to_align] += translation_vector.reshape(frames_to_align.shape[0], 1, 3)
 
-    def get_aligned_xyz(self, reference_frame, periodic=True, cores=None):
+        xyz_aligned[frames_to_align] += xyz[frames_to_align]
+
+    # TODO: Improve Performance for GPU and CPU
+    def get_aligned_xyz(self, reference_frame, periodic=True):
+        # TODO: think about GPU support
+
         if not np.allclose(self.box_information["unit_cell_angles"], 90):
             raise MoleculeException("Box is not orthogonal. This method works on orthogonal boxes only.")
 
         xyz = self.get_xyz(eliminate_periodicity=periodic)[0]
         xyz_aligned = np.zeros_like(xyz)
-        frames_to_align = np.arange(xyz.shape[0])
-        frames_to_align = np.delete(frames_to_align, reference_frame)
 
         # Set Reference Frame
-        reference_xyz = xyz[reference_frame]
+        xyz_aligned[reference_frame] = xyz[reference_frame]
 
-        # Get Geometric Center of box
-        # TODO: check if this is true for non-cubic boxes
-        geometric_center_box = np.sum(self.box_information["unit_cell_vectors"][reference_frame], axis=1) / 2
-        geometric_center_molecule = self._get_geometric_center(reference_xyz)
-        shift = geometric_center_box - geometric_center_molecule
-
-        reference_xyz += shift
-        xyz_aligned[reference_frame] += reference_xyz
-
-        pool = ThreadPool(processes=cores)
-        xyz_combinations = itertools.product(xyz_aligned[reference_frame].reshape(1, xyz_aligned.shape[1], 3), xyz[frames_to_align])
-        shifted_xyz = np.array(pool.starmap(self._align_frames, xyz_combinations))
-        xyz_aligned[frames_to_align] += shifted_xyz[:]
-        pool.close()
+        # Align
+        self._align_frames(xyz=xyz, xyz_aligned=xyz_aligned, reference_frame=reference_frame)
 
         return np.round(xyz_aligned, decimals=6)
 
