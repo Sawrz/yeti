@@ -167,6 +167,7 @@ class TwoAtomsMolecule(object):
         return xyz, names
 
     def _align_frames(self, xyz, xyz_aligned, reference_frame):
+        # TODO: Although using a Kabsch-like algorithm implement it fully for more versatility: https://en.wikipedia.org/wiki/Kabsch_algorithm
         frames_to_align = np.delete(np.arange(xyz.shape[0]), reference_frame)
 
         # TODO: check if this is true for non-cubic boxes
