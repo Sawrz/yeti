@@ -36,8 +36,7 @@ class TestBiomolecule(TestCase):
     def test_update_abbreviations_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import Biomolecule
 
-        reference = {"argenine": "ARG",
-                     "lysine": "LYS"}
+        reference = {"argenine": "ARG", "lysine": "LYS"}
 
         bio_mol = Biomolecule()
         bio_mol.update_abbreviation_dictionary(abbreviations=reference)
@@ -60,9 +59,7 @@ class TestBiomolecule(TestCase):
     def test_update_abbreviations_dictionary_wrong_key_type(self):
         from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
 
-        abbreviations = {"ADE": "A",
-                         7: "T",
-                         "GUA": "G"}
+        abbreviations = {"ADE": "A", 7: "T", "GUA": "G"}
 
         bio_mol = Biomolecule()
 
@@ -74,9 +71,7 @@ class TestBiomolecule(TestCase):
     def test_update_abbreviations_dictionary_wrong_value_type(self):
         from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
 
-        abbreviations = {"ADE": "A",
-                         "THY": 7,
-                         "GUA": "G"}
+        abbreviations = {"ADE": "A", "THY": 7, "GUA": "G"}
 
         bio_mol = Biomolecule()
 
@@ -88,8 +83,10 @@ class TestBiomolecule(TestCase):
     def test_update_dihedral_angle_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import Biomolecule
 
-        reference = {"alpha": (("O3\'", "P", "O5\'", "C5\'"), (-1, 0, 0, 0), r"$\alpha$"),
-                     "beta": (("P", "O5\'", "C5\'", "C4\'"), (0, 0, 0, 0), r"$\beta$")}
+        reference = {
+            "alpha": (("O3\'", "P", "O5\'", "C5\'"), (-1, 0, 0, 0), r"$\alpha$"),
+            "beta": (("P", "O5\'", "C5\'", "C4\'"), (0, 0, 0, 0), r"$\beta$")
+        }
 
         bio_mol = Biomolecule()
         bio_mol.update_dihedral_angle_dictionary(dihedral_angles=reference)
@@ -244,8 +241,7 @@ class TestBiomolecule(TestCase):
     def test_update_distances_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import Biomolecule
 
-        reference = {"PToP": (("P", "P"), "P to P"),
-                     "PToMG": (("P", "MG"), "P to MG")}
+        reference = {"PToP": (("P", "P"), "P to P"), "PToMG": (("P", "MG"), "P to MG")}
 
         bio_mol = Biomolecule()
         bio_mol.update_distances_dictionary(distances=reference)
@@ -268,8 +264,7 @@ class TestBiomolecule(TestCase):
     def test_update_distances_dictionary_wrong_key_type(self):
         from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
 
-        distances = {"PToMg": (("P", "Mg"), "P to Mg"),
-                     6: (("P", "P"), "P to P")}
+        distances = {"PToMg": (("P", "Mg"), "P to Mg"), 6: (("P", "P"), "P to P")}
 
         bio_mol = Biomolecule()
 
@@ -281,8 +276,7 @@ class TestBiomolecule(TestCase):
     def test_update_distances_dictionary_wrong_value_type(self):
         from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
 
-        distances = {"PToMg": (("P", "Mg"), "P to Mg"),
-                     "PToP": [("P", "P"), "P to P"]}
+        distances = {"PToMg": (("P", "Mg"), "P to Mg"), "PToP": [("P", "P"), "P to P"]}
 
         bio_mol = Biomolecule()
 
@@ -318,7 +312,7 @@ class TestBiomolecule(TestCase):
     def test_update_distances_dictionary_first_element_not_enough_entries(self):
         from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
 
-        distances = {"PToP": (("P",), "P to P")}
+        distances = {"PToP": (("P", ), "P to P")}
 
         bio_mol = Biomolecule()
 
@@ -354,8 +348,7 @@ class TestBiomolecule(TestCase):
     def test_update_backbone_bonds_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import Biomolecule
 
-        reference = {"start": (("P", "OP1"), ("P", "OP2"), ("P", "O5\'")),
-                     "end": (("P", "OP1"), ("P", "O5\'"))}
+        reference = {"start": (("P", "OP1"), ("P", "OP2"), ("P", "O5\'")), "end": (("P", "OP1"), ("P", "O5\'"))}
 
         bio_mol = Biomolecule()
         bio_mol.update_backbone_bonds_dictionary(backbone_bonds=reference)
@@ -378,8 +371,7 @@ class TestBiomolecule(TestCase):
     def test_update_backbone_bonds_dictionary_wrong_key_types(self):
         from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
 
-        backbone_bonds = {"start": (("P", "OP1"), ("P", "OP2"), ("P", "O5\'")),
-                          0: (("P", "OP1"), ("P", "O5\'"))}
+        backbone_bonds = {"start": (("P", "OP1"), ("P", "OP2"), ("P", "O5\'")), 0: (("P", "OP1"), ("P", "O5\'"))}
 
         bio_mol = Biomolecule()
 
@@ -391,8 +383,7 @@ class TestBiomolecule(TestCase):
     def test_update_backbone_bonds_dictionary_wrong_value_types(self):
         from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
 
-        backbone_bonds = {"start": (("P", "OP1"), ("P", "OP2"), ("P", "O5\'")),
-                          "end": [("P", "OP1"), ("P", "O5\'")]}
+        backbone_bonds = {"start": (("P", "OP1"), ("P", "OP2"), ("P", "O5\'")), "end": [("P", "OP1"), ("P", "O5\'")]}
 
         bio_mol = Biomolecule()
 
@@ -404,8 +395,7 @@ class TestBiomolecule(TestCase):
     def test_update_backbone_bonds_dictionary_tuple_elements_no_tuples(self):
         from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
 
-        backbone_bonds = {"start": (("P", "OP1"), ("P", "OP2"), ("P", "O5\'")),
-                          "end": (("P", "OP1"), ["P", "O5\'"])}
+        backbone_bonds = {"start": (("P", "OP1"), ("P", "OP2"), ("P", "O5\'")), "end": (("P", "OP1"), ["P", "O5\'"])}
 
         bio_mol = Biomolecule()
 
@@ -417,8 +407,7 @@ class TestBiomolecule(TestCase):
     def test_update_backbone_bonds_dictionary_tuple_elements_no_strings(self):
         from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
 
-        backbone_bonds = {"start": (("P", "OP1"), ("P", "OP2"), ("P", "O5\'")),
-                          "end": (("P", "OP1"), ("8", 7))}
+        backbone_bonds = {"start": (("P", "OP1"), ("P", "OP2"), ("P", "O5\'")), "end": (("P", "OP1"), ("8", 7))}
 
         bio_mol = Biomolecule()
 
@@ -430,8 +419,10 @@ class TestBiomolecule(TestCase):
     def test_update_backbone_bonds_dictionary_tuple_elements_too_many(self):
         from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
 
-        backbone_bonds = {"start": (("P", "OP1"), ("P", "OP2", "Popeye"), ("P", "O5\'")),
-                          "end": (("P", "OP1"), ("P", "O5\'"))}
+        backbone_bonds = {
+            "start": (("P", "OP1"), ("P", "OP2", "Popeye"), ("P", "O5\'")),
+            "end": (("P", "OP1"), ("P", "O5\'"))
+        }
 
         bio_mol = Biomolecule()
 
@@ -443,8 +434,7 @@ class TestBiomolecule(TestCase):
     def test_update_backbone_bonds_dictionary_tuple_elements_not_enough(self):
         from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
 
-        backbone_bonds = {"start": (("P", "OP1"), ("P", "OP2"), ("P", "O5\'")),
-                          "end": (("P", "OP1"), ("O5\'",))}
+        backbone_bonds = {"start": (("P", "OP1"), ("P", "OP2"), ("P", "O5\'")), "end": (("P", "OP1"), ("O5\'", ))}
 
         bio_mol = Biomolecule()
 
@@ -456,8 +446,7 @@ class TestBiomolecule(TestCase):
     def test_update_termini_bonds_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import Biomolecule
 
-        reference = {"start": (("P", "OP1"), ("P", "OP2"), ("P", "O5\'")),
-                     "end": (("P", "OP1"), ("P", "O5\'"))}
+        reference = {"start": (("P", "OP1"), ("P", "OP2"), ("P", "O5\'")), "end": (("P", "OP1"), ("P", "O5\'"))}
 
         bio_mol = Biomolecule()
         bio_mol.update_termini_bonds_dictionary(termini_bonds=reference)
@@ -480,8 +469,7 @@ class TestBiomolecule(TestCase):
     def test_update_termini_bonds_dictionary_wrong_key_types(self):
         from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
 
-        backbone_bonds = {"start": (("P", "OP1"), ("P", "OP2"), ("P", "O5\'")),
-                          0: (("P", "OP1"), ("P", "O5\'"))}
+        backbone_bonds = {"start": (("P", "OP1"), ("P", "OP2"), ("P", "O5\'")), 0: (("P", "OP1"), ("P", "O5\'"))}
 
         bio_mol = Biomolecule()
 
@@ -493,8 +481,7 @@ class TestBiomolecule(TestCase):
     def test_update_termini_bonds_dictionary_wrong_value_types(self):
         from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
 
-        backbone_bonds = {"start": (("P", "OP1"), ("P", "OP2"), ("P", "O5\'")),
-                          "end": [("P", "OP1"), ("P", "O5\'")]}
+        backbone_bonds = {"start": (("P", "OP1"), ("P", "OP2"), ("P", "O5\'")), "end": [("P", "OP1"), ("P", "O5\'")]}
 
         bio_mol = Biomolecule()
 
@@ -506,8 +493,7 @@ class TestBiomolecule(TestCase):
     def test_update_termini_bonds_dictionary_tuple_elements_no_tuples(self):
         from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
 
-        backbone_bonds = {"start": (("P", "OP1"), ("P", "OP2"), ("P", "O5\'")),
-                          "end": (("P", "OP1"), ["P", "O5\'"])}
+        backbone_bonds = {"start": (("P", "OP1"), ("P", "OP2"), ("P", "O5\'")), "end": (("P", "OP1"), ["P", "O5\'"])}
 
         bio_mol = Biomolecule()
 
@@ -519,8 +505,7 @@ class TestBiomolecule(TestCase):
     def test_update_termini_bonds_dictionary_tuple_elements_no_strings(self):
         from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
 
-        backbone_bonds = {"start": (("P", "OP1"), ("P", "OP2"), ("P", "O5\'")),
-                          "end": (("P", "OP1"), ("8", 7))}
+        backbone_bonds = {"start": (("P", "OP1"), ("P", "OP2"), ("P", "O5\'")), "end": (("P", "OP1"), ("8", 7))}
 
         bio_mol = Biomolecule()
 
@@ -532,8 +517,10 @@ class TestBiomolecule(TestCase):
     def test_update_termini_bonds_dictionary_tuple_elements_too_many(self):
         from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
 
-        backbone_bonds = {"start": (("P", "OP1"), ("P", "OP2", "Popeye"), ("P", "O5\'")),
-                          "end": (("P", "OP1"), ("P", "O5\'"))}
+        backbone_bonds = {
+            "start": (("P", "OP1"), ("P", "OP2", "Popeye"), ("P", "O5\'")),
+            "end": (("P", "OP1"), ("P", "O5\'"))
+        }
 
         bio_mol = Biomolecule()
 
@@ -545,8 +532,7 @@ class TestBiomolecule(TestCase):
     def test_update_termini_bonds_dictionary_tuple_elements_not_enough(self):
         from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
 
-        backbone_bonds = {"start": (("P", "OP1"), ("P", "OP2"), ("P", "O5\'")),
-                          "end": (("P", "OP1"), ("O5\'",))}
+        backbone_bonds = {"start": (("P", "OP1"), ("P", "OP2"), ("P", "O5\'")), "end": (("P", "OP1"), ("O5\'", ))}
 
         bio_mol = Biomolecule()
 
@@ -558,8 +544,7 @@ class TestBiomolecule(TestCase):
     def test_update_base_bonds_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import Biomolecule
 
-        reference = {"A": (("P", "OP1"), ("P", "OP2"), ("P", "O5\'")),
-                     "B": (("P", "OP1"), ("P", "O5\'"))}
+        reference = {"A": (("P", "OP1"), ("P", "OP2"), ("P", "O5\'")), "B": (("P", "OP1"), ("P", "O5\'"))}
 
         bio_mol = Biomolecule()
         bio_mol.update_side_chain_bonds_dictionary(new_side_chain=reference)
@@ -606,8 +591,7 @@ class TestBiomolecule(TestCase):
     def test_update_base_bonds_dictionary_tuple_elements_no_tuples(self):
         from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
 
-        base_bonds = {"A": (("P", "OP1"), ["P", "OP2"], ("P", "O5\'")),
-                      "B": (("P", "OP1"), ("P", "O5\'"))}
+        base_bonds = {"A": (("P", "OP1"), ["P", "OP2"], ("P", "O5\'")), "B": (("P", "OP1"), ("P", "O5\'"))}
 
         bio_mol = Biomolecule()
 
@@ -619,8 +603,7 @@ class TestBiomolecule(TestCase):
     def test_update_base_bonds_dictionary_tuple_elements_no_strings(self):
         from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
 
-        base_bonds = {"A": (("P", "OP1"), ("P", "OP2"), (8, "O5\'")),
-                      "B": (("P", "OP1"), ("P", "O5\'"))}
+        base_bonds = {"A": (("P", "OP1"), ("P", "OP2"), (8, "O5\'")), "B": (("P", "OP1"), ("P", "O5\'"))}
 
         bio_mol = Biomolecule()
 
@@ -632,8 +615,7 @@ class TestBiomolecule(TestCase):
     def test_update_base_bonds_dictionary_tuple_elements_too_many(self):
         from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
 
-        base_bonds = {"A": (("P", "OP1"), ("P", "OP2"), ("P", "O5\'")),
-                      "B": (("P", "OP1", "Olivia"), ("P", "O5\'"))}
+        base_bonds = {"A": (("P", "OP1"), ("P", "OP2"), ("P", "O5\'")), "B": (("P", "OP1", "Olivia"), ("P", "O5\'"))}
 
         bio_mol = Biomolecule()
 
@@ -645,8 +627,7 @@ class TestBiomolecule(TestCase):
     def test_update_base_bonds_dictionary_tuple_elements_not_enough(self):
         from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
 
-        base_bonds = {"A": (("OP1",), ("P", "OP2"), ("P", "O5\'")),
-                      "B": (("P", "OP1"), ("P", "O5\'"))}
+        base_bonds = {"A": (("OP1", ), ("P", "OP2"), ("P", "O5\'")), "B": (("P", "OP1"), ("P", "O5\'"))}
 
         bio_mol = Biomolecule()
 
@@ -658,8 +639,7 @@ class TestBiomolecule(TestCase):
     def test_update_hydrogen_bond_dictionary_donor(self):
         from yeti.dictionaries.molecules.biomolecules import Biomolecule
 
-        reference_atoms = {"adenine": {"H61": 1,
-                                       "H62": 1}}
+        reference_atoms = {"adenine": {"H61": 1, "H62": 1}}
 
         bio_mol = Biomolecule()
         bio_mol.update_hydrogen_bond_dictionary(hydrogen_bond_atoms=reference_atoms, update_donors=True)
@@ -670,8 +650,7 @@ class TestBiomolecule(TestCase):
     def test_update_hydrogen_bond_dictionary_acceptor(self):
         from yeti.dictionaries.molecules.biomolecules import Biomolecule
 
-        reference_atoms = {"adenine": {"H61": 1,
-                                       "H62": 1}}
+        reference_atoms = {"adenine": {"H61": 1, "H62": 1}}
 
         bio_mol = Biomolecule()
         bio_mol.update_hydrogen_bond_dictionary(hydrogen_bond_atoms=reference_atoms, update_donors=False)
@@ -682,8 +661,7 @@ class TestBiomolecule(TestCase):
     def test_update_hydrogen_bond_dictionary_wrong_input_type_for_update_donors(self):
         from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
 
-        new_atoms = {"adenine": {"H61": 1,
-                                 "H62": 1}}
+        new_atoms = {"adenine": {"H61": 1, "H62": 1}}
 
         bio_mol = Biomolecule()
 
@@ -707,12 +685,7 @@ class TestBiomolecule(TestCase):
     def test_update_hydrogen_bond_dictionary_wrong_key_type(self):
         from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
 
-        new_atoms = {"adenine": {"H61": 1,
-                                 "H62": 1},
-                     42: {"H61": 1,
-                          "H62": 1,
-                          "H63": 1}
-                     }
+        new_atoms = {"adenine": {"H61": 1, "H62": 1}, 42: {"H61": 1, "H62": 1, "H63": 1}}
 
         bio_mol = Biomolecule()
 
@@ -724,10 +697,7 @@ class TestBiomolecule(TestCase):
     def test_update_hydrogen_bond_dictionary_wrong_value_type(self):
         from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
 
-        new_atoms = {"adenine": {"H61": 1,
-                                 "H62": 1},
-                     "super_adenine": ["potatoes, eggs, milk"]
-                     }
+        new_atoms = {"adenine": {"H61": 1, "H62": 1}, "super_adenine": ["potatoes, eggs, milk"]}
 
         bio_mol = Biomolecule()
 
@@ -739,11 +709,7 @@ class TestBiomolecule(TestCase):
     def test_update_hydrogen_bond_dictionary_atoms_dictionary_no_integers(self):
         from yeti.dictionaries.molecules.biomolecules import Biomolecule, BiomoleculesException
 
-        new_atoms = {"adenine": {"H61": 1,
-                                 "H62": 1},
-                     "super_adenine": {"H61": "1",
-                                       "H62": 1}
-                     }
+        new_atoms = {"adenine": {"H61": 1, "H62": 1}, "super_adenine": {"H61": "1", "H62": 1}}
 
         bio_mol = Biomolecule()
 
@@ -762,8 +728,7 @@ class TestNucleicAcid(TestCase):
 
         watson_crick = {"cytosine_guanine": (("N4", "O6"), ("N3", "N1"), ("O2", "N2"))}
 
-        reference = {"watson-crick": watson_crick,
-                     "watson-trick": new_base_combination}
+        reference = {"watson-crick": watson_crick, "watson-trick": new_base_combination}
 
         nuc_acid = NucleicAcid()
         nuc_acid.update_base_pairs_dictionary(new_base_pairs=new_pair_type)
@@ -777,8 +742,10 @@ class TestNucleicAcid(TestCase):
         new_base_combination = {"a_with_b": (("N3", "N1"), ("O2", "N2"))}
         new_pair_type = {"watson-crick": new_base_combination}
 
-        watson_crick = {"cytosine_guanine": (("N4", "O6"), ("N3", "N1"), ("O2", "N2")),
-                        "a_with_b": (("N3", "N1"), ("O2", "N2"))}
+        watson_crick = {
+            "cytosine_guanine": (("N4", "O6"), ("N3", "N1"), ("O2", "N2")),
+            "a_with_b": (("N3", "N1"), ("O2", "N2"))
+        }
 
         reference = {"watson-crick": watson_crick}
 
@@ -875,7 +842,7 @@ class TestNucleicAcid(TestCase):
     def test_update_base_pairs_dictionary_base_pair_bonds_not_enough_atoms(self):
         from yeti.dictionaries.molecules.biomolecules import NucleicAcid, BiomoleculesException
 
-        new_pair_type = {"watson-crick": {"a_with_b": (("N3", "N1"), ("O2",))}}
+        new_pair_type = {"watson-crick": {"a_with_b": (("N3", "N1"), ("O2", ))}}
 
         nucleic_acid = NucleicAcid()
 
@@ -898,20 +865,15 @@ class TestNucleicAcid(TestCase):
 
 
 class TestRNA(TestCase):
-
     def test_abbreviations_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import RNA
 
-        reference = {"A": "adenine",
-                     "C": "cytosine",
-                     "G": "guanine",
-                     "U": "uracil"}
+        reference = {"A": "adenine", "C": "cytosine", "G": "guanine", "U": "uracil"}
 
         rna = RNA()
         result = rna.abbreviation_dictionary
 
         for base in reference.keys():
-            print(base)
             tmp_reference = reference[base]
             tmp_result = result[base]
 
@@ -922,26 +884,26 @@ class TestRNA(TestCase):
     def test_dihedral_angles_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import RNA
 
-        reference = {"alpha": (("O3\'", "P", "O5\'", "C5\'"), (-1, 0, 0, 0), r"$\alpha$"),
-                     "beta": (("P", "O5\'", "C5\'", "C4\'"), (0, 0, 0, 0), r"$\beta$"),
-                     "gamma": (("O5\'", "C5\'", "C4\'", "C3\'"), (0, 0, 0, 0), r"$\gamma$"),
-                     "delta": (("C5\'", "C4\'", "C3\'", "O3\'"), (0, 0, 0, 0), r"$\delta$"),
-                     "epsilon": (("C4\'", "C3\'", "O3\'", "P"), (0, 0, 0, 1), r"$\epsilon$"),
-                     "zeta": (("C3\'", "O3\'", "P", "O5\'"), (0, 0, 1, 1), r"$\zeta$"),
-                     "tau0": (("C4\'", "O4\'", "C1\'", "C2\'"), (0, 0, 0, 0), r"$\tau_0$"),
-                     "tau1": (("O4\'", "C1\'", "C2\'", "C3\'"), (0, 0, 0, 0), r"$\tau_1$"),
-                     "tau2": (("C1\'", "C2\'", "C3\'", "C4\'"), (0, 0, 0, 0), r"$\tau_2$"),
-                     "tau3": (("C2\'", "C3\'", "C4\'", "O4\'"), (0, 0, 0, 0), r"$\tau_3$"),
-                     "tau4": (("C3\'", "C4\'", "O4\'", "C1\'"), (0, 0, 0, 0), r"$\tau_4$"),
-                     "chi_py": (("O4\'", "C1\'", "N1", "C2"), (0, 0, 0, 0), r"$\chi_pyrimidine$"),
-                     "chi_pu": (("O4\'", "C1\'", "N9", "C4"), (0, 0, 0, 0), r"$\chi_purine$")
-                     }
+        reference = {
+            "alpha": (("O3\'", "P", "O5\'", "C5\'"), (-1, 0, 0, 0), r"$\alpha$"),
+            "beta": (("P", "O5\'", "C5\'", "C4\'"), (0, 0, 0, 0), r"$\beta$"),
+            "gamma": (("O5\'", "C5\'", "C4\'", "C3\'"), (0, 0, 0, 0), r"$\gamma$"),
+            "delta": (("C5\'", "C4\'", "C3\'", "O3\'"), (0, 0, 0, 0), r"$\delta$"),
+            "epsilon": (("C4\'", "C3\'", "O3\'", "P"), (0, 0, 0, 1), r"$\epsilon$"),
+            "zeta": (("C3\'", "O3\'", "P", "O5\'"), (0, 0, 1, 1), r"$\zeta$"),
+            "tau0": (("C4\'", "O4\'", "C1\'", "C2\'"), (0, 0, 0, 0), r"$\tau_0$"),
+            "tau1": (("O4\'", "C1\'", "C2\'", "C3\'"), (0, 0, 0, 0), r"$\tau_1$"),
+            "tau2": (("C1\'", "C2\'", "C3\'", "C4\'"), (0, 0, 0, 0), r"$\tau_2$"),
+            "tau3": (("C2\'", "C3\'", "C4\'", "O4\'"), (0, 0, 0, 0), r"$\tau_3$"),
+            "tau4": (("C3\'", "C4\'", "O4\'", "C1\'"), (0, 0, 0, 0), r"$\tau_4$"),
+            "chi_py": (("O4\'", "C1\'", "N1", "C2"), (0, 0, 0, 0), r"$\chi_pyrimidine$"),
+            "chi_pu": (("O4\'", "C1\'", "N9", "C4"), (0, 0, 0, 0), r"$\chi_purine$")
+        }
 
         rna = RNA()
         result = rna.dihedral_angles_dictionary
 
         for dihedral in reference.keys():
-            print(dihedral)
             tmp_reference = reference[dihedral]
             tmp_result = result[dihedral]
 
@@ -952,14 +914,14 @@ class TestRNA(TestCase):
     def test_distances_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import RNA
 
-        reference = {"P_P": (("P", "P"), "P to P"),
-                     }
+        reference = {
+            "P_P": (("P", "P"), "P to P"),
+        }
 
         rna = RNA()
         result = rna.distances_dictionary
 
         for distance in reference.keys():
-            print(distance)
             tmp_reference = reference[distance]
             tmp_result = result[distance]
 
@@ -980,22 +942,21 @@ class TestRNA(TestCase):
     def test_backbone_bonds_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import RNA
 
-        reference = {"residual": (("P", "OP1"), ("P", "OP2"), ("P", "O5\'"), ("O5\'", "C5\'"),
-                                  ("C5\'", "H5\'1"), ("C5\'", "H5\'2"), ("C5\'", "C4\'"), ("C4\'", "H4\'"),
-                                  ("C4\'", "O4\'"), ("C4\'", "C3\'"), ("O4\'", "C1\'"), ("C1\'", "H1\'"),
-                                  ("C1\'", "C2\'"), ("C3\'", "H3\'"), ("C3\'", "C2\'"), ("C3\'", "O3\'"),
-                                  ("C2\'", "H2\'1"), ("C2\'", "O2\'"), ("O2\'", "HO\'2")),
-                     "p_capped": (("O5\'", "C5\'"), ("C5\'", "H5\'1"), ("C5\'", "H5\'2"), ("C5\'", "C4\'"),
-                                  ("C4\'", "H4\'"), ("C4\'", "O4\'"), ("C4\'", "C3\'"), ("O4\'", "C1\'"),
-                                  ("C1\'", "H1\'"), ("C1\'", "C2\'"), ("C3\'", "H3\'"), ("C3\'", "C2\'"),
-                                  ("C3\'", "O3\'"), ("C2\'", "H2\'1"), ("C2\'", "O2\'"), ("O2\'", "HO\'2"))
-                     }
+        reference = {
+            "residual": (("P", "OP1"), ("P", "OP2"), ("P", "O5\'"), ("O5\'", "C5\'"), ("C5\'", "H5\'1"),
+                         ("C5\'", "H5\'2"), ("C5\'", "C4\'"), ("C4\'", "H4\'"), ("C4\'", "O4\'"), ("C4\'", "C3\'"),
+                         ("O4\'", "C1\'"), ("C1\'", "H1\'"), ("C1\'", "C2\'"), ("C3\'", "H3\'"), ("C3\'", "C2\'"),
+                         ("C3\'", "O3\'"), ("C2\'", "H2\'1"), ("C2\'", "O2\'"), ("O2\'", "HO\'2")),
+            "p_capped":
+            (("O5\'", "C5\'"), ("C5\'", "H5\'1"), ("C5\'", "H5\'2"), ("C5\'", "C4\'"), ("C4\'", "H4\'"),
+             ("C4\'", "O4\'"), ("C4\'", "C3\'"), ("O4\'", "C1\'"), ("C1\'", "H1\'"), ("C1\'", "C2\'"), ("C3\'", "H3\'"),
+             ("C3\'", "C2\'"), ("C3\'", "O3\'"), ("C2\'", "H2\'1"), ("C2\'", "O2\'"), ("O2\'", "HO\'2"))
+        }
 
         rna = RNA()
         result = rna.backbone_bonds_dictionary
 
         for bond_class in reference.keys():
-            print(bond_class)
             tmp_reference = reference[bond_class]
             tmp_result = result[bond_class]
 
@@ -1006,15 +967,12 @@ class TestRNA(TestCase):
     def test_termini_bonds_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import RNA
 
-        reference = {"p_capped": (("O5\'", "H5T"),),
-                     "last_residue": (("O3'", "HO3\'"),)
-                     }
+        reference = {"p_capped": (("O5\'", "H5T"), ), "last_residue": (("O3'", "HO3\'"), )}
 
         rna = RNA()
         result = rna.termini_bonds_dictionary
 
         for terminus_bonds in reference.keys():
-            print(terminus_bonds)
             tmp_reference = reference[terminus_bonds]
             tmp_result = result[terminus_bonds]
 
@@ -1025,26 +983,24 @@ class TestRNA(TestCase):
     def test_base_bonds_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import RNA
 
-        reference = {"adenine": (("C1\'", "N9"), ("N9", "C8"), ("N9", "C4"), ("C8", "H8"), ("C8", "N7"),
-                                 ("N7", "C5"), ("C5", "C6"), ("C5", "C4"), ("C6", "N6"), ("C6", "N1"),
-                                 ("N6", "H61"), ("N6", "H62"), ("N1", "C2"), ("C2", "H2"), ("C2", "N3"),
-                                 ("N3", "C4")),
-                     "cytosine": (("C1\'", "N1"), ("N1", "C6"), ("N1", "C2"), ("C6", "H6"),
-                                  ("C6", "C5"), ("C5", "H5"), ("C5", "C4"), ("C4", "N4"), ("C4", "N3"),
-                                  ("N4", "H41"), ("N4", "H42"), ("N3", "C2"), ("C2", "O2")),
-                     "guanine": (("C1\'", "N9"), ("N9", "C8"), ("N9", "C4"), ("C8", "H8"), ("C8", "N7"),
-                                 ("N7", "C5"), ("C5", "C6"), ("C5", "C4"), ("C6", "O6"), ("C6", "N1"),
-                                 ("N1", "H1"), ("N1", "C2"), ("C2", "N2"), ("C2", "N3"), ("N2", "H21"),
-                                 ("N2", "H22"), ("N3", "C4")),
-                     "uracil": (("C1\'", "N1"), ("N1", "C6"), ("N1", "C2"), ("C6", "H6"), ("C6", "C5"), ("C5", "H5"),
-                                ("C5", "C4"), ("C4", "O4"), ("C4", "N3"), ("N3", "H3"), ("N3", "C2"), ("C2", "O2"))
-                     }
+        reference = {
+            "adenine": (("C1\'", "N9"), ("N9", "C8"), ("N9", "C4"), ("C8", "H8"), ("C8", "N7"), ("N7", "C5"),
+                        ("C5", "C6"), ("C5", "C4"), ("C6", "N6"), ("C6", "N1"), ("N6", "H61"), ("N6", "H62"),
+                        ("N1", "C2"), ("C2", "H2"), ("C2", "N3"), ("N3", "C4")),
+            "cytosine":
+            (("C1\'", "N1"), ("N1", "C6"), ("N1", "C2"), ("C6", "H6"), ("C6", "C5"), ("C5", "H5"), ("C5", "C4"),
+             ("C4", "N4"), ("C4", "N3"), ("N4", "H41"), ("N4", "H42"), ("N3", "C2"), ("C2", "O2")),
+            "guanine": (("C1\'", "N9"), ("N9", "C8"), ("N9", "C4"), ("C8", "H8"), ("C8", "N7"), ("N7", "C5"),
+                        ("C5", "C6"), ("C5", "C4"), ("C6", "O6"), ("C6", "N1"), ("N1", "H1"), ("N1", "C2"),
+                        ("C2", "N2"), ("C2", "N3"), ("N2", "H21"), ("N2", "H22"), ("N3", "C4")),
+            "uracil": (("C1\'", "N1"), ("N1", "C6"), ("N1", "C2"), ("C6", "H6"), ("C6", "C5"), ("C5", "H5"),
+                       ("C5", "C4"), ("C4", "O4"), ("C4", "N3"), ("N3", "H3"), ("N3", "C2"), ("C2", "O2"))
+        }
 
         rna = RNA()
         result = rna.side_chain_bonds_dictionary
 
         for base in reference.keys():
-            print(base)
             tmp_reference = reference[base]
             tmp_result = result[base]
 
@@ -1055,26 +1011,32 @@ class TestRNA(TestCase):
     def test_donors_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import RNA
 
-        reference = {"adenine": {"H61": 1,
-                                 "H62": 1
-                                 },
-                     "cytosine": {"H41": 1,
-                                  "H42": 1
-                                  },
-                     "guanine": {"H1": 1,
-                                 "H21": 1,
-                                 "H22": 1
-                                 },
-                     "uracil": {"H3": 1
-                                },
-                     "backbone": {"HO\'2": 1}
-                     }
+        reference = {
+            "adenine": {
+                "H61": 1,
+                "H62": 1
+            },
+            "cytosine": {
+                "H41": 1,
+                "H42": 1
+            },
+            "guanine": {
+                "H1": 1,
+                "H21": 1,
+                "H22": 1
+            },
+            "uracil": {
+                "H3": 1
+            },
+            "backbone": {
+                "HO\'2": 1
+            }
+        }
 
         rna = RNA()
         result = rna.donors_dictionary
 
         for base in reference.keys():
-            print(base)
             tmp_reference = reference[base]
             tmp_result = result[base]
 
@@ -1085,40 +1047,47 @@ class TestRNA(TestCase):
     def test_acceptors_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import RNA
 
-        reference = {"adenine": {"N1": 1,
-                                 "N3": 1,
-                                 "N6": 1,
-                                 "N7": 1
-                                 },
-                     "cytosine": {"O2": 2,
-                                  "N3": 1,
-                                  "N4": 1
-                                  },
-                     "guanine": {"O6": 2,
-                                 "N3": 1,
-                                 "N7": 1
-                                 },
-                     "uracil": {"O2": 2,
-                                "O4": 2
-                                },
-                     "backbone": {"OP1": 2,
-                                  "OP2": 2,
-                                  "O2\'": 2,
-                                  "O3\'": 2,
-                                  "O4\'": 2,
-                                  "O5\'": 2
-                                  },
-                     "backbone_p_capped": {"O2\'": 2,
-                                           "O3\'": 2,
-                                           "O4\'": 2,
-                                           "O5\'": 2}
-                     }
+        reference = {
+            "adenine": {
+                "N1": 1,
+                "N3": 1,
+                "N6": 1,
+                "N7": 1
+            },
+            "cytosine": {
+                "O2": 2,
+                "N3": 1,
+                "N4": 1
+            },
+            "guanine": {
+                "O6": 2,
+                "N3": 1,
+                "N7": 1
+            },
+            "uracil": {
+                "O2": 2,
+                "O4": 2
+            },
+            "backbone": {
+                "OP1": 2,
+                "OP2": 2,
+                "O2\'": 2,
+                "O3\'": 2,
+                "O4\'": 2,
+                "O5\'": 2
+            },
+            "backbone_p_capped": {
+                "O2\'": 2,
+                "O3\'": 2,
+                "O4\'": 2,
+                "O5\'": 2
+            }
+        }
 
         rna = RNA()
         result = rna.acceptors_dictionary
 
         for base in reference.keys():
-            print(base)
             tmp_reference = reference[base]
             tmp_result = result[base]
 
@@ -1129,8 +1098,10 @@ class TestRNA(TestCase):
     def test_base_pairs_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import RNA
 
-        watson_crick_reference = {"adenine_uracil": (("N6", "O4"), ("N1", "N3")),
-                                  "cytosine_guanine": (("N4", "O6"), ("N3", "N1"), ("O2", "N2"))}
+        watson_crick_reference = {
+            "adenine_uracil": (("N6", "O4"), ("N1", "N3")),
+            "cytosine_guanine": (("N4", "O6"), ("N3", "N1"), ("O2", "N2"))
+        }
 
         reference = {"watson-crick": watson_crick_reference}
 
@@ -1139,7 +1110,6 @@ class TestRNA(TestCase):
 
         for base_pair_type in reference.keys():
             for base in reference[base_pair_type]:
-                print(base_pair_type, base)
                 tmp_reference = reference[base_pair_type][base]
                 tmp_result = result[base_pair_type][base]
 
@@ -1149,14 +1119,10 @@ class TestRNA(TestCase):
 
 
 class TestDNA(TestCase):
-
     def test_abbreviations_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import DNA
 
-        reference = {"A": "adenine",
-                     "C": "cytosine",
-                     "G": "guanine",
-                     "T": "thymine"}
+        reference = {"A": "adenine", "C": "cytosine", "G": "guanine", "T": "thymine"}
 
         dna = DNA()
         result = dna.abbreviation_dictionary
@@ -1172,26 +1138,26 @@ class TestDNA(TestCase):
     def test_dihedral_angles_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import DNA
 
-        reference = {"alpha": (("O3\'", "P", "O5\'", "C5\'"), (-1, 0, 0, 0), r"$\alpha$"),
-                     "beta": (("P", "O5\'", "C5\'", "C4\'"), (0, 0, 0, 0), r"$\beta$"),
-                     "gamma": (("O5\'", "C5\'", "C4\'", "C3\'"), (0, 0, 0, 0), r"$\gamma$"),
-                     "delta": (("C5\'", "C4\'", "C3\'", "O3\'"), (0, 0, 0, 0), r"$\delta$"),
-                     "epsilon": (("C4\'", "C3\'", "O3\'", "P"), (0, 0, 0, 1), r"$\epsilon$"),
-                     "zeta": (("C3\'", "O3\'", "P", "O5\'"), (0, 0, 1, 1), r"$\zeta$"),
-                     "tau0": (("C4\'", "O4\'", "C1\'", "C2\'"), (0, 0, 0, 0), r"$\tau_0$"),
-                     "tau1": (("O4\'", "C1\'", "C2\'", "C3\'"), (0, 0, 0, 0), r"$\tau_1$"),
-                     "tau2": (("C1\'", "C2\'", "C3\'", "C4\'"), (0, 0, 0, 0), r"$\tau_2$"),
-                     "tau3": (("C2\'", "C3\'", "C4\'", "O4\'"), (0, 0, 0, 0), r"$\tau_3$"),
-                     "tau4": (("C3\'", "C4\'", "O4\'", "C1\'"), (0, 0, 0, 0), r"$\tau_4$"),
-                     "chi_py": (("O4\'", "C1\'", "N1", "C2"), (0, 0, 0, 0), r"$\chi_pyrimidine$"),
-                     "chi_pu": (("O4\'", "C1\'", "N9", "C4"), (0, 0, 0, 0), r"$\chi_purine$")
-                     }
+        reference = {
+            "alpha": (("O3\'", "P", "O5\'", "C5\'"), (-1, 0, 0, 0), r"$\alpha$"),
+            "beta": (("P", "O5\'", "C5\'", "C4\'"), (0, 0, 0, 0), r"$\beta$"),
+            "gamma": (("O5\'", "C5\'", "C4\'", "C3\'"), (0, 0, 0, 0), r"$\gamma$"),
+            "delta": (("C5\'", "C4\'", "C3\'", "O3\'"), (0, 0, 0, 0), r"$\delta$"),
+            "epsilon": (("C4\'", "C3\'", "O3\'", "P"), (0, 0, 0, 1), r"$\epsilon$"),
+            "zeta": (("C3\'", "O3\'", "P", "O5\'"), (0, 0, 1, 1), r"$\zeta$"),
+            "tau0": (("C4\'", "O4\'", "C1\'", "C2\'"), (0, 0, 0, 0), r"$\tau_0$"),
+            "tau1": (("O4\'", "C1\'", "C2\'", "C3\'"), (0, 0, 0, 0), r"$\tau_1$"),
+            "tau2": (("C1\'", "C2\'", "C3\'", "C4\'"), (0, 0, 0, 0), r"$\tau_2$"),
+            "tau3": (("C2\'", "C3\'", "C4\'", "O4\'"), (0, 0, 0, 0), r"$\tau_3$"),
+            "tau4": (("C3\'", "C4\'", "O4\'", "C1\'"), (0, 0, 0, 0), r"$\tau_4$"),
+            "chi_py": (("O4\'", "C1\'", "N1", "C2"), (0, 0, 0, 0), r"$\chi_pyrimidine$"),
+            "chi_pu": (("O4\'", "C1\'", "N9", "C4"), (0, 0, 0, 0), r"$\chi_purine$")
+        }
 
         dna = DNA()
         result = dna.dihedral_angles_dictionary
 
         for dihedral in reference.keys():
-            print(dihedral)
             tmp_reference = reference[dihedral]
             tmp_result = result[dihedral]
 
@@ -1208,7 +1174,6 @@ class TestDNA(TestCase):
         result = dna.distances_dictionary
 
         for distance in reference.keys():
-            print(distance)
             tmp_reference = reference[distance]
             tmp_result = result[distance]
 
@@ -1229,17 +1194,18 @@ class TestDNA(TestCase):
     def test_backbone_bonds_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import DNA
 
-        reference = {"residual": (("P", "OP1"), ("P", "OP2"), ("P", "O5\'"), ("O5\'", "C5\'"), ("C5\'", "H5\'1"),
-                                  ("C5\'", "H5\'2"), ("C5\'", "C4\'"), ("C4\'", "H4\'"), ("C4\'", "O4\'"),
-                                  ("C4\'", "C3\'"), ("O4\'", "C1\'"), ("C1\'", "H1\'"), ("C1\'", "C2\'"),
-                                  ("C3\'", "H3\'"), ("C3\'", "C2\'"), ("C3\'", "O3\'"), ("C2\'", "H2\'1"),
-                                  ("C2\'", "H2\'2"))}
+        reference = {
+            "residual":
+            (("P", "OP1"), ("P", "OP2"), ("P", "O5\'"), ("O5\'", "C5\'"), ("C5\'", "H5\'1"), ("C5\'", "H5\'2"),
+             ("C5\'", "C4\'"), ("C4\'", "H4\'"), ("C4\'", "O4\'"), ("C4\'", "C3\'"), ("O4\'", "C1\'"), ("C1\'", "H1\'"),
+             ("C1\'", "C2\'"), ("C3\'", "H3\'"), ("C3\'", "C2\'"), ("C3\'", "O3\'"), ("C2\'", "H2\'1"), ("C2\'",
+                                                                                                         "H2\'2"))
+        }
 
         dna = DNA()
         result = dna.backbone_bonds_dictionary
 
         for bond_class in reference.keys():
-            print(bond_class)
             tmp_reference = reference[bond_class]
             tmp_result = result[bond_class]
 
@@ -1256,7 +1222,6 @@ class TestDNA(TestCase):
         result = dna.termini_bonds_dictionary
 
         for terminus_bonds in reference.keys():
-            print(terminus_bonds)
             tmp_reference = reference[terminus_bonds]
             tmp_result = result[terminus_bonds]
 
@@ -1267,25 +1232,25 @@ class TestDNA(TestCase):
     def test_base_bonds_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import DNA
 
-        reference = {"adenine": (("C1\'", "N9"), ("N9", "C8"), ("N9", "C4"), ("C8", "H8"), ("C8", "N7"), ("N7", "C5"),
-                                 ("C5", "C6"), ("C5", "C4"), ("C6", "N6"), ("C6", "N1"), ("N6", "H61"), ("N6", "H62"),
-                                 ("N1", "C2"), ("C2", "H2"), ("C2", "N3"), ("N3", "C4")),
-                     "cytosine": (("C1\'", "N1"), ("N1", "C6"), ("N1", "C2"), ("C6", "H6"), ("C6", "C5"), ("C5", "H5"),
-                                  ("C5", "C4"), ("C4", "N4"), ("C4", "N3"), ("N4", "H41"), ("N4", "H42"), ("N3", "C2"),
-                                  ("C2", "O2")),
-                     "guanine": (("C1\'", "N9"), ("N9", "C8"), ("N9", "C4"), ("C8", "H8"), ("C8", "N7"), ("N7", "C5"),
-                                 ("C5", "C6"), ("C5", "C4"), ("C6", "O6"), ("C6", "N1"), ("N1", "H1"), ("N1", "C2"),
-                                 ("C2", "N2"), ("C2", "N3"), ("N2", "H21"), ("N2", "H22"), ("N3", "C4")),
-                     "thymine": (("C1\'", "N1"), ("N1", "C6"), ("N1", "C2"), ("C6", "H6"), ("C6", "C5"), ("C5", "C5M"),
-                                 ("C5M", "H51"), ("C5M", "H52"), ("C5M", "H53"), ("C5", "C4"), ("C4", "O4"),
-                                 ("C4", "N3"), ("N3", "H3"), ("N3", "C2"), ("C2", "O2"))
-                     }
+        reference = {
+            "adenine": (("C1\'", "N9"), ("N9", "C8"), ("N9", "C4"), ("C8", "H8"), ("C8", "N7"), ("N7", "C5"),
+                        ("C5", "C6"), ("C5", "C4"), ("C6", "N6"), ("C6", "N1"), ("N6", "H61"), ("N6", "H62"),
+                        ("N1", "C2"), ("C2", "H2"), ("C2", "N3"), ("N3", "C4")),
+            "cytosine":
+            (("C1\'", "N1"), ("N1", "C6"), ("N1", "C2"), ("C6", "H6"), ("C6", "C5"), ("C5", "H5"), ("C5", "C4"),
+             ("C4", "N4"), ("C4", "N3"), ("N4", "H41"), ("N4", "H42"), ("N3", "C2"), ("C2", "O2")),
+            "guanine": (("C1\'", "N9"), ("N9", "C8"), ("N9", "C4"), ("C8", "H8"), ("C8", "N7"), ("N7", "C5"),
+                        ("C5", "C6"), ("C5", "C4"), ("C6", "O6"), ("C6", "N1"), ("N1", "H1"), ("N1", "C2"),
+                        ("C2", "N2"), ("C2", "N3"), ("N2", "H21"), ("N2", "H22"), ("N3", "C4")),
+            "thymine": (("C1\'", "N1"), ("N1", "C6"), ("N1", "C2"), ("C6", "H6"), ("C6", "C5"), ("C5", "C5M"),
+                        ("C5M", "H51"), ("C5M", "H52"), ("C5M", "H53"), ("C5", "C4"), ("C4", "O4"), ("C4", "N3"),
+                        ("N3", "H3"), ("N3", "C2"), ("C2", "O2"))
+        }
 
         dna = DNA()
         result = dna.side_chain_bonds_dictionary
 
         for base in reference.keys():
-            print(base)
             tmp_reference = reference[base]
             tmp_result = result[base]
 
@@ -1296,26 +1261,30 @@ class TestDNA(TestCase):
     def test_donors_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import DNA
 
-        reference = {"adenine": {"H61": 1,
-                                 "H62": 1
-                                 },
-                     "cytosine": {"H41": 1,
-                                  "H42": 1
-                                  },
-                     "guanine": {"H1": 1,
-                                 "H21": 1,
-                                 "H22": 1
-                                 },
-                     "thymine": {"H3": 1
-                                 },
-                     "backbone": {}
-                     }
+        reference = {
+            "adenine": {
+                "H61": 1,
+                "H62": 1
+            },
+            "cytosine": {
+                "H41": 1,
+                "H42": 1
+            },
+            "guanine": {
+                "H1": 1,
+                "H21": 1,
+                "H22": 1
+            },
+            "thymine": {
+                "H3": 1
+            },
+            "backbone": {}
+        }
 
         dna = DNA()
         result = dna.donors_dictionary
 
         for base in reference.keys():
-            print(base)
             tmp_reference = reference[base]
             tmp_result = result[base]
 
@@ -1327,33 +1296,40 @@ class TestDNA(TestCase):
         # Note: Order of elements is important
         from yeti.dictionaries.molecules.biomolecules import DNA
 
-        reference = {"adenine": {"N1": 1,
-                                 "N3": 1,
-                                 "N6": 1,
-                                 "N7": 1
-                                 },
-                     "cytosine": {"O2": 2,
-                                  "N3": 1,
-                                  "N4": 1
-                                  },
-                     "guanine": {"O6": 2,
-                                 "N3": 1,
-                                 "N7": 1
-                                 },
-                     "thymine": {"O2": 2,
-                                 "O4": 2
-                                 },
-                     "backbone": {"OP1": 2,
-                                  "OP2": 2,
-                                  "O3\'": 2,
-                                  "O4\'": 2,
-                                  "O5\'": 2}}
+        reference = {
+            "adenine": {
+                "N1": 1,
+                "N3": 1,
+                "N6": 1,
+                "N7": 1
+            },
+            "cytosine": {
+                "O2": 2,
+                "N3": 1,
+                "N4": 1
+            },
+            "guanine": {
+                "O6": 2,
+                "N3": 1,
+                "N7": 1
+            },
+            "thymine": {
+                "O2": 2,
+                "O4": 2
+            },
+            "backbone": {
+                "OP1": 2,
+                "OP2": 2,
+                "O3\'": 2,
+                "O4\'": 2,
+                "O5\'": 2
+            }
+        }
 
         dna = DNA()
         result = dna.acceptors_dictionary
 
         for base in reference.keys():
-            print(base)
             tmp_reference = reference[base]
             tmp_result = result[base]
 
@@ -1364,8 +1340,10 @@ class TestDNA(TestCase):
     def test_base_pairs_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import DNA
 
-        watson_crick_reference = {"adenine_thymine": (("N6", "O4"), ("N1", "N3")),
-                                  "cytosine_guanine": (("N4", "O6"), ("N3", "N1"), ("O2", "N2"))}
+        watson_crick_reference = {
+            "adenine_thymine": (("N6", "O4"), ("N1", "N3")),
+            "cytosine_guanine": (("N4", "O6"), ("N3", "N1"), ("O2", "N2"))
+        }
 
         reference = {"watson-crick": watson_crick_reference}
 
@@ -1374,7 +1352,6 @@ class TestDNA(TestCase):
 
         for base_pair_type in reference.keys():
             for base in reference[base_pair_type]:
-                print(base_pair_type, base)
                 tmp_reference = reference[base_pair_type][base]
                 tmp_result = result[base_pair_type][base]
 
@@ -1387,34 +1364,35 @@ class TestProtein(TestCase):
     def test_abbreviations_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import Protein
 
-        reference = {"glycine": "Gly",
-                     "alanine": "Ala",
-                     "valine": "Val",
-                     "leucine": "Leu",
-                     "isoleucine": "Ile",
-                     "serine": "Ser",
-                     "threonine": "Thr",
-                     "proline": "Pro",
-                     "aspartic acid": "Asp",
-                     "glutamic acid": "Glu",
-                     "asparagine": "Asn",
-                     "glutamine": "Gln",
-                     "methionine": "Met",
-                     "cysteine": "Cys",
-                     "lysine": "Lys",
-                     "arginine": "Arg",
-                     "histidine": "His",
-                     "phenylalanine": "Phe",
-                     "tyrosine": "Tyr",
-                     "tryptophan": "Trp",
-                     "acetyl group": "Ace",
-                     "methylamine": "Nme"}
+        reference = {
+            "GLY": "glycine",
+            "ALA": "alanine",
+            "VAL": "valine",
+            "LEU": "leucine",
+            "ILE": "isoleucine",
+            "SER": "serine",
+            "THR": "threonine",
+            "PRO": "proline",
+            "ASP": "aspartic acid",
+            "GLU": "glutamic acid",
+            "ASN": "asparagine",
+            "GLN": "glutamine",
+            "MET": "methionine",
+            "CYS": "cysteine",
+            "LYS": "lysine",
+            "ARG": "arginine",
+            "HIS": "histidine",
+            "PHE": "phenylalanine",
+            "TYR": "tyrosine",
+            "TRP": "tryptophan",
+            "ACE": "acetyl group",
+            "NME": "methylamine"
+        }
 
         protein = Protein()
         result = protein.abbreviation_dictionary
 
         for amino_acid in reference.keys():
-            print(amino_acid)
             tmp_reference = reference[amino_acid]
             tmp_result = result[amino_acid]
 
@@ -1425,19 +1403,20 @@ class TestProtein(TestCase):
     def test_dihedral_angles_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import Protein
 
-        reference = {"psi": (("N", "CA", "C", "N"), (0, 0, 0, 1), r'$\psi$'),
-                     "phi": (("C", "N", "CA", "C"), (-1, 0, 0, 0), r'$\phi$'),
-                     "omega": (("CA", "C", "N", "CA"), (0, 0, 1, 1), r'$\omega$'),
-                     "chi1": (("N", "CA", "CB", "CG"), (0, 0, 0, 0), r'$\chi_1$'),
-                     "chi2": (("CA", "CB", "CG", "CD"), (0, 0, 0, 0), r'$\chi_2$'),
-                     "chi3": (("CB", "CG", "CD", "CE"), (0, 0, 0, 0), r'$\chi_3$'),
-                     "chi4": (("CG", "CD", "CE", "NZ"), (0, 0, 0, 0), r'$\chi_4$')}
+        reference = {
+            "psi": (("N", "CA", "C", "N"), (0, 0, 0, 1), r'$\psi$'),
+            "phi": (("C", "N", "CA", "C"), (-1, 0, 0, 0), r'$\phi$'),
+            "omega": (("CA", "C", "N", "CA"), (0, 0, 1, 1), r'$\omega$'),
+            "chi1": (("N", "CA", "CB", "CG"), (0, 0, 0, 0), r'$\chi_1$'),
+            "chi2": (("CA", "CB", "CG", "CD"), (0, 0, 0, 0), r'$\chi_2$'),
+            "chi3": (("CB", "CG", "CD", "CE"), (0, 0, 0, 0), r'$\chi_3$'),
+            "chi4": (("CG", "CD", "CE", "NZ"), (0, 0, 0, 0), r'$\chi_4$')
+        }
 
         protein = Protein()
         result = protein.dihedral_angles_dictionary
 
         for dihedral in reference.keys():
-            print(dihedral)
             tmp_reference = reference[dihedral]
             tmp_result = result[dihedral]
 
@@ -1454,7 +1433,6 @@ class TestProtein(TestCase):
         result = protein.distances_dictionary
 
         for distance in reference.keys():
-            print(distance)
             tmp_reference = reference[distance]
             tmp_result = result[distance]
 
@@ -1475,13 +1453,18 @@ class TestProtein(TestCase):
     def test_backbone_bonds_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import Protein
 
-        reference = {"residual": (("N", "H"), ("N", "CA"), ("CA", "HA1"), ("CA", "C"), ("C", "O"))}
+        reference = {"residual": (("N", "H"), ("N", "CA"), ("CA", "HA"), ("CA", "C"), ("C", "O"))}
 
         protein = Protein()
         result = protein.backbone_bonds_dictionary
 
+        # check for equal keys
+        keys_expected = ("residual",)
+        keys_result = tuple(result.keys())
+
+        self.assertTupleEqual(keys_expected, keys_result)
+
         for bond_class in reference.keys():
-            print(bond_class)
             tmp_reference = reference[bond_class]
             tmp_result = result[bond_class]
 
@@ -1492,14 +1475,21 @@ class TestProtein(TestCase):
     def test_termini_bonds_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import Protein
 
-        reference = {"acetyl group": (("C", "O"), ("C", "CH3"), ("CH3", "HH31"), ("CH3", "HH32"), ("CH3", "HH33")),
-                     "methylamine": (("N", "H"), ("N", "CH3"), ("CH3", "HH31"), ("CH3", "HH32"), ("CH3", "HH33"))}
+        reference = {
+            "acetyl group": (("C", "O"), ("C", "CH3"), ("CH3", "H1"), ("CH3", "H2"), ("CH3", "H3")),
+            "methylamine": (("N", "H"), ("N", "C"), ("C", "H1"), ("C", "H2"), ("C", "H3"))
+        }
 
         protein = Protein()
         result = protein.termini_bonds_dictionary
 
+        # check for equal keys
+        keys_expected = ("acetyl group", "methylamine")
+        keys_result = tuple(result.keys())
+
+        self.assertTupleEqual(keys_expected, keys_result)
+
         for terminus_bonds in reference.keys():
-            print(terminus_bonds)
             tmp_reference = reference[terminus_bonds]
             tmp_result = result[terminus_bonds]
 
@@ -1510,62 +1500,58 @@ class TestProtein(TestCase):
     def test_amino_acid_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import Protein
 
-        reference = {"glycine": (("CA", "HA2"),),
-                     "alanine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "HB3")),
-                     "valine": (("CA", "CB"), ("CB", "HB1"), ("CB", "CG1"), ("CG1", "HG11"), ("CG1", "HG12"),
-                                ("CG1", "HG13"), ("CB", "CG2"), ("CG2", "HG21"), ("CG2", "HG22"), ("CG2", "HG23")),
-                     "leucine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "HG1"), ("CG", "CD1"),
-                                 ("CD1", "HD11"), ("CD1", "HD12"), ("CD1", "HD13"), ("CG", "CD2"), ("CD2", "HD21"),
-                                 ("CD2", "HD22"), ("CD2", "HD23")),
-                     "isoleucine": (("CA", "CB"), ("CB", "HB1"), ("CB", "CG1"), ("CG1", "HG11"), ("CG1", "HG12"),
-                                    ("CG1", "HG13"), ("CB", "CG2"), ("CG2", "HG21"), ("CG2", "HG22"), ("CG2", "CD"),
-                                    ("CD", "HD1"), ("CD", "HD2"), ("CD", "HD3")),
-                     "serine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "OG"), ("OG", "HG1")),
-                     "threonine": (("CA", "CB"), ("CB", "HB1"), ("CB", "OG1"), ("OG1", "HG11"), ("CB", "CG2"),
-                                   ("CG2", "HG21"), ("CG2", "HG22"), ("CG2", "HG23")),
-                     "proline": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "HG1"), ("CG", "HG2"),
-                                 ("CG", "CD"), ("CD", "HD1"), ("CD", "HD2"), ("CD", "N")),
-                     "aspartic acid": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "OD1"),
-                                       ("CG", "OD2")),
-                     "glutamic acid": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "HG1"),
-                                       ("CG", "HG2"), ("CG", "CD"), ("CD", "OE1"), ("CD", "OE2")),
-                     "asparagine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "OD1"),
-                                    ("CG", "ND2"), ("ND2", "HD21"), ("ND2", "HD22")),
-                     "glutamine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "HG1"),
-                                   ("CG", "HG2"), ("CG", "CD"), ("CD", "OE1"), ("CD", "NE2"), ("NE2", "HE21"),
-                                   ("NE2", "HE22")),
-                     "methionine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "HG1"),
-                                    ("CG", "HG2"), ("CG", "SD"), ("SD", "CE"), ("CE", "HE1"), ("CE", "HE2"),
-                                    ("CE", "HE3")),
-                     "cysteine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "SG"), ("SG", "HG1")),
-                     "lysine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "HG1"), ("CG", "HG2"),
-                                ("CG", "CD"), ("CD", "HD1"), ("CD", "HD2"), ("CD", "CE"), ("CE", "HE1"), ("CE", "HE2"),
-                                ("CE", "NZ"), ("NZ", "HZ1"), ("NZ", "HZ2"), ("NZ", "HZ3")),
-                     "arginine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "HG1"),
-                                  ("CG", "HG2"), ("CG", "CD"), ("CD", "HD1"), ("CD", "HD2"), ("CD", "NE"),
-                                  ("NE", "HE1"), ("NE", "CZ"), ("CZ", "NH1"), ("NH1", "HH11"), ("NH1", "HH12"),
-                                  ("CZ", "NH2"), ("NH2", "HH21"), ("NH2", "HH22")),
-                     "histidine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "CD1"),
-                                   ("CD1", "HD11"), ("CG", "ND2"), ("ND2", "HD21"), ("CD1", "NE1"), ("NE1", "HE11"),
-                                   ("ND2", "CE2"), ("CE2", "HE21"), ("NE1", "CE2")),
-                     "phenylalanine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "CD1"),
-                                       ("CD1", "HD11"), ("CG", "CD2"), ("CD2", "HD21"), ("CD1", "CE1"), ("CE1", "HE11"),
-                                       ("CD2", "CE2"), ("CE2", "HE21"), ("CE1", "CZ"), ("CE2", "CZ"), ("CZ", "HZ1")),
-                     "tyrosine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "CD1"),
-                                  ("CD1", "HD11"), ("CG", "CD2"), ("CD2", "HD21"), ("CD1", "CE1"), ("CE1", "HE11"),
-                                  ("CD2", "CE2"), ("CE2", "HE21"), ("CE1", "CZ"), ("CE2", "CZ"), ("CZ", "OH"),
-                                  ("OH", "HH1")),
-                     "tryptophan": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "CD1"),
-                                    ("CD1", "CE1"), ("CE1", "HE11"), ("CE1", "CZ1"), ("CZ1", "HZ11"), ("CG", "CD2"),
-                                    ("CD2", "HD21"), ("CD2", "NE2"), ("NE2", "HE21"), ("NE2", "CZ2"), ("CZ2", "CH2"),
-                                    ("CH2", "HH21"), ("CH2", "CTH2"), ("CTH2", "HTH21"), ("CD1", "CZ2"),
-                                    ("CZ1", "CTH2"))}
+        reference = {
+            "glycine": (("CA", "HA2"), ),
+            "alanine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "HB3")),
+            "valine": (("CA", "CB"), ("CB", "HB1"), ("CB", "CG1"), ("CG1", "HG11"), ("CG1", "HG12"), ("CG1", "HG13"),
+                       ("CB", "CG2"), ("CG2", "HG21"), ("CG2", "HG22"), ("CG2", "HG23")),
+            "leucine":
+            (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "HG1"), ("CG", "CD1"), ("CD1", "HD11"),
+             ("CD1", "HD12"), ("CD1", "HD13"), ("CG", "CD2"), ("CD2", "HD21"), ("CD2", "HD22"), ("CD2", "HD23")),
+            "isoleucine": (("CA", "CB"), ("CB", "HB1"), ("CB", "CG1"), ("CG1", "HG11"), ("CG1", "HG12"),
+                           ("CG1", "HG13"), ("CB", "CG2"), ("CG2", "HG21"), ("CG2", "HG22"), ("CG2", "CD"),
+                           ("CD", "HD1"), ("CD", "HD2"), ("CD", "HD3")),
+            "serine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "OG"), ("OG", "HG1")),
+            "threonine": (("CA", "CB"), ("CB", "HB1"), ("CB", "OG1"), ("OG1", "HG11"), ("CB", "CG2"), ("CG2", "HG21"),
+                          ("CG2", "HG22"), ("CG2", "HG23")),
+            "proline": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "HG1"), ("CG", "HG2"),
+                        ("CG", "CD"), ("CD", "HD1"), ("CD", "HD2"), ("CD", "N")),
+            "aspartic acid": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "OD1"), ("CG", "OD2")),
+            "glutamic acid": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "HG1"), ("CG", "HG2"),
+                              ("CG", "CD"), ("CD", "OE1"), ("CD", "OE2")),
+            "asparagine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "OD1"), ("CG", "ND2"),
+                           ("ND2", "HD21"), ("ND2", "HD22")),
+            "glutamine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "HG1"), ("CG", "HG2"),
+                          ("CG", "CD"), ("CD", "OE1"), ("CD", "NE2"), ("NE2", "HE21"), ("NE2", "HE22")),
+            "methionine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "HG1"), ("CG", "HG2"),
+                           ("CG", "SD"), ("SD", "CE"), ("CE", "HE1"), ("CE", "HE2"), ("CE", "HE3")),
+            "cysteine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "SG"), ("SG", "HG1")),
+            "lysine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "HG1"), ("CG", "HG2"),
+                       ("CG", "CD"), ("CD", "HD1"), ("CD", "HD2"), ("CD", "CE"), ("CE", "HE1"), ("CE", "HE2"),
+                       ("CE", "NZ"), ("NZ", "HZ1"), ("NZ", "HZ2"), ("NZ", "HZ3")),
+            "arginine":
+            (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "HG1"), ("CG", "HG2"), ("CG", "CD"),
+             ("CD", "HD1"), ("CD", "HD2"), ("CD", "NE"), ("NE", "HE1"), ("NE", "CZ"), ("CZ", "NH1"), ("NH1", "HH11"),
+             ("NH1", "HH12"), ("CZ", "NH2"), ("NH2", "HH21"), ("NH2", "HH22")),
+            "histidine":
+            (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "CD1"), ("CD1", "HD11"), ("CG", "ND2"),
+             ("ND2", "HD21"), ("CD1", "NE1"), ("NE1", "HE11"), ("ND2", "CE2"), ("CE2", "HE21"), ("NE1", "CE2")),
+            "phenylalanine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "CD1"), ("CD1", "HD11"),
+                              ("CG", "CD2"), ("CD2", "HD21"), ("CD1", "CE1"), ("CE1", "HE11"), ("CD2", "CE2"),
+                              ("CE2", "HE21"), ("CE1", "CZ"), ("CE2", "CZ"), ("CZ", "HZ1")),
+            "tyrosine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "CD1"), ("CD1", "HD11"),
+                         ("CG", "CD2"), ("CD2", "HD21"), ("CD1", "CE1"), ("CE1", "HE11"), ("CD2", "CE2"),
+                         ("CE2", "HE21"), ("CE1", "CZ"), ("CE2", "CZ"), ("CZ", "OH"), ("OH", "HH1")),
+            "tryptophan": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "CD1"), ("CD1", "CE1"),
+                           ("CE1", "HE11"), ("CE1", "CZ1"), ("CZ1", "HZ11"), ("CG", "CD2"), ("CD2", "HD21"),
+                           ("CD2", "NE2"), ("NE2", "HE21"), ("NE2", "CZ2"), ("CZ2", "CH2"), ("CH2", "HH21"),
+                           ("CH2", "CTH2"), ("CTH2", "HTH21"), ("CD1", "CZ2"), ("CZ1", "CTH2"))
+        }
 
         protein = Protein()
         result = protein.side_chain_bonds_dictionary
 
         for amino_acid in reference.keys():
-            print(amino_acid)
             tmp_reference = reference[amino_acid]
             tmp_result = result[amino_acid]
 
@@ -1583,7 +1569,6 @@ class TestProtein(TestCase):
         result = protein.acceptors_dictionary
 
         for base in reference.keys():
-            print(base)
             tmp_reference = reference[base]
             tmp_result = result[base]
 
@@ -1601,7 +1586,6 @@ class TestProtein(TestCase):
         result = protein.donors_dictionary
 
         for base in reference.keys():
-            print(base)
             tmp_reference = reference[base]
             tmp_result = result[base]
 
