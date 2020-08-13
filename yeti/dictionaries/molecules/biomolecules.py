@@ -284,28 +284,27 @@ class NucleicAcid(Biomolecule):
         super(NucleicAcid, self).__init__()
 
         # ABBREVIATION
-        abbreviations = {"A": "adenine",
-                         "G": "guanine",
-                         "C": "cytosine"}
+        abbreviations = {"A": "adenine", "G": "guanine", "C": "cytosine"}
 
         self.update_abbreviation_dictionary(abbreviations=abbreviations)
 
         # MEASURES
         # Dihedral Angles
-        dihedral_angles_dictionary = {"alpha": (("O3\'", "P", "O5\'", "C5\'"), (-1, 0, 0, 0), r"$\alpha$"),
-                                      "beta": (("P", "O5\'", "C5\'", "C4\'"), (0, 0, 0, 0), r"$\beta$"),
-                                      "gamma": (("O5\'", "C5\'", "C4\'", "C3\'"), (0, 0, 0, 0), r"$\gamma$"),
-                                      "delta": (("C5\'", "C4\'", "C3\'", "O3\'"), (0, 0, 0, 0), r"$\delta$"),
-                                      "epsilon": (("C4\'", "C3\'", "O3\'", "P"), (0, 0, 0, 1), r"$\epsilon$"),
-                                      "zeta": (("C3\'", "O3\'", "P", "O5\'"), (0, 0, 1, 1), r"$\zeta$"),
-                                      "tau0": (("C4\'", "O4\'", "C1\'", "C2\'"), (0, 0, 0, 0), r"$\tau_0$"),
-                                      "tau1": (("O4\'", "C1\'", "C2\'", "C3\'"), (0, 0, 0, 0), r"$\tau_1$"),
-                                      "tau2": (("C1\'", "C2\'", "C3\'", "C4\'"), (0, 0, 0, 0), r"$\tau_2$"),
-                                      "tau3": (("C2\'", "C3\'", "C4\'", "O4\'"), (0, 0, 0, 0), r"$\tau_3$"),
-                                      "tau4": (("C3\'", "C4\'", "O4\'", "C1\'"), (0, 0, 0, 0), r"$\tau_4$"),
-                                      "chi_py": (("O4\'", "C1\'", "N1", "C2"), (0, 0, 0, 0), r"$\chi_pyrimidine$"),
-                                      "chi_pu": (("O4\'", "C1\'", "N9", "C4"), (0, 0, 0, 0), r"$\chi_purine$")
-                                      }
+        dihedral_angles_dictionary = {
+            "alpha": (("O3\'", "P", "O5\'", "C5\'"), (-1, 0, 0, 0), r"$\alpha$"),
+            "beta": (("P", "O5\'", "C5\'", "C4\'"), (0, 0, 0, 0), r"$\beta$"),
+            "gamma": (("O5\'", "C5\'", "C4\'", "C3\'"), (0, 0, 0, 0), r"$\gamma$"),
+            "delta": (("C5\'", "C4\'", "C3\'", "O3\'"), (0, 0, 0, 0), r"$\delta$"),
+            "epsilon": (("C4\'", "C3\'", "O3\'", "P"), (0, 0, 0, 1), r"$\epsilon$"),
+            "zeta": (("C3\'", "O3\'", "P", "O5\'"), (0, 0, 1, 1), r"$\zeta$"),
+            "tau0": (("C4\'", "O4\'", "C1\'", "C2\'"), (0, 0, 0, 0), r"$\tau_0$"),
+            "tau1": (("O4\'", "C1\'", "C2\'", "C3\'"), (0, 0, 0, 0), r"$\tau_1$"),
+            "tau2": (("C1\'", "C2\'", "C3\'", "C4\'"), (0, 0, 0, 0), r"$\tau_2$"),
+            "tau3": (("C2\'", "C3\'", "C4\'", "O4\'"), (0, 0, 0, 0), r"$\tau_3$"),
+            "tau4": (("C3\'", "C4\'", "O4\'", "C1\'"), (0, 0, 0, 0), r"$\tau_4$"),
+            "chi_py": (("O4\'", "C1\'", "N1", "C2"), (0, 0, 0, 0), r"$\chi_pyrimidine$"),
+            "chi_pu": (("O4\'", "C1\'", "N9", "C4"), (0, 0, 0, 0), r"$\chi_purine$")
+        }
 
         self.update_dihedral_angle_dictionary(dihedral_angles=dihedral_angles_dictionary)
 
@@ -317,51 +316,59 @@ class NucleicAcid(Biomolecule):
         # COVALENT BONDS
         self.set_bonds_between_residues("O3\'", "P")
 
-        base_bonds_dictionary = {"adenine": (("C1\'", "N9"), ("N9", "C8"), ("N9", "C4"), ("C8", "H8"),
-                                             ("C8", "N7"), ("N7", "C5"), ("C5", "C6"), ("C5", "C4"),
-                                             ("C6", "N6"), ("C6", "N1"), ("N6", "H61"), ("N6", "H62"),
-                                             ("N1", "C2"), ("C2", "H2"), ("C2", "N3"), ("N3", "C4")),
-                                 "cytosine": (("C1\'", "N1"), ("N1", "C6"), ("N1", "C2"), ("C6", "H6"),
-                                              ("C6", "C5"), ("C5", "H5"), ("C5", "C4"), ("C4", "N4"),
-                                              ("C4", "N3"), ("N4", "H41"), ("N4", "H42"), ("N3", "C2"),
-                                              ("C2", "O2")),
-                                 "guanine": (("C1\'", "N9"), ("N9", "C8"), ("N9", "C4"), ("C8", "H8"),
-                                             ("C8", "N7"), ("N7", "C5"), ("C5", "C6"), ("C5", "C4"),
-                                             ("C6", "O6"), ("C6", "N1"), ("N1", "H1"), ("N1", "C2"),
-                                             ("C2", "N2"), ("C2", "N3"), ("N2", "H21"), ("N2", "H22"),
-                                             ("N3", "C4"))
-                                 }
+        base_bonds_dictionary = {
+            "adenine": (("C1\'", "N9"), ("N9", "C8"), ("N9", "C4"), ("C8", "H8"), ("C8", "N7"), ("N7", "C5"),
+                        ("C5", "C6"), ("C5", "C4"), ("C6", "N6"), ("C6", "N1"), ("N6", "H61"), ("N6", "H62"),
+                        ("N1", "C2"), ("C2", "H2"), ("C2", "N3"), ("N3", "C4")),
+            "cytosine":
+            (("C1\'", "N1"), ("N1", "C6"), ("N1", "C2"), ("C6", "H6"), ("C6", "C5"), ("C5", "H5"), ("C5", "C4"),
+             ("C4", "N4"), ("C4", "N3"), ("N4", "H41"), ("N4", "H42"), ("N3", "C2"), ("C2", "O2")),
+            "guanine": (("C1\'", "N9"), ("N9", "C8"), ("N9", "C4"), ("C8", "H8"), ("C8", "N7"), ("N7", "C5"),
+                        ("C5", "C6"), ("C5", "C4"), ("C6", "O6"), ("C6", "N1"), ("N1", "H1"), ("N1", "C2"),
+                        ("C2", "N2"), ("C2", "N3"), ("N2", "H21"), ("N2", "H22"), ("N3", "C4"))
+        }
 
         self.update_side_chain_bonds_dictionary(new_side_chain=base_bonds_dictionary)
 
         # HYDROGEN BONDS
         # Donors
-        donors_dict = {"adenine": {"H61": 1,
-                                   "H62": 1},
-                       "cytosine": {"H41": 1,
-                                    "H42": 1},
-                       "guanine": {"H1": 1,
-                                   "H21": 1,
-                                   "H22": 1}
-                       }
+        donors_dict = {
+            "adenine": {
+                "H61": 1,
+                "H62": 1
+            },
+            "cytosine": {
+                "H41": 1,
+                "H42": 1
+            },
+            "guanine": {
+                "H1": 1,
+                "H21": 1,
+                "H22": 1
+            }
+        }
 
         self.update_hydrogen_bond_dictionary(hydrogen_bond_atoms=donors_dict, update_donors=True)
 
         # Acceptors
-        acceptors_dict = {"adenine": {"N1": 1,
-                                      "N3": 1,
-                                      "N6": 1,
-                                      "N7": 1
-                                      },
-                          "cytosine": {"O2": 2,
-                                       "N3": 1,
-                                       "N4": 1
-                                       },
-                          "guanine": {"O6": 2,
-                                      "N3": 1,
-                                      "N7": 1
-                                      }
-                          }
+        acceptors_dict = {
+            "adenine": {
+                "N1": 1,
+                "N3": 1,
+                "N6": 1,
+                "N7": 1
+            },
+            "cytosine": {
+                "O2": 2,
+                "N3": 1,
+                "N4": 1
+            },
+            "guanine": {
+                "O6": 2,
+                "N3": 1,
+                "N7": 1
+            }
+        }
 
         self.update_hydrogen_bond_dictionary(hydrogen_bond_atoms=acceptors_dict, update_donors=False)
 
@@ -395,17 +402,19 @@ class NucleicAcid(Biomolecule):
         if not all(type(base_pairs) is tuple for value in new_base_pairs.values() for base_pairs in value.values()):
             raise BiomoleculesException("Value of the base pair dictionary need to be a tuple.")
 
-        if not all(type(bond) is tuple for value in new_base_pairs.values() for base_pairs in value.values() for bond in
-                   base_pairs):
+        if not all(
+                type(bond) is tuple for value in new_base_pairs.values() for base_pairs in value.values()
+                for bond in base_pairs):
             raise BiomoleculesException("Base pair bonds need to be tuples.")
 
-        if not all(len(bond) == 2 for value in new_base_pairs.values() for base_pairs in value.values() for bond in
-                   base_pairs):
+        if not all(
+                len(bond) == 2 for value in new_base_pairs.values() for base_pairs in value.values()
+                for bond in base_pairs):
             raise BiomoleculesException("Base pair bonds contains only two strings.")
 
         if not all(
-                type(atom_name) is str for value in new_base_pairs.values() for base_pairs in value.values() for bond in
-                base_pairs for atom_name in bond):
+                type(atom_name) is str for value in new_base_pairs.values() for base_pairs in value.values()
+                for bond in base_pairs for atom_name in bond):
             raise BiomoleculesException("Base pair bonds contains only two strings.")
 
         base_pair_types = tuple(self.base_pairs_dictionary.keys())
@@ -419,7 +428,6 @@ class NucleicAcid(Biomolecule):
 
 
 class RNA(NucleicAcid):
-
     def __init__(self):
         """
         Contains all information to build and evaluate DNA.
@@ -458,39 +466,48 @@ class RNA(NucleicAcid):
 
         # Termini Bonds
         # P-capping bond
-        termini_bonds["p_capped"] = (("O5\'", "H5T"),)
+        termini_bonds["p_capped"] = (("O5\'", "H5T"), )
 
         # last residue bond
-        termini_bonds['last_residue'] = (("O3'", "HO3\'"),)
+        termini_bonds['last_residue'] = (("O3'", "HO3\'"), )
 
         self.update_termini_bonds_dictionary(termini_bonds=termini_bonds)
 
         # Base Bonds
-        base = {"uracil": (("C1\'", "N1"), ("N1", "C6"), ("N1", "C2"), ("C6", "H6"), ("C6", "C5"), ("C5", "H5"),
-                           ("C5", "C4"), ("C4", "O4"), ("C4", "N3"), ("N3", "H3"), ("N3", "C2"), ("C2", "O2"))}
+        base = {
+            "uracil": (("C1\'", "N1"), ("N1", "C6"), ("N1", "C2"), ("C6", "H6"), ("C6", "C5"), ("C5", "H5"),
+                       ("C5", "C4"), ("C4", "O4"), ("C4", "N3"), ("N3", "H3"), ("N3", "C2"), ("C2", "O2"))
+        }
 
         self.update_side_chain_bonds_dictionary(new_side_chain=base)
 
         # HYDROGEN BONDS
         # Donors
-        donors = {"uracil": {"H3": 1},
-                  "backbone": {"HO\'2": 1}}
+        donors = {"uracil": {"H3": 1}, "backbone": {"HO\'2": 1}}
 
         self.update_hydrogen_bond_dictionary(hydrogen_bond_atoms=donors, update_donors=True)
 
         # Acceptors
-        acceptors = {"uracil": {"O2": 2,
-                                "O4": 2},
-                     "backbone": {"OP1": 2,
-                                  "OP2": 2,
-                                  "O2\'": 2,
-                                  "O3\'": 2,
-                                  "O4\'": 2,
-                                  "O5\'": 2},
-                     "backbone_p_capped": {"O2\'": 2,
-                                           "O3\'": 2,
-                                           "O4\'": 2,
-                                           "O5\'": 2}}
+        acceptors = {
+            "uracil": {
+                "O2": 2,
+                "O4": 2
+            },
+            "backbone": {
+                "OP1": 2,
+                "OP2": 2,
+                "O2\'": 2,
+                "O3\'": 2,
+                "O4\'": 2,
+                "O5\'": 2
+            },
+            "backbone_p_capped": {
+                "O2\'": 2,
+                "O3\'": 2,
+                "O4\'": 2,
+                "O5\'": 2
+            }
+        }
 
         self.update_hydrogen_bond_dictionary(hydrogen_bond_atoms=acceptors, update_donors=False)
 
@@ -501,7 +518,6 @@ class RNA(NucleicAcid):
 
 
 class DNA(NucleicAcid):
-
     def __init__(self):
         """
         Contains all information to build and evaluate DNA.
@@ -522,34 +538,28 @@ class DNA(NucleicAcid):
                                    ("C3\'", "H3\'"), ("C3\'", "C2\'"), ("C3\'", "O3\'"), ("C2\'", "H2\'1"),
                                    ("C2\'", "H2\'2")]
 
-        backbone_bonds = {"residual": tuple(full_backbone_bond_list)
-                          }
+        backbone_bonds = {"residual": tuple(full_backbone_bond_list)}
 
         self.update_backbone_bonds_dictionary(backbone_bonds=backbone_bonds)
 
         # Base Bonds
-        base = {"thymine": (("C1\'", "N1"), ("N1", "C6"), ("N1", "C2"), ("C6", "H6"), ("C6", "C5"), ("C5", "C5M"),
-                            ("C5M", "H51"), ("C5M", "H52"), ("C5M", "H53"), ("C5", "C4"), ("C4", "O4"), ("C4", "N3"),
-                            ("N3", "H3"), ("N3", "C2"), ("C2", "O2"))}
+        base = {
+            "thymine": (("C1\'", "N1"), ("N1", "C6"), ("N1", "C2"), ("C6", "H6"), ("C6", "C5"), ("C5", "C5M"),
+                        ("C5M", "H51"), ("C5M", "H52"), ("C5M", "H53"), ("C5", "C4"), ("C4", "O4"), ("C4", "N3"),
+                        ("N3", "H3"), ("N3", "C2"), ("C2", "O2"))
+        }
 
         self.update_side_chain_bonds_dictionary(new_side_chain=base)
 
         # HYDROGEN BONDS
         # Donors
-        donors = {"thymine": {"H3": 1},
-                  "backbone": {}}
+        donors = {"thymine": {"H3": 1}, "backbone": {}}
 
         self.update_hydrogen_bond_dictionary(hydrogen_bond_atoms=donors, update_donors=True)
 
         # Acceptors
 
-        acceptors = {"thymine": {"O2": 2,
-                                 "O4": 2},
-                     "backbone": {"OP1": 2,
-                                  "OP2": 2,
-                                  "O3\'": 2,
-                                  "O4\'": 2,
-                                  "O5\'": 2}}
+        acceptors = {"thymine": {"O2": 2, "O4": 2}, "backbone": {"OP1": 2, "OP2": 2, "O3\'": 2, "O4\'": 2, "O5\'": 2}}
 
         self.update_hydrogen_bond_dictionary(hydrogen_bond_atoms=acceptors, update_donors=False)
 
@@ -564,40 +574,44 @@ class Protein(Biomolecule):
         super(Protein, self).__init__()
 
         # ABBREVIATION
-        abbreviations = {"GLY": "glycine",
-                         "ALA": "alanine",
-                         "VAL": "valine",
-                         "LEU": "leucine",
-                         "ILE": "isoleucine",
-                         "SER": "serine",
-                         "THR": "threonine",
-                         "PRO": "proline",
-                         "ASP": "aspartic acid",
-                         "GLU": "glutamic acid",
-                         "ASN": "asparagine",
-                         "GLN": "glutamine",
-                         "MET": "methionine",
-                         "CYS": "cysteine",
-                         "LYS": "lysine",
-                         "ARG": "arginine",
-                         "HIS": "histidine",
-                         "PHE": "phenylalanine",
-                         "TYR": "tyrosine",
-                         "TRP": "tryptophan",
-                         "ACE": "acetyl group",
-                         "NME": "methylamine"}
+        abbreviations = {
+            "GLY": "glycine",
+            "ALA": "alanine",
+            "VAL": "valine",
+            "LEU": "leucine",
+            "ILE": "isoleucine",
+            "SER": "serine",
+            "THR": "threonine",
+            "PRO": "proline",
+            "ASP": "aspartic acid",
+            "GLU": "glutamic acid",
+            "ASN": "asparagine",
+            "GLN": "glutamine",
+            "MET": "methionine",
+            "CYS": "cysteine",
+            "LYS": "lysine",
+            "ARG": "arginine",
+            "HIS": "histidine",
+            "PHE": "phenylalanine",
+            "TYR": "tyrosine",
+            "TRP": "tryptophan",
+            "ACE": "acetyl group",
+            "NME": "methylamine"
+        }
 
         self.update_abbreviation_dictionary(abbreviations=abbreviations)
 
         # MEASURES
-        # Dihedral Angles
-        dihedral_angles_dictionary = {"psi": (("N", "CA", "C", "N"), (0, 0, 0, 1), r"$\psi$"),
-                                      "phi": (("C", "N", "CA", "C"), (-1, 0, 0, 0), r"$\phi$"),
-                                      "omega": (("CA", "C", "N", "CA"), (0, 0, 1, 1), r"$\omega$"),
-                                      "chi1": (("N", "CA", "CB", "CG"), (0, 0, 0, 0), r"$\chi_1$"),
-                                      "chi2": (("CA", "CB", "CG", "CD"), (0, 0, 0, 0), r"$\chi_2$"),
-                                      "chi3": (("CB", "CG", "CD", "CE"), (0, 0, 0, 0), r"$\chi_3$"),
-                                      "chi4": (("CG", "CD", "CE", "NZ"), (0, 0, 0, 0), r"$\chi_4$")}
+        # Angles
+        dihedral_angles_dictionary = {
+            "psi": (("N", "CA", "C", "N"), (0, 0, 0, 1), r"$\psi$"),
+            "phi": (("C", "N", "CA", "C"), (-1, 0, 0, 0), r"$\phi$"),
+            "omega": (("CA", "C", "N", "CA"), (0, 0, 1, 1), r"$\omega$"),
+            "chi1": (("N", "CA", "CB", "CG"), (0, 0, 0, 0), r"$\chi_1$"),
+            "chi2": (("CA", "CB", "CG", "CD"), (0, 0, 0, 0), r"$\chi_2$"),
+            "chi3": (("CB", "CG", "CD", "CE"), (0, 0, 0, 0), r"$\chi_3$"),
+            "chi4": (("CG", "CD", "CE", "NZ"), (0, 0, 0, 0), r"$\chi_4$")
+        }
 
         self.update_dihedral_angle_dictionary(dihedral_angles=dihedral_angles_dictionary)
 
@@ -615,64 +629,61 @@ class Protein(Biomolecule):
         self.update_backbone_bonds_dictionary(backbone_bonds=backbone_bonds)
 
         # Termini Bonds
-        termini_bonds = {"acetyl group": (("C", "O"), ("C", "CH3"), ("CH3", "H1"), ("CH3", "H2"), ("CH3", "H3")),
-                         "methylamine": (("N", "H"), ("N", "C"), ("C", "H1"), ("C", "H2"), ("C", "H3"))}
+        termini_bonds = {
+            "acetyl group": (("C", "O"), ("C", "CH3"), ("CH3", "H1"), ("CH3", "H2"), ("CH3", "H3")),
+            "methylamine": (("N", "H"), ("N", "C"), ("C", "H1"), ("C", "H2"), ("C", "H3"))
+        }
 
         self.update_termini_bonds_dictionary(termini_bonds=termini_bonds)
 
         # Base Bonds
-        amino_acids = {"glycine": (("CA", "HA2"),),
-                       "alanine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "HB3")),
-                       "valine": (("CA", "CB"), ("CB", "HB1"), ("CB", "CG1"), ("CG1", "HG11"), ("CG1", "HG12"),
-                                  ("CG1", "HG13"), ("CB", "CG2"), ("CG2", "HG21"), ("CG2", "HG22"), ("CG2", "HG23")),
-                       "leucine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "HG1"),
-                                   ("CG", "CD1"), ("CD1", "HD11"), ("CD1", "HD12"), ("CD1", "HD13"), ("CG", "CD2"),
-                                   ("CD2", "HD21"), ("CD2", "HD22"), ("CD2", "HD23")),
-                       "isoleucine": (("CA", "CB"), ("CB", "HB1"), ("CB", "CG1"), ("CG1", "HG11"), ("CG1", "HG12"),
-                                      ("CG1", "HG13"), ("CB", "CG2"), ("CG2", "HG21"), ("CG2", "HG22"), ("CG2", "CD"),
-                                      ("CD", "HD1"), ("CD", "HD2"), ("CD", "HD3")),
-                       "serine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "OG"), ("OG", "HG1")),
-                       "threonine": (("CA", "CB"), ("CB", "HB1"), ("CB", "OG1"), ("OG1", "HG11"), ("CB", "CG2"),
-                                     ("CG2", "HG21"), ("CG2", "HG22"), ("CG2", "HG23")),
-                       "proline": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "HG1"),
-                                   ("CG", "HG2"), ("CG", "CD"), ("CD", "HD1"), ("CD", "HD2"), ("CD", "N")),
-                       "aspartic acid": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "OD1"),
-                                         ("CG", "OD2")),
-                       "glutamic acid": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "HG1"),
-                                         ("CG", "HG2"), ("CG", "CD"), ("CD", "OE1"), ("CD", "OE2")),
-                       "asparagine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "OD1"),
-                                      ("CG", "ND2"), ("ND2", "HD21"), ("ND2", "HD22")),
-                       "glutamine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "HG1"),
-                                     ("CG", "HG2"), ("CG", "CD"), ("CD", "OE1"), ("CD", "NE2"), ("NE2", "HE21"),
-                                     ("NE2", "HE22")),
-                       "methionine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "HG1"),
-                                      ("CG", "HG2"), ("CG", "SD"), ("SD", "CE"), ("CE", "HE1"), ("CE", "HE2"),
-                                      ("CE", "HE3")),
-                       "cysteine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "SG"), ("SG", "HG1")),
-                       "lysine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "HG1"),
-                                  ("CG", "HG2"), ("CG", "CD"), ("CD", "HD1"), ("CD", "HD2"), ("CD", "CE"),
-                                  ("CE", "HE1"), ("CE", "HE2"), ("CE", "NZ"), ("NZ", "HZ1"), ("NZ", "HZ2"),
-                                  ("NZ", "HZ3")),
-                       "arginine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "HG1"),
-                                    ("CG", "HG2"), ("CG", "CD"), ("CD", "HD1"), ("CD", "HD2"), ("CD", "NE"),
-                                    ("NE", "HE1"), ("NE", "CZ"), ("CZ", "NH1"), ("NH1", "HH11"), ("NH1", "HH12"),
-                                    ("CZ", "NH2"), ("NH2", "HH21"), ("NH2", "HH22")),
-                       "histidine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "CD1"),
-                                     ("CD1", "HD11"), ("CG", "ND2"), ("ND2", "HD21"), ("CD1", "NE1"), ("NE1", "HE11"),
-                                     ("ND2", "CE2"), ("CE2", "HE21"), ("NE1", "CE2")),
-                       "phenylalanine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "CD1"),
-                                         ("CD1", "HD11"), ("CG", "CD2"), ("CD2", "HD21"), ("CD1", "CE1"),
-                                         ("CE1", "HE11"), ("CD2", "CE2"), ("CE2", "HE21"), ("CE1", "CZ"), ("CE2", "CZ"),
-                                         ("CZ", "HZ1")),
-                       "tyrosine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "CD1"),
-                                    ("CD1", "HD11"), ("CG", "CD2"), ("CD2", "HD21"), ("CD1", "CE1"), ("CE1", "HE11"),
-                                    ("CD2", "CE2"), ("CE2", "HE21"), ("CE1", "CZ"), ("CE2", "CZ"), ("CZ", "OH"),
-                                    ("OH", "HH1")),
-                       "tryptophan": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "CD1"),
-                                      ("CD1", "CE1"), ("CE1", "HE11"), ("CE1", "CZ1"), ("CZ1", "HZ11"), ("CG", "CD2"),
-                                      ("CD2", "HD21"), ("CD2", "NE2"), ("NE2", "HE21"), ("NE2", "CZ2"), ("CZ2", "CH2"),
-                                      ("CH2", "HH21"), ("CH2", "CTH2"), ("CTH2", "HTH21"), ("CD1", "CZ2"),
-                                      ("CZ1", "CTH2"))}
+        amino_acids = {
+            "glycine": (("CA", "HA2"), ),
+            "alanine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "HB3")),
+            "valine": (("CA", "CB"), ("CB", "HB1"), ("CB", "CG1"), ("CG1", "HG11"), ("CG1", "HG12"), ("CG1", "HG13"),
+                       ("CB", "CG2"), ("CG2", "HG21"), ("CG2", "HG22"), ("CG2", "HG23")),
+            "leucine":
+            (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "HG1"), ("CG", "CD1"), ("CD1", "HD11"),
+             ("CD1", "HD12"), ("CD1", "HD13"), ("CG", "CD2"), ("CD2", "HD21"), ("CD2", "HD22"), ("CD2", "HD23")),
+            "isoleucine": (("CA", "CB"), ("CB", "HB1"), ("CB", "CG1"), ("CG1", "HG11"), ("CG1", "HG12"),
+                           ("CG1", "HG13"), ("CB", "CG2"), ("CG2", "HG21"), ("CG2", "HG22"), ("CG2", "CD"),
+                           ("CD", "HD1"), ("CD", "HD2"), ("CD", "HD3")),
+            "serine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "OG"), ("OG", "HG1")),
+            "threonine": (("CA", "CB"), ("CB", "HB1"), ("CB", "OG1"), ("OG1", "HG11"), ("CB", "CG2"), ("CG2", "HG21"),
+                          ("CG2", "HG22"), ("CG2", "HG23")),
+            "proline": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "HG1"), ("CG", "HG2"),
+                        ("CG", "CD"), ("CD", "HD1"), ("CD", "HD2"), ("CD", "N")),
+            "aspartic acid": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "OD1"), ("CG", "OD2")),
+            "glutamic acid": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "HG1"), ("CG", "HG2"),
+                              ("CG", "CD"), ("CD", "OE1"), ("CD", "OE2")),
+            "asparagine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "OD1"), ("CG", "ND2"),
+                           ("ND2", "HD21"), ("ND2", "HD22")),
+            "glutamine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "HG1"), ("CG", "HG2"),
+                          ("CG", "CD"), ("CD", "OE1"), ("CD", "NE2"), ("NE2", "HE21"), ("NE2", "HE22")),
+            "methionine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "HG1"), ("CG", "HG2"),
+                           ("CG", "SD"), ("SD", "CE"), ("CE", "HE1"), ("CE", "HE2"), ("CE", "HE3")),
+            "cysteine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "SG"), ("SG", "HG1")),
+            "lysine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "HG1"), ("CG", "HG2"),
+                       ("CG", "CD"), ("CD", "HD1"), ("CD", "HD2"), ("CD", "CE"), ("CE", "HE1"), ("CE", "HE2"),
+                       ("CE", "NZ"), ("NZ", "HZ1"), ("NZ", "HZ2"), ("NZ", "HZ3")),
+            "arginine":
+            (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "HG1"), ("CG", "HG2"), ("CG", "CD"),
+             ("CD", "HD1"), ("CD", "HD2"), ("CD", "NE"), ("NE", "HE1"), ("NE", "CZ"), ("CZ", "NH1"), ("NH1", "HH11"),
+             ("NH1", "HH12"), ("CZ", "NH2"), ("NH2", "HH21"), ("NH2", "HH22")),
+            "histidine":
+            (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "CD1"), ("CD1", "HD11"), ("CG", "ND2"),
+             ("ND2", "HD21"), ("CD1", "NE1"), ("NE1", "HE11"), ("ND2", "CE2"), ("CE2", "HE21"), ("NE1", "CE2")),
+            "phenylalanine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "CD1"), ("CD1", "HD11"),
+                              ("CG", "CD2"), ("CD2", "HD21"), ("CD1", "CE1"), ("CE1", "HE11"), ("CD2", "CE2"),
+                              ("CE2", "HE21"), ("CE1", "CZ"), ("CE2", "CZ"), ("CZ", "HZ1")),
+            "tyrosine": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "CD1"), ("CD1", "HD11"),
+                         ("CG", "CD2"), ("CD2", "HD21"), ("CD1", "CE1"), ("CE1", "HE11"), ("CD2", "CE2"),
+                         ("CE2", "HE21"), ("CE1", "CZ"), ("CE2", "CZ"), ("CZ", "OH"), ("OH", "HH1")),
+            "tryptophan": (("CA", "CB"), ("CB", "HB1"), ("CB", "HB2"), ("CB", "CG"), ("CG", "CD1"), ("CD1", "CE1"),
+                           ("CE1", "HE11"), ("CE1", "CZ1"), ("CZ1", "HZ11"), ("CG", "CD2"), ("CD2", "HD21"),
+                           ("CD2", "NE2"), ("NE2", "HE21"), ("NE2", "CZ2"), ("CZ2", "CH2"), ("CH2", "HH21"),
+                           ("CH2", "CTH2"), ("CTH2", "HTH21"), ("CD1", "CZ2"), ("CZ1", "CTH2"))
+        }
 
         self.update_side_chain_bonds_dictionary(new_side_chain=amino_acids)
 
