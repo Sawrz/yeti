@@ -3,7 +3,6 @@ import itertools
 from multiprocessing.pool import ThreadPool
 
 import numpy as np
-import cupy as cp
 
 from yeti.get_features.angles import Angle, Dihedral
 from yeti.get_features.distances import Distance
