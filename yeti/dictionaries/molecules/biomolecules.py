@@ -616,7 +616,9 @@ class Protein(Biomolecule):
         self.update_dihedral_angle_dictionary(dihedral_angles=dihedral_angles_dictionary)
 
         # Distances
-        distance_dict = {"CA_CA": (("CA", "CA"), r"$C_{\alpha}$ to $C_{\alpha}$")}
+        distance_dict = {"CA_CA": (("CA", "CA"), r"$C_{\alpha}$ to $C_{\alpha}$"),
+                         "CA_CB": (("CA", "CB"), r"$C_{\alpha}$ to $C_{\beta}$"),
+                         "CA_O": (("CA", "O"), r"$C_{\alpha}$ to $O$")}
 
         self.update_distances_dictionary(distances=distance_dict)
 

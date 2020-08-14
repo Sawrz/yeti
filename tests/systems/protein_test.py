@@ -90,7 +90,7 @@ class TestProteinDistanceMethods(ProteinTestCase):
                        xyz_trajectory=np.array([[0.4, 0.4, 0.4], [0.8, 0.8, 0.8]]))
         atom_03 = Atom(structure_file_index=2,
                        subsystem_index=0,
-                       name='A',
+                       name='CB',
                        xyz_trajectory=np.array([[0.25, 0.25, 0.25], [0.85, 0.85, 0.85]]))
         atom_04 = Atom(structure_file_index=5,
                        subsystem_index=3,
@@ -136,7 +136,10 @@ class TestProteinDistanceMethods(ProteinTestCase):
 
         exp = {'RESA_0000:CA_0003-RESB_0001:CA_0001': np.array([0.173205081, 0.346410162]),
                'RESA_0000:CA_0003-RESC_0002:CA_0002': np.array([0.519615242, 0.692820323]),
-               'RESB_0001:CA_0001-RESC_0002:CA_0002': np.array([0.346410162, 0.692820323])}
+               'RESB_0001:CA_0001-RESC_0002:CA_0002': np.array([0.346410162, 0.692820323]),
+               'RESA_0000:CA_0003-RESA_0000:CB_0000': np.array([0.25980762, 0.60621778]),
+               'RESB_0001:CA_0001-RESA_0000:CB_0000': np.array([0.08660254, 0.77942286]),
+               'RESC_0002:CA_0002-RESA_0000:CB_0000': np.array([0.25980762, 0.08660254])}
 
         self.assertEqual(exp.keys(), self.molecule.distances.keys())
 

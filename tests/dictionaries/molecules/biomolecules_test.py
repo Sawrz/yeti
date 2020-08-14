@@ -1427,7 +1427,9 @@ class TestProtein(TestCase):
     def test_distances_dictionary(self):
         from yeti.dictionaries.molecules.biomolecules import Protein
 
-        reference = {"CA_CA": (("CA", "CA"), r'$C_{\alpha}$ to $C_{\alpha}$')}
+        reference = {"CA_CA": (("CA", "CA"), r'$C_{\alpha}$ to $C_{\alpha}$'),
+                     "CA_CB": (("CA", "CB"), r'$C_{\alpha}$ to $C_{\beta}$'),
+                     "CA_O": (("CA", "O"), r'$C_{\alpha}$ to $O$')}
 
         protein = Protein()
         result = protein.distances_dictionary
@@ -1459,7 +1461,7 @@ class TestProtein(TestCase):
         result = protein.backbone_bonds_dictionary
 
         # check for equal keys
-        keys_expected = ("residual",)
+        keys_expected = ("residual", )
         keys_result = tuple(result.keys())
 
         self.assertTupleEqual(keys_expected, keys_result)
