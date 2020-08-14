@@ -131,6 +131,18 @@ class TestProteinDistanceMethods(ProteinTestCase):
         self.assertListEqual([exp_key], list(self.molecule.distances.keys()))
         npt.assert_array_almost_equal(exp_distances, self.molecule.distances[exp_key], decimal=5)
 
+    def test_get_all_distances(self):
+        self.molecule.get_all_distances()
+
+        exp = {'RESA_0000:CA_0003-RESB_0001:CA_0001': np.array([0.173205081, 0.346410162]),
+               'RESA_0000:CA_0003-RESC_0002:CA_0002': np.array([0.519615242, 0.692820323]),
+               'RESB_0001:CA_0001-RESC_0002:CA_0002': np.array([0.346410162, 0.692820323])}
+
+        self.assertEqual(exp.keys(), self.molecule.distances.keys())
+
+        for key in exp.keys():
+            npt.assert_array_almost_equal(exp[key], self.molecule.distances[key], decimal=5)
+
 
 class TestProteinDihedralAngleMethods(ProteinTestCase):
     def setUpResidues(self) -> None:

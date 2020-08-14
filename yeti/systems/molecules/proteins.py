@@ -1,3 +1,4 @@
+from itertools import product, combinations
 import yeti.dictionaries.molecules.biomolecules as biomolecule_dictionaries
 from yeti.systems.molecules.molecules import BioMolecule, BioMoleculeException
 
@@ -22,6 +23,26 @@ class Protein(BioMolecule):
         atom_positions = self.__get_atom_ids__(atom_names=(atom_names[0], atom_names[1]),
                                                residue_ids=(residue_id_01, residue_id_02))
         super(Protein, self).get_distance(*atom_positions, store_result=True, opt=True)
+
+    def get_all_distances(self):
+        for distance_name in self.dictionary.distances_dictionary.keys():
+            (atom_01, atom_02) = self.dictionary.distances_dictionary[distance_name][0]
+            atom_01_indices = []
+            atom_02_indices = []
+
+            for residue in self.residues:
+                if atom_01 in residue.sequence:
+                    atom_01_indices.append(residue.subsystem_index)
+                if atom_02 in residue.sequence:
+                    atom_02_indices.append(residue.subsystem_index)
+
+            if atom_01 == atom_02:
+                distance_pairs = combinations(atom_01_indices, 2)
+            else:
+                distance_pairs = product(atom_01_indices, atom_02_indices)
+
+            for (residue_id_01, residue_id_02) in distance_pairs:
+                self.get_distance(distance_name=distance_name, residue_id_01=residue_id_01, residue_id_02=residue_id_02)
 
     def get_dihedral(self, dihedral_name, residue_id):
         self.ensure_data_type.ensure_string(parameter=dihedral_name, parameter_name='dihedral_name')
