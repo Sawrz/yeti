@@ -269,21 +269,25 @@ class TestProteinDihedralAngleMethods(ProteinTestCase):
         for key in exp.keys():
             npt.assert_array_almost_equal(exp[key], self.molecule.dihedral_angles[key], decimal=5)
 
-    '''
     def test_get_all_dihedral_angles(self):
         self.molecule.get_all_dihedral_angles()
 
         exp = {
-            'alpha_001': np.array([np.pi, np.pi]),
-            'chi_001': np.array([2.42560681293738, np.pi]),
-            'chi_002': np.array([np.pi, 2.42560681293738])
+            'phi_001': np.array([np.pi, np.pi]),
+            'phi_002': np.array([-1.1341678, 0.]),
+            'psi_000': np.array([0., 1.6667259]),
+            'psi_001': np.array([2.158799, 0.]),
+            'psi_002': np.array([2.42560681293738, np.pi]),
+            'omega_000': np.array([0., 0.78539824]),
+            'omega_001': np.array([1.9738548, np.pi]),
+            'chi1_000': np.array([np.pi, 2.42560681293738])
         }
 
         self.assertEqual(exp.keys(), self.molecule.dihedral_angles.keys())
 
         for key in exp.keys():
             npt.assert_array_almost_equal(exp[key], self.molecule.dihedral_angles[key], decimal=5)
-    '''
+
 
 class ProteinExceptionsTestCase(ProteinTestCase, BlueprintExceptionsTestCase):
     def setUp(self) -> None:
